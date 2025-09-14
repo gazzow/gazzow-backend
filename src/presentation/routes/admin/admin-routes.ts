@@ -3,16 +3,29 @@ import { AdminDependencyContainer } from "../../../di/admin/admin-dependency-con
 
 const adminRouter = Router();
 
-
 const adminContainer = new AdminDependencyContainer();
 
 const adminAuthController = adminContainer.createAuthController();
 const userManagementController = adminContainer.createUserManagementController();
 
+const verifyMiddleware = adminContainer.createVerifyAdminMiddleware();
+
 adminRouter.post("/auth/login", adminAuthController.login);
 
-adminRouter.get("/users", userManagementController.listUsers);
-adminRouter.get('/users/:id', userManagementController.getUser);
-adminRouter.patch("/users/:id/status", userManagementController.blockUser);
+adminRouter.get(
+  "/users",
+  verifyMiddleware.isAdmin,
+  userManagementController.listUsers
+);
+adminRouter.get(
+  "/users/:id",
+  verifyMiddleware.isAdmin,
+  userManagementController.getUser
+);
+adminRouter.patch(
+  "/users/:id/status",
+  verifyMiddleware.isAdmin,
+  userManagementController.blockUser
+);
 
 export default adminRouter;

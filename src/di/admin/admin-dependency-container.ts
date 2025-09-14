@@ -6,6 +6,7 @@ import {
   UsersMapper,
   type IUsersMapper,
 } from "../../application/mappers/users.js";
+import type { ITokenService } from "../../application/providers/token-service.js";
 import { AdminLoginUC } from "../../application/use-cases/admin/auth/login.js";
 import {
   BlockUserUC,
@@ -16,9 +17,11 @@ import {
   type IGetUserUC,
 } from "../../application/use-cases/admin/users-management/get-user.js";
 import { ListUsersUC } from "../../application/use-cases/admin/users-management/list-users.js";
+import { TokenService } from "../../infrastructure/providers/token-service.js";
 import { UserRepository } from "../../infrastructure/repositories/user-repository.js";
 import { AdminAuthController } from "../../presentation/controllers/admin/auth-controller.js";
 import { UserManagementController } from "../../presentation/controllers/admin/user-management.js";
+import { VerifyAdmin } from "../../presentation/middleware/admin/is-admin.js";
 
 export class AdminDependencyContainer {
   constructor() {}
@@ -38,8 +41,14 @@ export class AdminDependencyContainer {
     return new UsersMapper(this.createUserMapper());
   }
 
+  createTokenService(): ITokenService {
+    return new TokenService()
+  }
+
   createLoginUC(): AdminLoginUC {
-    return new AdminLoginUC();
+    return new AdminLoginUC(
+      this.createTokenService(),
+    );
   }
 
   createListUsersUC(): ListUsersUC {
@@ -66,5 +75,12 @@ export class AdminDependencyContainer {
       this.createBlockUserUC(),
       this.createGetUserUC(),
     );
+  }
+
+  // Verify Middleware
+  createVerifyAdminMiddleware(): VerifyAdmin{
+    return new VerifyAdmin(
+      this.createTokenService(),
+    )
   }
 }

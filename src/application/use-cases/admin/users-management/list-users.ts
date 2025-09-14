@@ -10,7 +10,6 @@ export class ListUsersUC{
         
         const users = await this.userRepository.findAll();
         logger.debug(`users list: ${users}`);
-        console.log(`users list after mapped: ${JSON.stringify(users)}`)
         return {
             success: true,
             users,
