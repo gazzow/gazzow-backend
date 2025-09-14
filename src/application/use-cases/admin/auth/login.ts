@@ -25,6 +25,10 @@ export class AdminLoginUC {
         success: true,
         accessToken,
         refreshToken,
+        admin:{
+          email, 
+          role: UserRole.ADMIN
+        },
         message: "login successful",
       };
     } else {
