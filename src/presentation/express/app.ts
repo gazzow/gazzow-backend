@@ -4,7 +4,7 @@ import cookieParser from 'cookie-parser';
 import userRoutes from "../routes/user/user-routes.js";
 import adminRoutes from "../routes/admin/admin-routes.js";
 import { env } from "../../infrastructure/config/env.js";
-import { errorHandler } from "../middleware/error-handler.js";
+import { errorHandler } from "../middleware/user/error-handler.js";
 
 const app = express();
 

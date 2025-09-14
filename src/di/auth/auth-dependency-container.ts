@@ -12,7 +12,7 @@ import { AuthService } from "../../infrastructure/providers/auth-service.js";
 import { ForgotPasswordUC } from "../../application/use-cases/user/auth/forgot-password.js";
 import { VerifyOtpUC } from "../../application/use-cases/user/auth/verify-otp.js";
 import { ResetPasswordUC } from "../../application/use-cases/user/auth/reset-password.js";
-import { VerifyToken } from "../../presentation/middleware/verify-token.js";
+import { VerifyToken } from "../../presentation/middleware/user/verify-token.js";
 import {
   UserMapper,
   type IUserMapper,
@@ -24,7 +24,7 @@ import {
 import {
   CheckBlockedUserMiddleware,
   type ICheckBlockedUserMiddleware,
-} from "../../presentation/middleware/check-blocked-user.js";
+} from "../../presentation/middleware/user/check-blocked-user.js";
 import type { IUserRepository } from "../../application/interfaces/user-repository.js";
 import {
   RefreshAccessTokenUC,

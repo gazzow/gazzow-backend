@@ -1,11 +1,11 @@
 import type { NextFunction, Request, Response } from "express";
-import type { IUserRepository } from "../../application/interfaces/user-repository.js";
-import logger from "../../utils/logger.js";
-import { AppError } from "../../utils/app-error.js";
-import { UserStatus } from "../../domain/enums/user-role.js";
-import type { ITokenPayload } from "../../application/interfaces/jwt/jwt-payload.js";
-import { ResponseMessages } from "../../domain/enums/constants/response-messages.js";
-import { HttpStatusCode } from "../../domain/enums/constants/status-codes.js";
+import type { IUserRepository } from "../../../application/interfaces/user-repository.js";
+import logger from "../../../utils/logger.js";
+import { AppError } from "../../../utils/app-error.js";
+import { UserStatus } from "../../../domain/enums/user-role.js";
+import type { ITokenPayload } from "../../../application/interfaces/jwt/jwt-payload.js";
+import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
+import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
 
 export interface ICheckBlockedUserMiddleware {
   isBlocked(req: Request, res: Response, next: NextFunction): void;
