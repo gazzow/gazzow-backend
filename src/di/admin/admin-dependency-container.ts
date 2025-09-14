@@ -21,6 +21,7 @@ import { TokenService } from "../../infrastructure/providers/token-service.js";
 import { UserRepository } from "../../infrastructure/repositories/user-repository.js";
 import { AdminAuthController } from "../../presentation/controllers/admin/auth-controller.js";
 import { UserManagementController } from "../../presentation/controllers/admin/user-management.js";
+import { VerifyAdmin } from "../../presentation/middleware/admin/is-admin.js";
 
 export class AdminDependencyContainer {
   constructor() {}
@@ -74,5 +75,12 @@ export class AdminDependencyContainer {
       this.createBlockUserUC(),
       this.createGetUserUC(),
     );
+  }
+
+  // Verify Middleware
+  createVerifyAdminMiddleware(): VerifyAdmin{
+    return new VerifyAdmin(
+      this.createTokenService(),
+    )
   }
 }
