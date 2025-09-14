@@ -1,9 +1,9 @@
+import type { ITokenPayload } from "../../application/interfaces/jwt/jwt-payload.js";
 import type { IUserRepository } from "../../application/interfaces/user-repository.js";
 import type { IAuthService } from "../../application/providers/auth-service.js";
 import type { IHashService } from "../../application/providers/hash-service.js";
 import type { IOtpStore } from "../../application/providers/otp-service.js";
 import type { ITokenService } from "../../application/providers/token-service.js";
-import type { IUserPublic } from "../../domain/entities/user.js";
 import logger from "../../utils/logger.js";
 import type { IUserDocument } from "../db/models/user-model.js";
 
@@ -43,7 +43,7 @@ export class AuthService implements IAuthService {
   }
 
   async generateTokens(
-    payload: IUserPublic
+    payload: ITokenPayload
   ): Promise<[string, string]> {
 
     return Promise.all([

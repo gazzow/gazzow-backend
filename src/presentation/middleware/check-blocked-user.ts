@@ -1,16 +1,18 @@
 import type { NextFunction, Request, Response } from "express";
 import type { IUserRepository } from "../../application/interfaces/user-repository.js";
-import type { IUserPublic } from "../../domain/entities/user.js";
 import logger from "../../utils/logger.js";
 import { AppError } from "../../utils/app-error.js";
 import { UserStatus } from "../../domain/enums/user-role.js";
+import type { ITokenPayload } from "../../application/interfaces/jwt/jwt-payload.js";
+import { ResponseMessages } from "../../domain/enums/constants/response-messages.js";
+import { HttpStatusCode } from "../../domain/enums/constants/status-codes.js";
 
 export interface ICheckBlockedUserMiddleware {
   isBlocked(req: Request, res: Response, next: NextFunction): void;
 }
 
 interface AuthRequest extends Request {
-  user?: IUserPublic;
+  user?: ITokenPayload;
 }
 
 export class CheckBlockedUserMiddleware implements ICheckBlockedUserMiddleware {
@@ -26,9 +28,12 @@ export class CheckBlockedUserMiddleware implements ICheckBlockedUserMiddleware {
       logger.debug(`req user data: ${JSON.stringify(req.user)}`);
       const { id } = req.user;
       logger.debug(`user id : ${id}`);
+      if(!id){
+        throw new AppError(ResponseMessages.Unauthorized, HttpStatusCode.UNAUTHORIZED)
+      }
       const user = await this.userRepository.findById(id);
       if (!user) {
-        throw new AppError("User not found", 404);
+        throw new AppError(ResponseMessages.UserNotFound, HttpStatusCode.NOT_FOUND);
       }
 
       if (user.status === UserStatus.BLOCKED) {

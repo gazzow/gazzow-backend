@@ -9,13 +9,14 @@ import type { IOtpStore } from "../../../providers/otp-service.js";
 import type { IHashService } from "../../../providers/hash-service.js";
 import logger from "../../../../utils/logger.js";
 import type { IAuthService } from "../../../providers/auth-service.js";
+import type { ITokenPayload } from "../../../interfaces/jwt/jwt-payload.js";
 
 export class VerifyOtpAndCreateUserUC {
   constructor(
     private otpStore: IOtpStore,
     private passwordHash: IHashService, // re-name service
     private userRepository: IUserRepository,
-    private authService: IAuthService,
+    private authService: IAuthService
   ) {}
 
   async execute(email: string, otp: string): Promise<IVerificationResult> {
@@ -33,18 +34,19 @@ export class VerifyOtpAndCreateUserUC {
 
       // Create user in database with transaction-like behavior
       const createdUser = await this.createUserSafely(tempUserData);
-      logger.info(`Created user info in verify-otp: ${JSON.stringify(createdUser)}`)
+      logger.info(
+        `Created user info in verify-otp: ${JSON.stringify(createdUser)}`
+      );
 
       // Generate tokens after successful user creation
-      const payload = {
-      id: createdUser.id,
-      name: createdUser.name,
-      email: createdUser.email,
-      role: createdUser.role,
-      createdAt: createdUser.createdAt,
-    };
+      const payload: ITokenPayload = {
+        id: createdUser.id,
+        email: createdUser.email,
+        role: createdUser.role,
+      };
 
-      const [accessToken, refreshToken] = await this.authService.generateTokens(payload);
+      const [accessToken, refreshToken] =
+        await this.authService.generateTokens(payload);
 
       await this.cleanupTempData(normalizedEmail);
 

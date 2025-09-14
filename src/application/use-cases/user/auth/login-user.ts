@@ -5,6 +5,7 @@ import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.
 import logger from "../../../../utils/logger.js";
 import type { IUserMapper } from "../../../mappers/user.js";
 import type { IAuthService } from "../../../providers/auth-service.js";
+import type { ITokenPayload } from "../../../interfaces/jwt/jwt-payload.js";
 
 export class LoginUserUC {
   constructor(
@@ -34,12 +35,10 @@ export class LoginUserUC {
     const user = this.userMapper.toPublicDTO(userDoc);
 
     // Generate Tokens
-    const payload = {
+    const payload: ITokenPayload = {
       id: user.id,
-      name: user.name,
       email: user.email,
       role: user.role,
-      createdAt: user.createdAt,
     };
 
     const [accessToken, refreshToken] =
