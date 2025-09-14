@@ -206,4 +206,13 @@ export class AuthController {
       next(error);
     }
   };
+
+  logout = (req: Request, res: Response) => {
+    logger.debug('Logout api got hit 🚀');
+
+    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
+    
+    res.status(HttpStatusCode.OK).json({success: true, message: ResponseMessages.LogoutSuccess})
+  }
 }

@@ -22,6 +22,13 @@ userRouter.put("/auth/reset-password", authController.resetPassword);
 
 userRouter.post("/auth/refresh", authController.refreshAccessToken);
 
+userRouter.post(
+  "/auth/logout",
+  tokenMiddleware.verifyToken,
+  blockedUserMiddleware.isBlocked,
+  authController.logout
+);
+
 userRouter.put(
   "/profile/setup",
   tokenMiddleware.verifyToken,
