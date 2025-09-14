@@ -1,7 +1,7 @@
 import type { IGetUserProfileResponseDTO } from "../../../../domain/dtos/user.js";
 import { AppError } from "../../../../utils/app-error.js";
-import { ResponseMessages } from "../../../../utils/constants/response-messages.js";
-import { HttpStatusCode } from "../../../../utils/constants/status-codes.js";
+import { ResponseMessages } from "../../../../domain/enums/constants/response-messages.js";
+import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.js";
 import type { IUserRepository } from "../../../interfaces/user-repository.js";
 
 export interface IGetUserProfileUC {

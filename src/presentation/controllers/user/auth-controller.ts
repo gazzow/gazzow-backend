@@ -13,8 +13,8 @@ import type { VerifyOtpUC } from "../../../application/use-cases/user/auth/verif
 import type { ResetPasswordUC } from "../../../application/use-cases/user/auth/reset-password.js";
 import { AppError } from "../../../utils/app-error.js";
 import { UserStatus } from "../../../domain/enums/user-role.js";
-import { ResponseMessages } from "../../../utils/constants/response-messages.js";
-import { HttpStatusCode } from "../../../utils/constants/status-codes.js";
+import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
+import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
 import type { IRefreshAccessTokenUC } from "../../../application/use-cases/user/auth/refresh-token.js";
 
 export class AuthController {

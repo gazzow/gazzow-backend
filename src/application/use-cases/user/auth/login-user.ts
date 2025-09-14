@@ -1,7 +1,7 @@
 import type { ILoginRequestDTO } from "../../../../domain/dtos/user.js";
 import { AppError } from "../../../../utils/app-error.js";
-import { ResponseMessages } from "../../../../utils/constants/response-messages.js";
-import { HttpStatusCode } from "../../../../utils/constants/status-codes.js";
+import { ResponseMessages } from "../../../../domain/enums/constants/response-messages.js";
+import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.js";
 import logger from "../../../../utils/logger.js";
 import type { IUserMapper } from "../../../mappers/user.js";
 import type { IAuthService } from "../../../providers/auth-service.js";
