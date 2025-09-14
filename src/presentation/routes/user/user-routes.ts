@@ -25,7 +25,6 @@ userRouter.post("/auth/refresh", authController.refreshAccessToken);
 userRouter.post(
   "/auth/logout",
   tokenMiddleware.verifyToken,
-  blockedUserMiddleware.isBlocked,
   authController.logout
 );
 
@@ -38,6 +37,7 @@ userRouter.put(
 userRouter.get(
   "/profile/me",
   tokenMiddleware.verifyToken,
+  blockedUserMiddleware.isBlocked,
   userController.getUserProfile
 );
 
