@@ -1,6 +1,9 @@
 import type { IAdminLoginResponseDTO } from "../../../../domain/dtos/admin/admin.js";
+import { ResponseMessages } from "../../../../domain/enums/constants/response-messages.js";
+import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.js";
 import { UserRole } from "../../../../domain/enums/user-role.js";
 import { env } from "../../../../infrastructure/config/env.js";
+import { AppError } from "../../../../utils/app-error.js";
 import type { ITokenPayload } from "../../../interfaces/jwt/jwt-payload.js";
 import type { ITokenService } from "../../../providers/token-service.js";
 
@@ -32,7 +35,7 @@ export class AdminLoginUC {
         message: "login successful",
       };
     } else {
-      throw new Error("Invalid Admin Credentials. Please try again!");
+      throw new AppError(ResponseMessages.LoginFailed, HttpStatusCode.BAD_REQUEST);
     }
   };
 }

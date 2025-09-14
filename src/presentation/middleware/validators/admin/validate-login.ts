@@ -16,7 +16,7 @@ export const validateLogin = (
     if (error instanceof z.ZodError) {
       return res.status(400).json({
         success: false,
-        message: "Validation failed",
+        message: "Invalid Credential Format",
         errors: error.issues,
       });
     }
