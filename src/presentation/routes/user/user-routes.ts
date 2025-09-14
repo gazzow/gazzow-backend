@@ -38,7 +38,6 @@ userRouter.put(
 userRouter.get(
   "/profile/me",
   tokenMiddleware.verifyToken,
-  blockedUserMiddleware.isBlocked,
   userController.getUserProfile
 );
 

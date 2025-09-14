@@ -1,11 +1,11 @@
 import type { NextFunction, Request, Response } from "express";
 import type { ITokenService } from "../../application/providers/token-service.js";
-import type { IUserPublic } from "../../domain/entities/user.js";
 import logger from "../../utils/logger.js";
 import { AppError } from "../../utils/app-error.js";
+import type { ITokenPayload } from "../../application/interfaces/jwt/jwt-payload.js";
 
 interface AuthRequest extends Request {
-  user?: IUserPublic;
+  user?: ITokenPayload;
 }
 
 export class VerifyToken {
