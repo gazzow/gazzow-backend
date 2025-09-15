@@ -6,7 +6,7 @@ export const errorHandler = (
   err: Error | AppError,
   req: Request,
   res: Response,
-  next: NextFunction,
+  _next: NextFunction,
 ) => {
     logger.error(`Error handler: ${err.stack}`);
 
@@ -23,5 +23,4 @@ export const errorHandler = (
         success: false,
         message: 'Internal Server Error'
     })
-
-};
+};  
