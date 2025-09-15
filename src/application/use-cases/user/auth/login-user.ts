@@ -29,7 +29,7 @@ export class LoginUserUC {
     logger.info(`password compare res: ${isValidPassword}`);
 
     if (!isValidPassword) {
-      throw new Error("Invalid Credentials!");
+      throw new AppError(ResponseMessages.LoginFailed, HttpStatusCode.BAD_REQUEST);
     }
 
     const user = this.userMapper.toPublicDTO(userDoc);

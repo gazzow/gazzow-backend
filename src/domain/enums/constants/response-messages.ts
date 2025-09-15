@@ -6,7 +6,7 @@ export enum ResponseMessages {
   NoRefreshToken = "Unauthorized: No refresh token provided",
   InvalidRefreshToken = "Unauthorized: Invalid refresh token",
   AccessTokenRefreshed = "New access token generated successfully",
-  LogoutSuccess  = "Logged out successfully",
+  LogoutSuccess = "Logged out successfully",
   // User
   UserNotFound = "User not found",
   UserCreated = "User created successfully",
