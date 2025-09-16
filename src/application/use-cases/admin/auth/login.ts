@@ -4,14 +4,13 @@ import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.
 import { UserRole } from "../../../../domain/enums/user-role.js";
 import { env } from "../../../../infrastructure/config/env.js";
 import { AppError } from "../../../../utils/app-error.js";
+import type { IAdminLoginUseCase } from "../../../interfaces/admin/auth/login.js";
 import type { ITokenPayload } from "../../../interfaces/jwt/jwt-payload.js";
 import type { ITokenService } from "../../../providers/token-service.js";
 
-export interface IAdminLoginUC {
-  execute(email: string, password: string): Promise<IAdminLoginResponseDTO>;
-}
 
-export class AdminLoginUC {
+
+export class AdminLoginUC implements IAdminLoginUseCase {
   constructor(private tokenService: ITokenService) {}
 
   execute = async (email: string, password: string) => {
