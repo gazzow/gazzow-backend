@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { AdminDependencyContainer } from "../../../di/admin/admin-dependency-container.js";
+import { validateLogin } from "../../middleware/validators/admin/validate-login.js";
 
 const adminRouter = Router();
 
@@ -10,7 +11,7 @@ const userManagementController = adminContainer.createUserManagementController()
 
 const verifyMiddleware = adminContainer.createVerifyAdminMiddleware();
 
-adminRouter.post("/auth/login", adminAuthController.login);
+adminRouter.post("/auth/login",validateLogin, adminAuthController.login);
 
 adminRouter.get(
   "/users",

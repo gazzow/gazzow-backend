@@ -1,12 +1,12 @@
 import type { NextFunction, Request, Response } from "express";
-import { AppError } from "../../utils/app-error.js";
-import logger from "../../utils/logger.js";
+import { AppError } from "../../../utils/app-error.js";
+import logger from "../../../utils/logger.js";
 
 export const errorHandler = (
   err: Error | AppError,
   req: Request,
   res: Response,
-  next: NextFunction,
+  _next: NextFunction,
 ) => {
     logger.error(`Error handler: ${err.stack}`);
 
@@ -23,5 +23,4 @@ export const errorHandler = (
         success: false,
         message: 'Internal Server Error'
     })
-
-};
+};  
