@@ -6,6 +6,11 @@ export interface IAdminDTO {
   role: string;
 }
 
+export interface IAdminListUsersResponseDTO{
+  success: true;
+  users: IUserPublic[];
+}
+
 export interface IAdminLoginResponseDTO {
   success: boolean;
   message: string;
