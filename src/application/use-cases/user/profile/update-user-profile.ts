@@ -2,7 +2,7 @@ import type {
   IUpdateProfileRequestDTO,
   IUpdateProfileResponseDTO,
 } from "../../../../domain/dtos/user.js";
-import type { IUserRepository } from "../../../interfaces/user-repository.js";
+import type { IUserRepository } from "../../../interfaces/repository/user-repository.js";
 
 export class UpdateUserProfileUC {
   constructor(private userRepository: IUserRepository) {}

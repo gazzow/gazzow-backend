@@ -1,5 +1,5 @@
 import logger from "../../../../utils/logger.js";
-import type { IUserRepository } from "../../../interfaces/user-repository.js";
+import type { IUserRepository } from "../../../interfaces/repository/user-repository.js";
 
 export class ListUsersUC{
     constructor(

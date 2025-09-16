@@ -25,7 +25,7 @@ import {
   CheckBlockedUserMiddleware,
   type ICheckBlockedUserMiddleware,
 } from "../../presentation/middleware/user/check-blocked-user.js";
-import type { IUserRepository } from "../../application/interfaces/user-repository.js";
+import type { IUserRepository } from "../../application/interfaces/repository/user-repository.js";
 import {
   RefreshAccessTokenUC,
   type IRefreshAccessTokenUC,

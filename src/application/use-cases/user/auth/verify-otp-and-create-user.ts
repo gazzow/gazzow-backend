@@ -4,7 +4,7 @@ import type {
   IVerificationResult,
 } from "../../../../domain/entities/user.js";
 import { UserRole } from "../../../../domain/enums/user-role.js";
-import type { IUserRepository } from "../../../interfaces/user-repository.js";
+import type { IUserRepository } from "../../../interfaces/repository/user-repository.js";
 import type { IOtpStore } from "../../../providers/otp-service.js";
 import type { IHashService } from "../../../providers/hash-service.js";
 import logger from "../../../../utils/logger.js";
