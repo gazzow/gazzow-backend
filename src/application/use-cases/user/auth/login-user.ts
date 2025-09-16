@@ -1,4 +1,4 @@
-import type { ILoginRequestDTO } from "../../../../domain/dtos/user.js";
+import type { ILoginRequestDTO, ILoginResponseDTO } from "../../../../domain/dtos/user.js";
 import { AppError } from "../../../../utils/app-error.js";
 import { ResponseMessages } from "../../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.js";
@@ -6,14 +6,16 @@ import logger from "../../../../utils/logger.js";
 import type { IUserMapper } from "../../../mappers/user.js";
 import type { IAuthService } from "../../../providers/auth-service.js";
 import type { ITokenPayload } from "../../../interfaces/jwt/jwt-payload.js";
+import type { ILoginUserUseCase } from "../../../interfaces/user/auth/login-user.js";
 
-export class LoginUserUC {
+
+export class LoginUserUC implements ILoginUserUseCase{
   constructor(
     private authService: IAuthService,
     private userMapper: IUserMapper
   ) {}
 
-  async execute(data: ILoginRequestDTO) {
+  async execute(data: ILoginRequestDTO): Promise<ILoginResponseDTO> {
     // Find user by email
     const userDoc = await this.authService.checkUserExists(data.email);
     if (!userDoc) {
@@ -49,6 +51,7 @@ export class LoginUserUC {
       accessToken,
       refreshToken,
       user,
+      success:true,
       message: "Login Successful!",
     };
   }

@@ -21,6 +21,8 @@ export interface ILoginRequestDTO {
 }
 
 export interface ILoginResponseDTO {
+  accessToken: string;
+  refreshToken: string;
   success: boolean;
   user: IUserPublicDTO;
   message: string;
