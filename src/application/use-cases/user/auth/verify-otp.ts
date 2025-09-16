@@ -1,13 +1,15 @@
-import type { IVerifyOtpResponseDTO } from "../../../../domain/dtos/user.js";
+import type { IVerifyOtpRequestDTO, IVerifyOtpResponseDTO } from "../../../../domain/dtos/user.js";
 import type { AuthService } from "../../../../infrastructure/providers/auth-service.js";
+import type { IVerifyOtpUseCase } from "../../../interfaces/user/auth/verify-otp.js";
 
-export class VerifyOtpUC {
+
+export class VerifyOtpUC implements IVerifyOtpUseCase{
   constructor(private authService: AuthService) {}
 
-  async execute(email: string, otp: string): Promise<IVerifyOtpResponseDTO> {
+  async execute(data: IVerifyOtpRequestDTO): Promise<IVerifyOtpResponseDTO> {
     try {
 
-        await this.authService.verifyOtp(email, otp, 'reset')
+        await this.authService.verifyOtp(data.email, data.otp, 'reset')
 
         return {
             success: true,
