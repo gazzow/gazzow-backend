@@ -3,8 +3,10 @@ import type {
   IUpdateProfileResponseDTO,
 } from "../../../../domain/dtos/user.js";
 import type { IUserRepository } from "../../../interfaces/repository/user-repository.js";
+import type { IUpdateUserProfileUseCase } from "../../../interfaces/user/profile/updat-user-profile.js";
 
-export class UpdateUserProfileUC {
+
+export class UpdateUserProfileUC implements IUpdateUserProfileUseCase {
   constructor(private userRepository: IUserRepository) {}
 
   execute = async (
