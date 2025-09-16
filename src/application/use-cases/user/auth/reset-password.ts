@@ -1,24 +1,24 @@
-import type { IResetPasswordResponseDTO } from "../../../../domain/dtos/user.js";
+import type { IResetPasswordRequestDTO, IResetPasswordResponseDTO } from "../../../../domain/dtos/user.js";
 import type { AuthService } from "../../../../infrastructure/providers/auth-service.js";
 import type { HashService } from "../../../../infrastructure/providers/hash-service.js";
 import logger from "../../../../utils/logger.js";
+import type { IResetPasswordUseCase } from "../../../interfaces/user/auth/reset-password.js";
 
-export class ResetPasswordUC {
+export class ResetPasswordUC implements IResetPasswordUseCase{
   constructor(
     private hashService: HashService,
     private authService: AuthService
   ) {}
 
   async execute(
-    email: string,
-    password: string
+    data: IResetPasswordRequestDTO
   ): Promise<IResetPasswordResponseDTO> {
     try {
-      logger.info(`new password in UC: ${password}`)
-      const hashedPassword = await this.hashService.hash(password);
-      logger.info(`hashedPassword in UC: ${hashedPassword} and email: ${email}`)
+      logger.info(`new password in UC: ${data.password}`)
+      const hashedPassword = await this.hashService.hash(data.password);
+      logger.info(`hashedPassword in UC: ${hashedPassword} and email: ${data.email}`)
 
-      await this.authService.updatePassword(email, hashedPassword);
+      await this.authService.updatePassword(data.email, hashedPassword);
 
       return {
         success: true,
