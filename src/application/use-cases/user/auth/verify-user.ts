@@ -4,14 +4,16 @@ import type {
   IVerificationResult,
 } from "../../../../domain/entities/user.js";
 import { UserRole } from "../../../../domain/enums/user-role.js";
-import type { IUserRepository } from "../../../interfaces/user-repository.js";
+import type { IUserRepository } from "../../../interfaces/repository/user-repository.js";
 import type { IOtpStore } from "../../../providers/otp-service.js";
 import type { IHashService } from "../../../providers/hash-service.js";
 import logger from "../../../../utils/logger.js";
 import type { IAuthService } from "../../../providers/auth-service.js";
 import type { ITokenPayload } from "../../../interfaces/jwt/jwt-payload.js";
+import type { IVerifyUserUseCase } from "../../../interfaces/user/auth/verify-user.js";
 
-export class VerifyOtpAndCreateUserUC {
+
+export class VerifyUserUseCase implements IVerifyUserUseCase{
   constructor(
     private otpStore: IOtpStore,
     private passwordHash: IHashService, // re-name service

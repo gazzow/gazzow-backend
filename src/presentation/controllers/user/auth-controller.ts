@@ -1,37 +1,37 @@
 import type { NextFunction, Request, Response } from "express";
 import { env } from "../../../infrastructure/config/env.js";
-import type { StoreTempUserAndSentOtpUC } from "../../../application/use-cases/user/auth/store-temp-user-and-send-otp.js";
-import type { VerifyOtpAndCreateUserUC } from "../../../application/use-cases/user/auth/verify-otp-and-create-user.js";
-import type { LoginUserUC } from "../../../application/use-cases/user/auth/login-user.js";
-import type { ForgotPasswordUC } from "../../../application/use-cases/user/auth/forgot-password.js";
 import type {
   IForgotPasswordRequestDTO,
   IForgotPasswordResponseDTO,
 } from "../../../domain/dtos/user.js";
 import logger from "../../../utils/logger.js";
-import type { VerifyOtpUC } from "../../../application/use-cases/user/auth/verify-otp.js";
-import type { ResetPasswordUC } from "../../../application/use-cases/user/auth/reset-password.js";
 import { AppError } from "../../../utils/app-error.js";
 import { UserStatus } from "../../../domain/enums/user-role.js";
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
-import type { IRefreshAccessTokenUC } from "../../../application/use-cases/user/auth/refresh-token.js";
+import type { IRegisterUserUseCase } from "../../../application/interfaces/user/auth/register-user.js";
+import type { IVerifyUserUseCase } from "../../../application/interfaces/user/auth/verify-user.js";
+import type { ILoginUserUseCase } from "../../../application/interfaces/user/auth/login-user.js";
+import type { IForgotPasswordUseCase } from "../../../application/interfaces/user/auth/forgot-password.js";
+import type { IVerifyOtpUseCase } from "../../../application/interfaces/user/auth/verify-otp.js";
+import type { IResetPasswordUseCase } from "../../../application/interfaces/user/auth/reset-password.js";
+import type { IRefreshAccessTokenUseCase } from "../../../application/interfaces/user/auth/refresh-token.js";
 
 export class AuthController {
   constructor(
-    private storeTempUserAndSendOtpUC: StoreTempUserAndSentOtpUC,
-    private verifyOtpAndCreateUserUC: VerifyOtpAndCreateUserUC,
-    private loginUserUC: LoginUserUC,
-    private forgotPasswordUC: ForgotPasswordUC,
-    private verifyOtpUC: VerifyOtpUC,
-    private resetPasswordUC: ResetPasswordUC,
-    private refreshAccessTokenUc: IRefreshAccessTokenUC
+    private registerUserUseCase: IRegisterUserUseCase,
+    private verifyUserUseCase: IVerifyUserUseCase,
+    private loginUserUseCase: ILoginUserUseCase,
+    private forgotPasswordUseCase: IForgotPasswordUseCase,
+    private verifyOtpUseCase: IVerifyOtpUseCase,
+    private resetPasswordUseCase: IResetPasswordUseCase,
+    private refreshAccessTokenUseCase: IRefreshAccessTokenUseCase
   ) {}
 
   register = async (req: Request, res: Response) => {
     console.log("User Register API hit");
     try {
-      const result = await this.storeTempUserAndSendOtpUC.execute(req.body);
+      const result = await this.registerUserUseCase.execute(req.body);
       // message:  "Verification code sent successfully!"
       res.status(200).json(result);
     } catch (error) {
@@ -47,7 +47,7 @@ export class AuthController {
 
     try {
       const { email, otp } = req.body;
-      const result = await this.verifyOtpAndCreateUserUC.execute(email, otp);
+      const result = await this.verifyUserUseCase.execute(email, otp);
 
       // extract access and refresh token to store it on http-only cookie then
       const { accessToken, refreshToken, user, message } = result;
@@ -80,7 +80,7 @@ export class AuthController {
     logger.debug("login route hit");
 
     try {
-      const result = await this.loginUserUC.execute(req.body);
+      const result = await this.loginUserUseCase.execute(req.body);
 
       const { accessToken, refreshToken, user, message } = result;
       logger.info(`User login data: ${JSON.stringify(user)}`);
@@ -124,7 +124,7 @@ export class AuthController {
         res.status(400).json({ success: false, message: "Email required!" });
       }
 
-      const result = await this.forgotPasswordUC.execute(email);
+      const result = await this.forgotPasswordUseCase.execute(email);
 
       logger.info(`response result: ${JSON.stringify(result)}`);
 
@@ -143,7 +143,7 @@ export class AuthController {
     try {
       const { email, otp } = req.body;
 
-      const result = await this.verifyOtpUC.execute(email, otp);
+      const result = await this.verifyOtpUseCase.execute({email, otp});
       logger.debug(`result verifyOtp: ${JSON.stringify(result)}`);
 
       return res.status(200).json(result);
@@ -161,7 +161,7 @@ export class AuthController {
     try {
       const { email, password } = req.body;
 
-      const result = await this.resetPasswordUC.execute(email, password);
+      const result = await this.resetPasswordUseCase.execute({email, password});
 
       logger.info(`result reset-password: ${JSON.stringify(result)}`);
 
@@ -191,7 +191,7 @@ export class AuthController {
       }
 
       const { newAccessToken, ...response } =
-        await this.refreshAccessTokenUc.execute(refreshToken);
+        await this.refreshAccessTokenUseCase.execute(refreshToken);
 
       // set new access token cookie
       res.cookie("accessToken", newAccessToken, {
@@ -208,11 +208,13 @@ export class AuthController {
   };
 
   logout = (req: Request, res: Response) => {
-    logger.debug('Logout api got hit 🚀');
+    logger.debug("Logout api got hit 🚀");
 
-    res.clearCookie('accessToken');
-    res.clearCookie('refreshToken');
-    
-    res.status(HttpStatusCode.OK).json({success: true, message: ResponseMessages.LogoutSuccess})
-  }
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
+
+    res
+      .status(HttpStatusCode.OK)
+      .json({ success: true, message: ResponseMessages.LogoutSuccess });
+  };
 }

@@ -1,4 +1,4 @@
-import type { IUserRepository } from "../../application/interfaces/user-repository.js";
+import type { IUserRepository } from "../../application/interfaces/repository/user-repository.js";
 import type { IUserMapper } from "../../application/mappers/user.js";
 import { type IUsersMapper } from "../../application/mappers/users.js";
 import type {

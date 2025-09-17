@@ -2,13 +2,11 @@ import type { IUserBlockResponseDTO } from "../../../../domain/dtos/admin/admin.
 import type { UserStatus } from "../../../../domain/enums/user-role.js";
 import { AppError } from "../../../../utils/app-error.js";
 import logger from "../../../../utils/logger.js";
-import type { IUserRepository } from "../../../interfaces/user-repository.js";
+import type { IBlockUserUseCase } from "../../../interfaces/admin/users-management/block-user.js";
+import type { IUserRepository } from "../../../interfaces/repository/user-repository.js";
 
-export interface IBlockUserUC {
-  execute(id: string, status: UserStatus): Promise<IUserBlockResponseDTO>;
-}
 
-export class BlockUserUC implements IBlockUserUC {
+export class BlockUserUseCase implements IBlockUserUseCase  {
   constructor(private userRepository: IUserRepository) {}
   
   async execute(

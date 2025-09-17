@@ -1,10 +1,10 @@
 import type { Request, Response } from "express";
 import logger from "../../../utils/logger.js";
-import { AdminLoginUC } from "../../../application/use-cases/admin/auth/login.js";
 import { env } from "../../../infrastructure/config/env.js";
+import type { IAdminLoginUseCase } from "../../../application/interfaces/admin/auth/login.js";
 
 export class AdminAuthController {
-  constructor(private adminLoginUC: AdminLoginUC) {}
+  constructor(private adminLoginUseCase: IAdminLoginUseCase) {}
 
   login = async (req: Request, res: Response) => {
     logger.debug("Admin login api hit🚀");
@@ -13,7 +13,7 @@ export class AdminAuthController {
       const { email, password } = req.body;
 
       const { accessToken, refreshToken, ...result } =
-        await this.adminLoginUC.execute(email, password);
+        await this.adminLoginUseCase.execute(email, password);
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
         maxAge: env.jwt.access_expires, // 15 minutes

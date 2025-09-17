@@ -1,5 +1,5 @@
 import type { ITokenPayload } from "../../application/interfaces/jwt/jwt-payload.js";
-import type { IUserRepository } from "../../application/interfaces/user-repository.js";
+import type { IUserRepository } from "../../application/interfaces/repository/user-repository.js";
 import type { IAuthService } from "../../application/providers/auth-service.js";
 import type { IHashService } from "../../application/providers/hash-service.js";
 import type { IOtpStore } from "../../application/providers/otp-service.js";

@@ -1,0 +1,85 @@
+import {
+  UserMapper,
+  type IUserMapper,
+} from "../../../application/mappers/user.js";
+import {
+  UsersMapper,
+  type IUsersMapper,
+} from "../../../application/mappers/users.js";
+import type { ITokenService } from "../../../application/providers/token-service.js";
+import { BlockUserUseCase } from "../../../application/use-cases/admin/users-management/block-user.js";
+import { GetUserUseCase } from "../../../application/use-cases/admin/users-management/get-user.js";
+import { TokenService } from "../../providers/token-service.js";
+import { UserRepository } from "../../repositories/user-repository.js";
+import { AdminAuthController } from "../../../presentation/controllers/admin/auth-controller.js";
+import { UserManagementController } from "../../../presentation/controllers/admin/user-management.js";
+import { VerifyAdmin } from "../../../presentation/middleware/admin/is-admin.js";
+import type { IBlockUserUseCase } from "../../../application/interfaces/admin/users-management/block-user.js";
+import type { IGetUserUseCase } from "../../../application/interfaces/admin/users-management/get-user.js";
+import type { IUserRepository } from "../../../application/interfaces/repository/user-repository.js";
+import type { IAdminLoginUseCase } from "../../../application/interfaces/admin/auth/login.js";
+import { AdminLoginUseCase } from "../../../application/use-cases/admin/auth/login.js";
+import type { IListUsersUseCase } from "../../../application/interfaces/admin/users-management/list-users.js";
+import { ListUsersUseCase } from "../../../application/use-cases/admin/users-management/list-users.js";
+
+export class AdminDependencyContainer {
+  constructor() {}
+
+  createUserRepository(): IUserRepository {
+    return new UserRepository(
+      this.createUserMapper(),
+      this.createUsersMapper()
+    );
+  }
+
+  createUserMapper(): IUserMapper {
+    return new UserMapper();
+  }
+
+  createUsersMapper(): IUsersMapper {
+    return new UsersMapper(this.createUserMapper());
+  }
+
+  createTokenService(): ITokenService {
+    return new TokenService()
+  }
+
+  createLoginUC(): IAdminLoginUseCase {
+    return new AdminLoginUseCase(
+      this.createTokenService(),
+    );
+  }
+
+  createListUsersUC(): IListUsersUseCase {
+    return new ListUsersUseCase(this.createUserRepository());
+  }
+
+  createBlockUserUC(): IBlockUserUseCase {
+    return new BlockUserUseCase(this.createUserRepository());
+  }
+
+  createGetUserUC(): IGetUserUseCase {
+    return new GetUserUseCase(this.createUserRepository());
+  }
+
+  // Admin auth Controller
+  createAuthController() {
+    return new AdminAuthController(this.createLoginUC());
+  }
+
+  // Admin User Controller
+  createUserManagementController() {
+    return new UserManagementController(
+      this.createListUsersUC(),
+      this.createBlockUserUC(),
+      this.createGetUserUC(),
+    );
+  }
+
+  // Verify Middleware
+  createVerifyAdminMiddleware(): VerifyAdmin{
+    return new VerifyAdmin(
+      this.createTokenService(),
+    )
+  }
+}

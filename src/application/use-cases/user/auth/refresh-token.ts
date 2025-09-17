@@ -4,15 +4,11 @@ import { ResponseMessages } from "../../../../domain/enums/constants/response-me
 import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.js";
 import type { ITokenService } from "../../../providers/token-service.js";
 import type { ITokenPayload } from "../../../interfaces/jwt/jwt-payload.js";
+import type { IRefreshAccessTokenUseCase } from "../../../interfaces/user/auth/refresh-token.js";
 
-export interface IRefreshAccessTokenUC {
-  execute(token: string): Promise<IRefreshAccessTokenResponseDTO>;
-}
-
-export class RefreshAccessTokenUC implements IRefreshAccessTokenUC {
+export class RefreshAccessTokenUseCase implements IRefreshAccessTokenUseCase {
   constructor(private tokenService: ITokenService) {}
   execute = async (token: string): Promise<IRefreshAccessTokenResponseDTO> => {
-
     const decoded = await this.tokenService.verifyRefreshToken(token);
     if (!decoded || !decoded.email || !decoded.role) {
       throw new AppError(

@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import type { IUserRepository } from "../../../application/interfaces/user-repository.js";
+import type { IUserRepository } from "../../../application/interfaces/repository/user-repository.js";
 import logger from "../../../utils/logger.js";
 import { AppError } from "../../../utils/app-error.js";
 import { UserStatus } from "../../../domain/enums/user-role.js";

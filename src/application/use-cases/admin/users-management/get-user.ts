@@ -1,11 +1,10 @@
 import type { IGetUserResponseDTO } from "../../../../domain/dtos/admin/admin.js";
-import type { IUserRepository } from "../../../interfaces/user-repository.js";
+import type { IGetUserUseCase } from "../../../interfaces/admin/users-management/get-user.js";
+import type { IUserRepository } from "../../../interfaces/repository/user-repository.js";
 
-export interface IGetUserUC {
-  execute(id: string): Promise<IGetUserResponseDTO>;
-}
 
-export class GetUserUC implements IGetUserUC {
+
+export class GetUserUseCase implements IGetUserUseCase {
   constructor(private userRepository: IUserRepository) {}
 
   async execute(id: string): Promise<IGetUserResponseDTO> {
