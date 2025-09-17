@@ -34,6 +34,7 @@ import { ResetPasswordUseCase } from "../../../application/use-cases/user/auth/r
 import { RefreshAccessTokenUseCase } from "../../../application/use-cases/user/auth/refresh-token.js";
 import type { IRefreshAccessTokenUseCase } from "../../../application/interfaces/user/auth/refresh-token.js";
 import { VerifyToken } from "../../../presentation/middleware/user/verify-token.js";
+import { UserModel } from "../../db/models/user-model.js";
 
 export interface IAppConfig {
   otpTtlSeconds: number;
@@ -58,6 +59,7 @@ export class AuthDependencyContainer {
 
   createUserRepository(): IUserRepository {
     return new UserRepository(
+      UserModel,
       this.createUserMapper(),
       this.createUsersMapper()
     );
