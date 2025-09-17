@@ -3,7 +3,7 @@ import type { AuthService } from "../../../../infrastructure/providers/auth-serv
 import type { IVerifyOtpUseCase } from "../../../interfaces/user/auth/verify-otp.js";
 
 
-export class VerifyOtpUC implements IVerifyOtpUseCase{
+export class VerifyOtpUseCase implements IVerifyOtpUseCase{
   constructor(private authService: AuthService) {}
 
   async execute(data: IVerifyOtpRequestDTO): Promise<IVerifyOtpResponseDTO> {

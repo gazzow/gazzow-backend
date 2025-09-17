@@ -1,9 +1,9 @@
 import type { NextFunction, Request, Response } from "express";
-import type { UpdateUserProfileUC } from "../../../application/use-cases/user/profile/update-user-profile.js";
 import logger from "../../../utils/logger.js";
 import { AppError } from "../../../utils/app-error.js";
-import type { IGetUserProfileUC } from "../../../application/use-cases/user/profile/get-user-profile.js";
 import type { IUserPublic } from "../../../domain/entities/user.js";
+import type { ISetupUserProfileUseCase } from "../../../application/interfaces/user/profile/setup-profile.js";
+import type { IGetUserProfileUseCase } from "../../../application/interfaces/user/profile/get-profile.js";
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -19,8 +19,8 @@ interface AuthRequest extends Request {
 
 export class UserController {
   constructor(
-    private updateUserProfileUC: UpdateUserProfileUC,
-    private getUserProfileUC: IGetUserProfileUC
+    private updateUserProfileUseCase: ISetupUserProfileUseCase,
+    private getUserProfileUseCase: IGetUserProfileUseCase
   ) {}
 
   updateProfile = async (req: AuthenticatedRequest, res: Response) => {
@@ -37,7 +37,7 @@ export class UserController {
 
       const profileData = req.body;
 
-      const result = await this.updateUserProfileUC.execute(
+      const result = await this.updateUserProfileUseCase.execute(
         userId,
         profileData
       );
@@ -77,7 +77,7 @@ export class UserController {
 
       logger.debug(`user id: ${id}`);
 
-      const result = await this.getUserProfileUC.execute(id);
+      const result = await this.getUserProfileUseCase.execute(id);
       res.status(200).json(result);
     } catch (error) {
       next(error);

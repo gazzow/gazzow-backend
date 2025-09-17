@@ -1,20 +1,20 @@
 import type { NextFunction, Request, Response } from "express";
-import type { ListUsersUC } from "../../../application/use-cases/admin/users-management/list-users.js";
 import logger from "../../../utils/logger.js";
-import type { IBlockUserUC } from "../../../application/use-cases/admin/users-management/block-user.js";
-import type { IGetUserUC } from "../../../application/use-cases/admin/users-management/get-user.js";
+import type { IListUsersUseCase } from "../../../application/interfaces/admin/users-management/list-users.js";
+import type { IBlockUserUseCase } from "../../../application/interfaces/admin/users-management/block-user.js";
+import type { IGetUserUseCase } from "../../../application/interfaces/admin/users-management/get-user.js";
 
 export class UserManagementController {
   constructor(
-    private listUserUC: ListUsersUC,
-    private blockUserUC: IBlockUserUC,
-    private getUserUC: IGetUserUC,
+    private listUserUseCase: IListUsersUseCase,
+    private blockUserUseCase: IBlockUserUseCase,
+    private getUserUseCase: IGetUserUseCase,
   ) {}
 
   listUsers = async (req: Request, res: Response) => {
     logger.debug("admin user management list all users api 🚀");
     try {
-      const result = await this.listUserUC.execute();
+      const result = await this.listUserUseCase.execute();
       logger.info(`response result: ${result}`);
 
       return res.status(200).json(result);
@@ -37,7 +37,7 @@ export class UserManagementController {
 
       logger.debug(`User id: ${id} & update status ->:${status} `);
 
-      const result = await this.blockUserUC.execute(id, status);
+      const result = await this.blockUserUseCase.execute(id, status);
 
       return res.status(200).json(result);
     } catch (error) {
@@ -56,7 +56,7 @@ export class UserManagementController {
       }
       logger.debug(`user id: ${id}`);
 
-      const result  = await this.getUserUC.execute(id);
+      const result  = await this.getUserUseCase.execute(id);
 
       return res.status(200).json(result);
     } catch (error) {

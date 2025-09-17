@@ -1,0 +1,52 @@
+import { UserMapper, type IUserMapper } from "../../../application/mappers/user.js";
+import { UsersMapper, type IUsersMapper } from "../../../application/mappers/users.js";
+import { SetupUserProfileUseCase } from "../../../application/use-cases/user/profile/setup-profile.js";
+import { UserRepository } from "../../repositories/user-repository.js";
+import { UserController } from "../../../presentation/controllers/user/user-controller.js";
+import type { IGetUserProfileUseCase } from "../../../application/interfaces/user/profile/get-profile.js";
+import type { IUserRepository } from "../../../application/interfaces/repository/user-repository.js";
+import type { ISetupUserProfileUseCase } from "../../../application/interfaces/user/profile/setup-profile.js";
+import { GetUserProfileUseCase } from "../../../application/use-cases/user/profile/get-profile.js";
+
+
+export class UserDependencyContainer{
+    constructor(){}
+
+    createUserRepository(): IUserRepository{
+        return new UserRepository(
+            this.createUserMapper(),
+            this.createUsersMapper(),
+        );
+    }
+
+    createUserMapper(): IUserMapper{
+       return new UserMapper();
+     }
+   
+     createUsersMapper(): IUsersMapper{
+       return new UsersMapper(
+         this.createUserMapper(),
+       );
+     }
+   
+
+    createUpdateProfileUC(): ISetupUserProfileUseCase{
+        return new SetupUserProfileUseCase(
+            this.createUserRepository(),
+        )
+    }
+
+    createGetUserProfileUC(): IGetUserProfileUseCase{
+        return new GetUserProfileUseCase(
+            this.createUserRepository(),
+        )
+    }
+
+
+    createUserController(): UserController{
+        return new UserController(
+            this.createUpdateProfileUC(),
+            this.createGetUserProfileUC(),
+        )
+    }
+}

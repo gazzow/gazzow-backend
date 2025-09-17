@@ -6,7 +6,7 @@ import type { IBlockUserUseCase } from "../../../interfaces/admin/users-manageme
 import type { IUserRepository } from "../../../interfaces/repository/user-repository.js";
 
 
-export class BlockUserUC implements IBlockUserUseCase  {
+export class BlockUserUseCase implements IBlockUserUseCase  {
   constructor(private userRepository: IUserRepository) {}
   
   async execute(

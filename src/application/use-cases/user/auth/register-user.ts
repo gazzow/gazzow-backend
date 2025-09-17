@@ -15,7 +15,7 @@ export interface IOtpConfig {
 
 
 
-export class StoreTempUserAndSentOtpUC implements IRegisterUserUseCase {
+export class RegisterUserUseCase implements IRegisterUserUseCase {
   constructor(
     private otpStore: IOtpStore,
     private emailService: IEmailService,
@@ -107,7 +107,7 @@ export class StoreTempUserAndSentOtpUCFactory {
       otpTtlSeconds: number;
       emailSubject: string;
     }
-  ): StoreTempUserAndSentOtpUC {
+  ): IRegisterUserUseCase {
     const otpConfig: IOtpConfig = {
       ttlSeconds: config.otpTtlSeconds,
       emailSubject: config.emailSubject,
@@ -115,7 +115,7 @@ export class StoreTempUserAndSentOtpUCFactory {
         `Your Gazzow verification code is: ${otp}\n\nThis code expires in ${expiryMinutes} minutes.\n\nIf you didn't request this, please ignore this email.`,
     };
 
-    return new StoreTempUserAndSentOtpUC(
+    return new RegisterUserUseCase(
       otpStore,
       emailService,
       hashService,

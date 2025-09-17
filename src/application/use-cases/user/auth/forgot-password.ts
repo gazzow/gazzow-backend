@@ -13,7 +13,7 @@ export interface IOtpConfig {
   emailTemplate: (otp: string, expiryMinutes: number) => string;
 }
 
-export class ForgotPasswordUC implements IForgotPasswordUseCase{
+export class ForgotPasswordUseCase implements IForgotPasswordUseCase{
   constructor(
     private authService: IAuthService,
     private hashService: IHashService,

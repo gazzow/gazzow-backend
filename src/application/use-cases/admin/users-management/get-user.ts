@@ -4,7 +4,7 @@ import type { IUserRepository } from "../../../interfaces/repository/user-reposi
 
 
 
-export class GetUserUC implements IGetUserUseCase {
+export class GetUserUseCase implements IGetUserUseCase {
   constructor(private userRepository: IUserRepository) {}
 
   async execute(id: string): Promise<IGetUserResponseDTO> {

@@ -4,7 +4,7 @@ import type { HashService } from "../../../../infrastructure/providers/hash-serv
 import logger from "../../../../utils/logger.js";
 import type { IResetPasswordUseCase } from "../../../interfaces/user/auth/reset-password.js";
 
-export class ResetPasswordUC implements IResetPasswordUseCase{
+export class ResetPasswordUseCase implements IResetPasswordUseCase{
   constructor(
     private hashService: HashService,
     private authService: AuthService

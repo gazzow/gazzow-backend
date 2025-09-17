@@ -5,7 +5,7 @@ import type { IUserRepository } from "../../../interfaces/repository/user-reposi
 
 
 
-export class ListUsersUC implements IListUsersUseCase{
+export class ListUsersUseCase implements IListUsersUseCase{
     constructor(
         private userRepository: IUserRepository,
     ){}

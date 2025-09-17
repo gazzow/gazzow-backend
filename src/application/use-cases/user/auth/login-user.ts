@@ -9,7 +9,7 @@ import type { ITokenPayload } from "../../../interfaces/jwt/jwt-payload.js";
 import type { ILoginUserUseCase } from "../../../interfaces/user/auth/login-user.js";
 
 
-export class LoginUserUC implements ILoginUserUseCase{
+export class LoginUserUseCase implements ILoginUserUseCase{
   constructor(
     private authService: IAuthService,
     private userMapper: IUserMapper

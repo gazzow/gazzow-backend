@@ -4,9 +4,9 @@ import { ResponseMessages } from "../../../../domain/enums/constants/response-me
 import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.js";
 import type { ITokenService } from "../../../providers/token-service.js";
 import type { ITokenPayload } from "../../../interfaces/jwt/jwt-payload.js";
-import type { IRefreshAccessTokenUC } from "../../../interfaces/user/auth/refresh-token.js";
+import type { IRefreshAccessTokenUseCase } from "../../../interfaces/user/auth/refresh-token.js";
 
-export class RefreshAccessTokenUC implements IRefreshAccessTokenUC {
+export class RefreshAccessTokenUseCase implements IRefreshAccessTokenUseCase {
   constructor(private tokenService: ITokenService) {}
   execute = async (token: string): Promise<IRefreshAccessTokenResponseDTO> => {
     const decoded = await this.tokenService.verifyRefreshToken(token);

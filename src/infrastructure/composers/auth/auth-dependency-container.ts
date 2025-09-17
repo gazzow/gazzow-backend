@@ -1,35 +1,39 @@
-import { env } from "../../infrastructure/config/env.js";
-import { StoreTempUserAndSentOtpUC } from "../../application/use-cases/user/auth/store-temp-user-and-send-otp.js";
-import { VerifyOtpAndCreateUserUC } from "../../application/use-cases/user/auth/verify-otp-and-create-user.js";
-import { EmailService } from "../../infrastructure/providers/email-service.js";
-import { OtpStore } from "../../infrastructure/providers/otp-service.js";
-import { HashService } from "../../infrastructure/providers/hash-service.js";
-import { TokenService } from "../../infrastructure/providers/token-service.js";
-import { UserRepository } from "../../infrastructure/repositories/user-repository.js";
-import { AuthController } from "../../presentation/controllers/user/auth-controller.js";
-import { LoginUserUC } from "../../application/use-cases/user/auth/login-user.js";
-import { AuthService } from "../../infrastructure/providers/auth-service.js";
-import { ForgotPasswordUC } from "../../application/use-cases/user/auth/forgot-password.js";
-import { VerifyOtpUC } from "../../application/use-cases/user/auth/verify-otp.js";
-import { ResetPasswordUC } from "../../application/use-cases/user/auth/reset-password.js";
-import { VerifyToken } from "../../presentation/middleware/user/verify-token.js";
+import { env } from "../../config/env.js";
+import { EmailService } from "../../providers/email-service.js";
+import { OtpStore } from "../../providers/otp-service.js";
+import { HashService } from "../../providers/hash-service.js";
+import { TokenService } from "../../providers/token-service.js";
+import { AuthController } from "../../../presentation/controllers/user/auth-controller.js";
+import { AuthService } from "../../providers/auth-service.js";
 import {
   UserMapper,
   type IUserMapper,
-} from "../../application/mappers/user.js";
+} from "../../../application/mappers/user.js";
 import {
   UsersMapper,
   type IUsersMapper,
-} from "../../application/mappers/users.js";
+} from "../../../application/mappers/users.js";
 import {
   CheckBlockedUserMiddleware,
   type ICheckBlockedUserMiddleware,
-} from "../../presentation/middleware/user/check-blocked-user.js";
-import type { IUserRepository } from "../../application/interfaces/repository/user-repository.js";
-import {
-  RefreshAccessTokenUC,
-  type IRefreshAccessTokenUC,
-} from "../../application/use-cases/user/auth/refresh-token.js";
+} from "../../../presentation/middleware/user/check-blocked-user.js";
+import type { IUserRepository } from "../../../application/interfaces/repository/user-repository.js";
+import { UserRepository } from "../../repositories/user-repository.js";
+import type { IRegisterUserUseCase } from "../../../application/interfaces/user/auth/register-user.js";
+import { RegisterUserUseCase } from "../../../application/use-cases/user/auth/register-user.js";
+import type { IVerifyUserUseCase } from "../../../application/interfaces/user/auth/verify-user.js";
+import { VerifyUserUseCase } from "../../../application/use-cases/user/auth/verify-user.js";
+import type { ILoginUserUseCase } from "../../../application/interfaces/user/auth/login-user.js";
+import { LoginUserUseCase } from "../../../application/use-cases/user/auth/login-user.js";
+import type { IForgotPasswordUseCase } from "../../../application/interfaces/user/auth/forgot-password.js";
+import { ForgotPasswordUseCase } from "../../../application/use-cases/user/auth/forgot-password.js";
+import type { IVerifyOtpUseCase } from "../../../application/interfaces/user/auth/verify-otp.js";
+import { VerifyOtpUseCase } from "../../../application/use-cases/user/auth/verify-otp.js";
+import type { IResetPasswordUseCase } from "../../../application/interfaces/user/auth/reset-password.js";
+import { ResetPasswordUseCase } from "../../../application/use-cases/user/auth/reset-password.js";
+import { RefreshAccessTokenUseCase } from "../../../application/use-cases/user/auth/refresh-token.js";
+import type { IRefreshAccessTokenUseCase } from "../../../application/interfaces/user/auth/refresh-token.js";
+import { VerifyToken } from "../../../presentation/middleware/user/verify-token.js";
 
 export interface IAppConfig {
   otpTtlSeconds: number;
@@ -92,7 +96,7 @@ export class AuthDependencyContainer {
     );
   }
 
-  createStoreTempUC(): StoreTempUserAndSentOtpUC {
+  createStoreTempUC(): IRegisterUserUseCase {
     const otpConfig = {
       ttlSeconds: this.config.otpTtlSeconds,
       emailSubject: this.config.emailSubject,
@@ -100,7 +104,7 @@ export class AuthDependencyContainer {
         `Your verification code is: ${otp}\n\nThis code expires in ${expiryMinutes} minutes.`,
     };
 
-    return new StoreTempUserAndSentOtpUC(
+    return new RegisterUserUseCase(
       this.createOtpStore(),
       this.createEmailService(),
       this.createHashService(),
@@ -109,8 +113,8 @@ export class AuthDependencyContainer {
     );
   }
 
-  createVerifyUserUC(): VerifyOtpAndCreateUserUC {
-    return new VerifyOtpAndCreateUserUC(
+  createVerifyUserUC(): IVerifyUserUseCase {
+    return new VerifyUserUseCase(
       this.createOtpStore(),
       this.createHashService(),
       this.createUserRepository(),
@@ -118,11 +122,14 @@ export class AuthDependencyContainer {
     );
   }
 
-  createLoginUC(): LoginUserUC {
-    return new LoginUserUC(this.createAuthService(), this.createUserMapper());
+  createLoginUC(): ILoginUserUseCase {
+    return new LoginUserUseCase(
+      this.createAuthService(),
+      this.createUserMapper()
+    );
   }
 
-  createForgotUC(): ForgotPasswordUC {
+  createForgotUC(): IForgotPasswordUseCase {
     const otpConfig = {
       ttlSeconds: this.config.otpTtlSeconds,
       emailSubject: this.config.emailSubject,
@@ -130,7 +137,7 @@ export class AuthDependencyContainer {
         `Your verification code is: ${otp}\n\nThis code expires in ${expiryMinutes} minutes.`,
     };
 
-    return new ForgotPasswordUC(
+    return new ForgotPasswordUseCase(
       this.createAuthService(),
       this.createHashService(),
       this.createEmailService(),
@@ -139,20 +146,20 @@ export class AuthDependencyContainer {
     );
   }
 
-  createVerifyUC(): VerifyOtpUC {
-    return new VerifyOtpUC(this.createAuthService());
+  createVerifyUC(): IVerifyOtpUseCase {
+    return new VerifyOtpUseCase(this.createAuthService());
   }
 
-  createResetPasswordUC(): ResetPasswordUC {
-    return new ResetPasswordUC(
+  createResetPasswordUC(): IResetPasswordUseCase {
+    return new ResetPasswordUseCase(
       this.createHashService(),
       this.createAuthService()
     );
   }
 
-  createRefreshAccessTokenUC = () : IRefreshAccessTokenUC => {
-    return new RefreshAccessTokenUC(this.createTokenService());
-  }
+  createRefreshAccessTokenUC = (): IRefreshAccessTokenUseCase => {
+    return new RefreshAccessTokenUseCase(this.createTokenService());
+  };
 
   // auth controller
   createAuthController(): AuthController {
@@ -163,7 +170,7 @@ export class AuthDependencyContainer {
       this.createForgotUC(),
       this.createVerifyUC(),
       this.createResetPasswordUC(),
-      this.createRefreshAccessTokenUC(),
+      this.createRefreshAccessTokenUC()
     );
   }
 

@@ -13,7 +13,7 @@ import type { ITokenPayload } from "../../../interfaces/jwt/jwt-payload.js";
 import type { IVerifyUserUseCase } from "../../../interfaces/user/auth/verify-user.js";
 
 
-export class VerifyOtpAndCreateUserUC implements IVerifyUserUseCase{
+export class VerifyUserUseCase implements IVerifyUserUseCase{
   constructor(
     private otpStore: IOtpStore,
     private passwordHash: IHashService, // re-name service

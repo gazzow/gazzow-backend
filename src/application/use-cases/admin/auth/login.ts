@@ -9,7 +9,7 @@ import type { ITokenService } from "../../../providers/token-service.js";
 
 
 
-export class AdminLoginUC implements IAdminLoginUseCase {
+export class AdminLoginUseCase implements IAdminLoginUseCase {
   constructor(private tokenService: ITokenService) {}
 
   execute = async (email: string, password: string) => {
