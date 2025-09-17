@@ -8,13 +8,13 @@ import type { IUserDocument } from "../../../infrastructure/db/models/user-model
 
 export interface IUserRepository {
   create(user: ICreateUserInput): Promise<IUserDocument>;
-  findById(id: string): Promise<IUserPublicDTO | null>;
+  findById(id: string): Promise<IUserDocument | null>;
   findByEmail(email: string): Promise<IUserDocument | null>;
   updatePassword(email: string, hashedPassword: string): Promise<void | null>;
   updateProfile(
     userId: string,
     profileData: IUpdateProfileRequestDTO
   ): Promise<IUserPublicDTO>;
-  findAll(): Promise<IUserPublicDTO[]>;
+  findAll(): Promise<IUserDocument[]>;
   updateStatus(id: string, status: UserStatus): Promise<IUserPublicDTO | null>;
 }

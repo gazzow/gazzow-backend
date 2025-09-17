@@ -21,12 +21,14 @@ import type { IAdminLoginUseCase } from "../../../application/interfaces/admin/a
 import { AdminLoginUseCase } from "../../../application/use-cases/admin/auth/login.js";
 import type { IListUsersUseCase } from "../../../application/interfaces/admin/users-management/list-users.js";
 import { ListUsersUseCase } from "../../../application/use-cases/admin/users-management/list-users.js";
+import { UserModel } from "../../db/models/user-model.js";
 
 export class AdminDependencyContainer {
   constructor() {}
 
   createUserRepository(): IUserRepository {
     return new UserRepository(
+      UserModel,
       this.createUserMapper(),
       this.createUsersMapper()
     );
