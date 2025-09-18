@@ -5,7 +5,7 @@ export interface IUser extends IBaseUser {
   name: string;
   email: string;
   role: UserRole;
-  status?: UserStatus;
+  status: UserStatus;
   bio?: string;
   developerRole?: string;
   imageUrl?: string;
@@ -19,7 +19,7 @@ export interface IUserPublic {
   name: string;
   email: string;
   role: UserRole;
-  status?: UserStatus;
+  status: UserStatus;
   bio?: string;
   developerRole?: string;
   imageUrl?: string;

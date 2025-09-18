@@ -60,6 +60,7 @@ export class VerifyUserUseCase implements IVerifyUserUseCase{
           name: createdUser.name,
           email: createdUser.email,
           role: createdUser.role,
+          status: createdUser.status,
           createdAt: createdUser.createdAt,
         },
         message: "Account created successfully",

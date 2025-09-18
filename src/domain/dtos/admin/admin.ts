@@ -1,14 +1,16 @@
 import type { IUserPublic } from "../../entities/user.js";
-import type { UserStatus } from "../../enums/user-role.js";
+import type { UserRole, UserStatus } from "../../enums/user-role.js";
 
 export interface IAdminDTO {
+  id: string;
   email: string;
-  role: string;
+  role: UserRole;
+  status: UserStatus;
 }
 
-export interface IAdminListUsersResponseDTO{
-  success: true;
-  users: IUserPublic[];
+export interface IAdminLoginRequestDTO {
+  email: string;
+  password: string;
 }
 
 export interface IAdminLoginResponseDTO {
@@ -16,7 +18,12 @@ export interface IAdminLoginResponseDTO {
   message: string;
   accessToken: string;
   refreshToken: string;
-  admin: IAdminDTO;
+  data: IAdminDTO;
+}
+
+export interface IAdminListUsersResponseDTO {
+  success: true;
+  users: IUserPublic[];
 }
 
 export interface IUserBlockRequestDTO {
