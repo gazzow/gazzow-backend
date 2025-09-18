@@ -18,4 +18,7 @@ export enum ResponseMessages {
   Forbidden = "Access denied",
   BadRequest = "Invalid request data",
   InternalServerError = "Internal server error",
+
+  // Admin
+  AdminNotFound = "Admin not found"
 }

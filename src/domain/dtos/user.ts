@@ -1,3 +1,4 @@
+import type { IUserDocument } from "../../infrastructure/db/models/user-model.js";
 import type { UserRole, UserStatus } from "../enums/user-role.js";
 
 export interface IUserPublicDTO {
@@ -79,5 +80,5 @@ export interface IRefreshAccessTokenResponseDTO{
 
 export interface IGetUserProfileResponseDTO{
   success: true,
-  user: IUserPublicDTO,
+  user: IUserDocument,
 }

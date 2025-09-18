@@ -8,11 +8,11 @@ import { AuthService } from "../../providers/auth-service.js";
 import {
   UserMapper,
   type IUserMapper,
-} from "../../../application/mappers/user.js";
+} from "../../../application/mappers/user/user.js";
 import {
   UsersMapper,
   type IUsersMapper,
-} from "../../../application/mappers/users.js";
+} from "../../../application/mappers/admin/users.js";
 import {
   CheckBlockedUserMiddleware,
   type ICheckBlockedUserMiddleware,

@@ -1,11 +1,11 @@
 import {
   UserMapper,
   type IUserMapper,
-} from "../../../application/mappers/user.js";
+} from "../../../application/mappers/user/user.js";
 import {
   UsersMapper,
   type IUsersMapper,
-} from "../../../application/mappers/users.js";
+} from "../../../application/mappers/admin/users.js";
 import { SetupUserProfileUseCase } from "../../../application/use-cases/user/profile/setup-profile.js";
 import { UserRepository } from "../../repositories/user-repository.js";
 import { UserController } from "../../../presentation/controllers/user/user-controller.js";

@@ -1,19 +1,18 @@
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import logger from "../../../utils/logger.js";
 import { env } from "../../../infrastructure/config/env.js";
 import type { IAdminLoginUseCase } from "../../../application/interfaces/admin/auth/login.js";
+import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
 
 export class AdminAuthController {
   constructor(private adminLoginUseCase: IAdminLoginUseCase) {}
 
-  login = async (req: Request, res: Response) => {
+  login = async (req: Request, res: Response, next: NextFunction) => {
     logger.debug("Admin login api hit🚀");
 
     try {
-      const { email, password } = req.body;
-
       const { accessToken, refreshToken, ...result } =
-        await this.adminLoginUseCase.execute(email, password);
+        await this.adminLoginUseCase.execute(req.body);
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
         maxAge: env.jwt.access_expires, // 15 minutes
@@ -26,12 +25,9 @@ export class AdminAuthController {
         sameSite: "strict",
         secure: env.node_env,
       });
-      res.status(200).json(result);
+      res.status(HttpStatusCode.OK).json(result);
     } catch (error) {
-      if (error instanceof Error) {
-        logger.error(`error admin login: ${error.message}`);
-        return res.status(400).json({ success: false, message: error.message });
-      }
+      next(error);
     }
   };
 }
