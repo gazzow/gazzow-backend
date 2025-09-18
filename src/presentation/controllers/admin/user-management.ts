@@ -8,13 +8,18 @@ export class UserManagementController {
   constructor(
     private listUserUseCase: IListUsersUseCase,
     private blockUserUseCase: IBlockUserUseCase,
-    private getUserUseCase: IGetUserUseCase,
+    private getUserUseCase: IGetUserUseCase
   ) {}
 
   listUsers = async (req: Request, res: Response) => {
     logger.debug("admin user management list all users api 🚀");
     try {
-      const result = await this.listUserUseCase.execute();
+      const { skip, limit } = req.query;
+
+      const result = await this.listUserUseCase.execute({
+        skip: Number(skip),
+        limit: Number(limit),
+      });
       logger.info(`response result: ${result}`);
 
       return res.status(200).json(result);
@@ -42,7 +47,7 @@ export class UserManagementController {
       return res.status(200).json(result);
     } catch (error) {
       if (error instanceof Error) {
-        next(error)
+        next(error);
       }
     }
   };
@@ -50,13 +55,13 @@ export class UserManagementController {
   getUser = async (req: Request, res: Response) => {
     logger.debug("admin get user api 🚀");
     try {
-      const {id} = req.params;
+      const { id } = req.params;
       if (!id) {
         throw new Error("Invalid UserId");
       }
       logger.debug(`user id: ${id}`);
 
-      const result  = await this.getUserUseCase.execute(id);
+      const result = await this.getUserUseCase.execute(id);
 
       return res.status(200).json(result);
     } catch (error) {

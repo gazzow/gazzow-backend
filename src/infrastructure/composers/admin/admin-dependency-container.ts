@@ -68,7 +68,7 @@ export class AdminDependencyContainer {
   }
 
   createListUsersUC(): IListUsersUseCase {
-    return new ListUsersUseCase(this.createUserRepository());
+    return new ListUsersUseCase(this.createUserRepository(), this.createUsersMapper());
   }
 
   createBlockUserUC(): IBlockUserUseCase {

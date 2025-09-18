@@ -26,6 +26,4 @@ export const env = {
       1000 * 60 * 60 * 24 * Number(process.env.JWT_REFRESH_EXPIRES)
     ),
   },
-  admin_email: process.env.ADMIN_EMAIL,
-  admin_password: process.env.ADMIN_PASSWORD,
 };

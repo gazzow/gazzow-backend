@@ -15,6 +15,11 @@ export interface IUserRepository {
     userId: string,
     profileData: IUpdateProfileRequestDTO
   ): Promise<IUserPublicDTO>;
-  findAll(): Promise<IUserDocument[]>;
+  findAll(query: {
+    filter?: Record<string, string>;
+    skip?: number;
+    limit?: number;
+  }): Promise<IUserDocument[]>;
   updateStatus(id: string, status: UserStatus): Promise<IUserPublicDTO | null>;
+  count (filter: Record<string, string >): Promise<number>
 }

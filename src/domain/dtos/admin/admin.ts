@@ -21,9 +21,20 @@ export interface IAdminLoginResponseDTO {
   data: IAdminDTO;
 }
 
+export interface IAdminListUsersRequestDTO {
+  filter?: Record<string, string>;
+  skip?: number;
+  limit?: number;
+}
+
 export interface IAdminListUsersResponseDTO {
   success: true;
-  users: IUserPublic[];
+  data: IUserPublic[];
+  pagination: {
+    skip: number,
+    limit: number,
+    total: number,
+  }
 }
 
 export interface IUserBlockRequestDTO {
