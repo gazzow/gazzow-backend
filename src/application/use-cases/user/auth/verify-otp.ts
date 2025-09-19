@@ -4,12 +4,12 @@ import type { IVerifyOtpUseCase } from "../../../interfaces/user/auth/verify-otp
 
 
 export class VerifyOtpUseCase implements IVerifyOtpUseCase{
-  constructor(private authService: AuthService) {}
+  constructor(private _authService: AuthService) {}
 
   async execute(data: IVerifyOtpRequestDTO): Promise<IVerifyOtpResponseDTO> {
     try {
 
-        await this.authService.verifyOtp(data.email, data.otp, 'reset')
+        await this._authService.verifyOtp(data.email, data.otp, 'reset')
 
         return {
             success: true,

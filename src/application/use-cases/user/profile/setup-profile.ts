@@ -4,28 +4,32 @@ import type {
 } from "../../../../domain/dtos/user.js";
 import type { IUserRepository } from "../../../interfaces/repository/user-repository.js";
 import type { ISetupUserProfileUseCase } from "../../../interfaces/user/profile/setup-profile.js";
-
+import type { IUserMapper } from "../../../mappers/user/user.js";
 
 export class SetupUserProfileUseCase implements ISetupUserProfileUseCase {
-  constructor(private userRepository: IUserRepository) {}
+  constructor(
+    private _userRepository: IUserRepository,
+    private _userMapper: IUserMapper
+  ) {}
 
   execute = async (
     userId: string,
     profileData: IUpdateProfileRequestDTO
   ): Promise<IUpdateProfileResponseDTO> => {
     try {
-      const updatedUser = await this.userRepository.updateProfile(
+      const updatedUserDoc = await this._userRepository.updateProfile(
         userId,
         profileData
       );
 
-      if (!updatedUser) {
+      if (!updatedUserDoc) {
         throw new Error("User not found");
       }
 
+      const user = this._userMapper.toPublicDTO(updatedUserDoc);
       return {
         success: true,
-        user: updatedUser,
+        user,
         message: "Profile updated successfully",
       };
     } catch (error) {

@@ -9,7 +9,10 @@ import type { IUserRepository } from "../../../interfaces/repository/user-reposi
 import type { IUsersMapper } from "../../../mappers/admin/users.js";
 
 export class ListUsersUseCase implements IListUsersUseCase {
-  constructor(private _userRepository: IUserRepository, private _usersMapper: IUsersMapper) {}
+  constructor(
+    private _userRepository: IUserRepository,
+    private _usersMapper: IUsersMapper
+  ) {}
 
   execute = async (
     query: IAdminListUsersRequestDTO
@@ -26,15 +29,14 @@ export class ListUsersUseCase implements IListUsersUseCase {
     // logger.debug(`users list: ${users}`);
     const users = this._usersMapper.toPublicUsersDTO(usersDoc);
 
-
     return {
       success: true,
       data: users,
-      pagination : {
+      pagination: {
         limit,
         skip,
         total,
-      }
+      },
     };
   };
 }

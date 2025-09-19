@@ -13,15 +13,13 @@ export interface IOtpConfig {
   emailTemplate: (otp: string, expiryMinutes: number) => string;
 }
 
-
-
 export class RegisterUserUseCase implements IRegisterUserUseCase {
   constructor(
-    private otpStore: IOtpStore,
-    private emailService: IEmailService,
-    private hashService: IHashService,
-    private userRepository: IUserRepository,
-    private otpConfig: IOtpConfig
+    private _otpStore: IOtpStore,
+    private _emailService: IEmailService,
+    private _hashService: IHashService,
+    private _userRepository: IUserRepository,
+    private _otpConfig: IOtpConfig
   ) {}
 
   // Store user temp info in redis
@@ -30,11 +28,11 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
   ): Promise<{ success: boolean; message: string }> {
     try {
       // Check if the user exist or not
-      const existingUser = await this.userRepository.findByEmail(
+      const existingUser = await this._userRepository.findByEmail(
         userData.email
       );
 
-      const hashedPassword = await this.hashService.hash(userData.password);
+      const hashedPassword = await this._hashService.hash(userData.password);
 
       const tempUserData = {
         name: userData.name,
@@ -44,13 +42,13 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
 
       // Generate Otp and store hashed otp in redis
       const otp = generateOtp();
-      const hashedOtp = await this.hashService.hash(otp);
+      const hashedOtp = await this._hashService.hash(otp);
 
       if (existingUser) {
         // User exists - send different email like registration attempt
-        await this.emailService.sendAccountExistsNotification(
+        await this._emailService.sendAccountExistsNotification(
           userData.email,
-          this.otpConfig.emailSubject,
+          this._otpConfig.emailSubject,
           "An account with this email already exists. If this wasn't you, please ignore this email."
         );
       } else {
@@ -62,23 +60,27 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
           `temp user data before storing redis cache: ${tempUserData}`
         );
         await Promise.all([
-          await this.otpStore.set(
+          await this._otpStore.set(
             tempUserKey,
             JSON.stringify(tempUserData),
-            this.otpConfig.ttlSeconds
+            this._otpConfig.ttlSeconds
           ),
-          await this.otpStore.set(otpKey, hashedOtp, this.otpConfig.ttlSeconds),
+          await this._otpStore.set(
+            otpKey,
+            hashedOtp,
+            this._otpConfig.ttlSeconds
+          ),
         ]);
 
         // Send OTP via email
-        const emailContent = this.otpConfig.emailTemplate(
+        const emailContent = this._otpConfig.emailTemplate(
           otp,
-          Math.floor(this.otpConfig.ttlSeconds / 60)
+          Math.floor(this._otpConfig.ttlSeconds / 60)
         );
 
-        await this.emailService.sendOtpNotification(
+        await this._emailService.sendOtpNotification(
           userData.email,
-          this.otpConfig.emailSubject,
+          this._otpConfig.emailSubject,
           emailContent
         );
       }

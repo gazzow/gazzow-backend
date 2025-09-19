@@ -12,13 +12,12 @@ import type { IAuthService } from "../../../providers/auth-service.js";
 import type { ITokenPayload } from "../../../interfaces/jwt/jwt-payload.js";
 import type { IVerifyUserUseCase } from "../../../interfaces/user/auth/verify-user.js";
 
-
-export class VerifyUserUseCase implements IVerifyUserUseCase{
+export class VerifyUserUseCase implements IVerifyUserUseCase {
   constructor(
-    private otpStore: IOtpStore,
-    private passwordHash: IHashService, // re-name service
-    private userRepository: IUserRepository,
-    private authService: IAuthService
+    private _otpStore: IOtpStore,
+    private _passwordHash: IHashService,
+    private _userRepository: IUserRepository,
+    private _authService: IAuthService
   ) {}
 
   async execute(email: string, otp: string): Promise<IVerificationResult> {
@@ -29,7 +28,7 @@ export class VerifyUserUseCase implements IVerifyUserUseCase{
         throw new Error("Email and Otp are required");
       }
 
-      await this.authService.verifyOtp(normalizedEmail, otp, "register");
+      await this._authService.verifyOtp(normalizedEmail, otp, "register");
 
       // Get and validate temp user data
       const tempUserData = await this.getTempUserData(normalizedEmail);
@@ -48,7 +47,7 @@ export class VerifyUserUseCase implements IVerifyUserUseCase{
       };
 
       const [accessToken, refreshToken] =
-        await this.authService.generateTokens(payload);
+        await this._authService.generateTokens(payload);
 
       await this.cleanupTempData(normalizedEmail);
 
@@ -76,14 +75,14 @@ export class VerifyUserUseCase implements IVerifyUserUseCase{
   private async verifyOtp(email: string, otp: string): Promise<void> {
     const otpKey = `otp:register:${email}`;
 
-    const storedHashedOtp = await this.otpStore.get(otpKey);
+    const storedHashedOtp = await this._otpStore.get(otpKey);
     if (!storedHashedOtp) {
       throw new Error(
         "Verification code has expired. Please request a new one."
       );
     }
 
-    const isValid = await this.passwordHash.compare(otp, storedHashedOtp);
+    const isValid = await this._passwordHash.compare(otp, storedHashedOtp);
     if (!isValid) {
       throw new Error("Invalid verification code. Please check and try again.");
     }
@@ -91,7 +90,7 @@ export class VerifyUserUseCase implements IVerifyUserUseCase{
 
   private async getTempUserData(email: string): Promise<ITempUserData> {
     const tempKey = `temp:user:${email}`;
-    const tempPayload = await this.otpStore.get(tempKey);
+    const tempPayload = await this._otpStore.get(tempKey);
 
     if (!tempPayload) {
       throw new Error("Registration session has expired. Please start over.");
@@ -119,7 +118,7 @@ export class VerifyUserUseCase implements IVerifyUserUseCase{
   ): Promise<IUserPublic> {
     try {
       // Check if user was created
-      const existingUser = await this.userRepository.findByEmail(
+      const existingUser = await this._userRepository.findByEmail(
         tempUserData.email
       );
       if (existingUser) {
@@ -127,7 +126,7 @@ export class VerifyUserUseCase implements IVerifyUserUseCase{
       }
 
       // Create the user
-      const user = await this.userRepository.create({
+      const user = await this._userRepository.create({
         name: tempUserData.name,
         email: tempUserData.email,
         password: tempUserData.password,
@@ -155,8 +154,8 @@ export class VerifyUserUseCase implements IVerifyUserUseCase{
 
     try {
       await Promise.all([
-        this.otpStore.delete(otpKey),
-        this.otpStore.delete(tempKey),
+        this._otpStore.delete(otpKey),
+        this._otpStore.delete(tempKey),
       ]);
 
       console.log("Cleanup completed for:", email);

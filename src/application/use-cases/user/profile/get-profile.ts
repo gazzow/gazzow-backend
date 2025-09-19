@@ -4,18 +4,21 @@ import { ResponseMessages } from "../../../../domain/enums/constants/response-me
 import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.js";
 import type { IUserRepository } from "../../../interfaces/repository/user-repository.js";
 import type { IGetUserProfileUseCase } from "../../../interfaces/user/profile/get-profile.js";
+import type { IUserMapper } from "../../../mappers/user/user.js";
 
 export class GetUserProfileUseCase implements IGetUserProfileUseCase {
-  constructor(private userRepository: IUserRepository) {}
+  constructor(private _userRepository: IUserRepository, private _userMapper: IUserMapper) {}
 
   execute = async (id: string): Promise<IGetUserProfileResponseDTO> => {
-    const user = await this.userRepository.findById(id);
-    if (!user) {
+    const userDoc = await this._userRepository.findById(id);
+    if (!userDoc) {
       throw new AppError(
         ResponseMessages.UserNotFound,
         HttpStatusCode.NOT_FOUND
       );
     }
+
+const user  = this._userMapper.toPublicDTO(userDoc);
 
     return {
       success: true,

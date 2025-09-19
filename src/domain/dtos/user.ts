@@ -80,5 +80,5 @@ export interface IRefreshAccessTokenResponseDTO{
 
 export interface IGetUserProfileResponseDTO{
   success: true,
-  user: IUserDocument,
+  user: IUserPublicDTO,
 }

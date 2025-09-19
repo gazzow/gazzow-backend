@@ -14,12 +14,12 @@ export interface IUserRepository {
   updateProfile(
     userId: string,
     profileData: IUpdateProfileRequestDTO
-  ): Promise<IUserPublicDTO>;
+  ): Promise<IUserDocument>;
   findAll(query: {
     filter?: Record<string, string>;
     skip?: number;
     limit?: number;
   }): Promise<IUserDocument[]>;
-  updateStatus(id: string, status: UserStatus): Promise<IUserPublicDTO | null>;
+  updateStatus(id: string, status: UserStatus): Promise<IUserDocument | null>;
   count (filter: Record<string, string >): Promise<number>
 }

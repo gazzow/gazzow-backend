@@ -6,8 +6,8 @@ import type { IResetPasswordUseCase } from "../../../interfaces/user/auth/reset-
 
 export class ResetPasswordUseCase implements IResetPasswordUseCase{
   constructor(
-    private hashService: HashService,
-    private authService: AuthService
+    private _hashService: HashService,
+    private _authService: AuthService
   ) {}
 
   async execute(
@@ -15,10 +15,10 @@ export class ResetPasswordUseCase implements IResetPasswordUseCase{
   ): Promise<IResetPasswordResponseDTO> {
     try {
       logger.info(`new password in UC: ${data.password}`)
-      const hashedPassword = await this.hashService.hash(data.password);
+      const hashedPassword = await this._hashService.hash(data.password);
       logger.info(`hashedPassword in UC: ${hashedPassword} and email: ${data.email}`)
 
-      await this.authService.updatePassword(data.email, hashedPassword);
+      await this._authService.updatePassword(data.email, hashedPassword);
 
       return {
         success: true,

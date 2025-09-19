@@ -71,11 +71,17 @@ export class AdminDependencyContainer {
   }
 
   createBlockUserUC(): IBlockUserUseCase {
-    return new BlockUserUseCase(this.createUserRepository());
+    return new BlockUserUseCase(
+      this.createUserRepository(),
+      this.createUserMapper()
+    );
   }
 
   createGetUserUC(): IGetUserUseCase {
-    return new GetUserUseCase(this.createUserRepository());
+    return new GetUserUseCase(
+      this.createUserRepository(),
+      this.createUserMapper()
+    );
   }
 
   // Admin auth Controller

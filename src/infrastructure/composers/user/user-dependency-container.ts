@@ -19,9 +19,7 @@ export class UserDependencyContainer {
   constructor() {}
 
   createUserRepository(): IUserRepository {
-    return new UserRepository(
-      UserModel,
-    );
+    return new UserRepository(UserModel);
   }
 
   createUserMapper(): IUserMapper {
@@ -33,11 +31,17 @@ export class UserDependencyContainer {
   }
 
   createUpdateProfileUC(): ISetupUserProfileUseCase {
-    return new SetupUserProfileUseCase(this.createUserRepository());
+    return new SetupUserProfileUseCase(
+      this.createUserRepository(),
+      this.createUserMapper()
+    );
   }
 
   createGetUserProfileUC(): IGetUserProfileUseCase {
-    return new GetUserProfileUseCase(this.createUserRepository());
+    return new GetUserProfileUseCase(
+      this.createUserRepository(),
+      this.createUserMapper()
+    );
   }
 
   createUserController(): UserController {

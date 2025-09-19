@@ -11,19 +11,19 @@ import type { ILoginUserUseCase } from "../../../interfaces/user/auth/login-user
 
 export class LoginUserUseCase implements ILoginUserUseCase{
   constructor(
-    private authService: IAuthService,
-    private userMapper: IUserMapper
+    private _authService: IAuthService,
+    private _userMapper: IUserMapper
   ) {}
 
   async execute(data: ILoginRequestDTO): Promise<ILoginResponseDTO> {
     // Find user by email
-    const userDoc = await this.authService.checkUserExists(data.email);
+    const userDoc = await this._authService.checkUserExists(data.email);
     if (!userDoc) {
       throw new AppError(ResponseMessages.UserNotFound, HttpStatusCode.NOT_FOUND);
     }
 
     // Compare password
-    const isValidPassword = await this.authService.comparePassword(
+    const isValidPassword = await this._authService.comparePassword(
       data.password,
       userDoc.password
     );
@@ -34,7 +34,7 @@ export class LoginUserUseCase implements ILoginUserUseCase{
       throw new AppError(ResponseMessages.LoginFailed, HttpStatusCode.BAD_REQUEST);
     }
 
-    const user = this.userMapper.toPublicDTO(userDoc);
+    const user = this._userMapper.toPublicDTO(userDoc);
 
     // Generate Tokens
     const payload: ITokenPayload = {
@@ -44,7 +44,7 @@ export class LoginUserUseCase implements ILoginUserUseCase{
     };
 
     const [accessToken, refreshToken] =
-      await this.authService.generateTokens(payload);
+      await this._authService.generateTokens(payload);
 
     // return user + tokens
     return {

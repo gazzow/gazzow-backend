@@ -7,9 +7,10 @@ import type { ITokenPayload } from "../../../interfaces/jwt/jwt-payload.js";
 import type { IRefreshAccessTokenUseCase } from "../../../interfaces/user/auth/refresh-token.js";
 
 export class RefreshAccessTokenUseCase implements IRefreshAccessTokenUseCase {
-  constructor(private tokenService: ITokenService) {}
+  constructor(private _tokenService: ITokenService) {}
+  
   execute = async (token: string): Promise<IRefreshAccessTokenResponseDTO> => {
-    const decoded = await this.tokenService.verifyRefreshToken(token);
+    const decoded = await this._tokenService.verifyRefreshToken(token);
     if (!decoded || !decoded.email || !decoded.role) {
       throw new AppError(
         ResponseMessages.InvalidRefreshToken,
@@ -23,7 +24,7 @@ export class RefreshAccessTokenUseCase implements IRefreshAccessTokenUseCase {
       role: decoded.role,
     };
 
-    const newAccessToken = await this.tokenService.createAccessToken(payload);
+    const newAccessToken = await this._tokenService.createAccessToken(payload);
 
     return {
       success: true,

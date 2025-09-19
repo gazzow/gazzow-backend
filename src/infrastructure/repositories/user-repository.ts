@@ -15,11 +15,7 @@ export class UserRepository
   extends BaseRepository<IUserDocument>
   implements IUserRepository
 {
-  constructor(
-    userModel: Model<IUserDocument>,
-    private userMapper: IUserMapper,
-    private usersMapper: IUsersMapper
-  ) {
+  constructor(userModel: Model<IUserDocument>) {
     super(userModel);
   }
 
@@ -50,7 +46,7 @@ export class UserRepository
   async updateProfile(
     userId: string,
     profileData: IUpdateProfileRequestDTO
-  ): Promise<IUserPublicDTO> {
+  ): Promise<IUserDocument> {
     const updatedUserDoc = await this.model
       .findByIdAndUpdate(userId, { $set: profileData }, { new: true })
       .lean();
@@ -59,9 +55,7 @@ export class UserRepository
       throw new Error("User not found");
     }
 
-    const updatedUser = this.userMapper.toPublicDTO(updatedUserDoc);
-
-    return updatedUser;
+    return updatedUserDoc;
   }
 
   async findAll(query: {
@@ -80,7 +74,7 @@ export class UserRepository
   async updateStatus(
     id: string,
     status: UserStatus
-  ): Promise<IUserPublicDTO | null> {
+  ): Promise<IUserDocument | null> {
     const updatedUserDoc = await this.model
       .findByIdAndUpdate(id, { status }, { new: true })
       .lean();
@@ -89,8 +83,6 @@ export class UserRepository
       throw new Error("User not found");
     }
 
-    const updatedUser = this.userMapper.toPublicDTO(updatedUserDoc);
-
-    return updatedUser;
+    return updatedUserDoc;
   }
 }
