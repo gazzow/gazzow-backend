@@ -57,6 +57,7 @@ export interface IResetPasswordResponseDTO {
 }
 
 export interface IUpdateProfileRequestDTO {
+  name?: string;
   bio?: string;
   techStacks?: string[];
   learningGoals?: string[];

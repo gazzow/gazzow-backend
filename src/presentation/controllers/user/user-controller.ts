@@ -2,7 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import logger from "../../../utils/logger.js";
 import { AppError } from "../../../utils/app-error.js";
 import type { IUserPublic } from "../../../domain/entities/user.js";
-import type { ISetupUserProfileUseCase } from "../../../application/interfaces/user/profile/setup-profile.js";
+import type { IUpdateUserProfileUseCase } from "../../../application/interfaces/user/profile/setup-profile.js";
 import type { IGetUserProfileUseCase } from "../../../application/interfaces/user/profile/get-profile.js";
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
@@ -21,7 +21,7 @@ interface AuthRequest extends Request {
 
 export class UserController {
   constructor(
-    private _updateUserProfileUseCase: ISetupUserProfileUseCase,
+    private _updateUserProfileUseCase: IUpdateUserProfileUseCase,
     private _getUserProfileUseCase: IGetUserProfileUseCase
   ) {}
 

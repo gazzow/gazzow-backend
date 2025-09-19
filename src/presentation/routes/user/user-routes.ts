@@ -29,7 +29,7 @@ userRouter.post(
 );
 
 userRouter.put(
-  "/profile/setup",
+  "/profile/update",
   tokenMiddleware.verifyToken,
   blockedUserMiddleware.isBlocked,
   userController.updateProfile
