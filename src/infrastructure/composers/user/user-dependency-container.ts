@@ -21,8 +21,6 @@ export class UserDependencyContainer {
   createUserRepository(): IUserRepository {
     return new UserRepository(
       UserModel,
-      this.createUserMapper(),
-      this.createUsersMapper()
     );
   }
 

@@ -60,8 +60,6 @@ export class AuthDependencyContainer {
   createUserRepository(): IUserRepository {
     return new UserRepository(
       UserModel,
-      this.createUserMapper(),
-      this.createUsersMapper()
     );
   }
 

@@ -25,17 +25,13 @@ import { UserModel } from "../../db/models/user-model.js";
 import { HashService } from "../../providers/hash-service.js";
 import type { IHashService } from "../../../application/providers/hash-service.js";
 import { AdminMapper } from "../../../application/mappers/admin/admin.js";
-import type {IAdminMapper} from "../../../application/mappers/admin/admin.js"
+import type { IAdminMapper } from "../../../application/mappers/admin/admin.js";
 
 export class AdminDependencyContainer {
   constructor() {}
 
   createUserRepository(): IUserRepository {
-    return new UserRepository(
-      UserModel,
-      this.createUserMapper(),
-      this.createUsersMapper()
-    );
+    return new UserRepository(UserModel);
   }
 
   createUserMapper(): IUserMapper {
@@ -68,7 +64,10 @@ export class AdminDependencyContainer {
   }
 
   createListUsersUC(): IListUsersUseCase {
-    return new ListUsersUseCase(this.createUserRepository(), this.createUsersMapper());
+    return new ListUsersUseCase(
+      this.createUserRepository(),
+      this.createUsersMapper()
+    );
   }
 
   createBlockUserUC(): IBlockUserUseCase {
