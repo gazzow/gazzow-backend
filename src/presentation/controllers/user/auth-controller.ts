@@ -19,35 +19,35 @@ import type { IRefreshAccessTokenUseCase } from "../../../application/interfaces
 
 export class AuthController {
   constructor(
-    private registerUserUseCase: IRegisterUserUseCase,
-    private verifyUserUseCase: IVerifyUserUseCase,
-    private loginUserUseCase: ILoginUserUseCase,
-    private forgotPasswordUseCase: IForgotPasswordUseCase,
-    private verifyOtpUseCase: IVerifyOtpUseCase,
-    private resetPasswordUseCase: IResetPasswordUseCase,
-    private refreshAccessTokenUseCase: IRefreshAccessTokenUseCase
+    private _registerUserUseCase: IRegisterUserUseCase,
+    private _verifyUserUseCase: IVerifyUserUseCase,
+    private _loginUserUseCase: ILoginUserUseCase,
+    private _forgotPasswordUseCase: IForgotPasswordUseCase,
+    private _verifyOtpUseCase: IVerifyOtpUseCase,
+    private _resetPasswordUseCase: IResetPasswordUseCase,
+    private _refreshAccessTokenUseCase: IRefreshAccessTokenUseCase
   ) {}
 
-  register = async (req: Request, res: Response) => {
+  register = async (req: Request, res: Response, next: NextFunction) => {
     console.log("User Register API hit");
     try {
-      const result = await this.registerUserUseCase.execute(req.body);
+      const result = await this._registerUserUseCase.execute(req.body);
       // message:  "Verification code sent successfully!"
-      res.status(200).json(result);
+      res.status(HttpStatusCode.OK).json(result);
     } catch (error) {
       if (error instanceof Error) {
         logger.error(error);
-        res.status(400).json({ success: false, message: error.message });
+        next(error);
       }
     }
   };
 
-  verifyUser = async (req: Request, res: Response) => {
+  verifyUser = async (req: Request, res: Response, next: NextFunction) => {
     logger.debug("Verify Otp API hit");
 
     try {
       const { email, otp } = req.body;
-      const result = await this.verifyUserUseCase.execute(email, otp);
+      const result = await this._verifyUserUseCase.execute(email, otp);
 
       // extract access and refresh token to store it on http-only cookie then
       const { accessToken, refreshToken, user, message } = result;
@@ -67,11 +67,13 @@ export class AuthController {
       });
 
       logger.info(`Created User data: ${JSON.stringify(user)} `);
-      return res.status(201).json({ success: true, user, message });
+      return res
+        .status(HttpStatusCode.OK)
+        .json({ success: true, user, message });
     } catch (error) {
       if (error instanceof Error) {
         logger.error(`OTP verification failed: ${error.message}`);
-        res.status(400).json({ success: false, message: error.message });
+        next(error);
       }
     }
   };
@@ -80,7 +82,7 @@ export class AuthController {
     logger.debug("login route hit");
 
     try {
-      const result = await this.loginUserUseCase.execute(req.body);
+      const result = await this._loginUserUseCase.execute(req.body);
 
       const { accessToken, refreshToken, user, message } = result;
       logger.info(`User login data: ${JSON.stringify(user)}`);
@@ -102,7 +104,7 @@ export class AuthController {
       if (user.status === UserStatus.BLOCKED) {
         throw new AppError("Access Denied: User is blocked", 403);
       }
-      res.status(200).json({ success: true, user, message });
+      res.status(HttpStatusCode.OK).json({ success: true, user, message });
     } catch (err) {
       if (err instanceof Error) {
         logger.error(`Login error: ${err.message}`);
@@ -113,7 +115,8 @@ export class AuthController {
 
   forgotPassword = async (
     req: Request<object, IForgotPasswordResponseDTO, IForgotPasswordRequestDTO>,
-    res: Response
+    res: Response,
+    next: NextFunction
   ) => {
     logger.debug("Forgot password api hit");
 
@@ -121,55 +124,58 @@ export class AuthController {
       const { email } = req.body;
 
       if (!email) {
-        res.status(400).json({ success: false, message: "Email required!" });
+        throw new AppError(ResponseMessages.BadRequest, HttpStatusCode.BAD_REQUEST);
       }
 
-      const result = await this.forgotPasswordUseCase.execute(email);
+      const result = await this._forgotPasswordUseCase.execute(email);
 
       logger.info(`response result: ${JSON.stringify(result)}`);
 
-      res.status(200).json(result);
+      res.status(HttpStatusCode.OK).json(result);
     } catch (e) {
       if (e instanceof Error) {
         logger.error(`forgot-password error: ${e.message}`);
-        res.status(400).json({ success: false, message: e.message });
+        next(e);
       }
     }
   };
 
-  verifyOtp = async (req: Request, res: Response) => {
+  verifyOtp = async (req: Request, res: Response, next: NextFunction) => {
     logger.debug("verify otp api hit");
 
     try {
       const { email, otp } = req.body;
 
-      const result = await this.verifyOtpUseCase.execute({email, otp});
+      const result = await this._verifyOtpUseCase.execute({ email, otp });
       logger.debug(`result verifyOtp: ${JSON.stringify(result)}`);
 
       return res.status(200).json(result);
     } catch (e) {
       if (e instanceof Error) {
         logger.error(`forgot-password error: ${e.message}`);
-        res.status(400).json({ success: false, message: e.message });
+        next(e)
       }
     }
   };
 
-  resetPassword = async (req: Request, res: Response) => {
+  resetPassword = async (req: Request, res: Response, next: NextFunction) => {
     logger.info("reset password api hit");
 
     try {
       const { email, password } = req.body;
 
-      const result = await this.resetPasswordUseCase.execute({email, password});
+      const result = await this._resetPasswordUseCase.execute({
+        email,
+        password,
+      });
 
       logger.info(`result reset-password: ${JSON.stringify(result)}`);
 
-      return res.status(200).json(result);
+      return res.status(HttpStatusCode.OK).json(result);
     } catch (error) {
       if (error instanceof Error) {
         logger.error(`reset-password error: ${error.message}`);
-        res.status(400).json({ success: false, message: error.message });
+        next(error)
       }
     }
   };
@@ -191,7 +197,7 @@ export class AuthController {
       }
 
       const { newAccessToken, ...response } =
-        await this.refreshAccessTokenUseCase.execute(refreshToken);
+        await this._refreshAccessTokenUseCase.execute(refreshToken);
 
       // set new access token cookie
       res.cookie("accessToken", newAccessToken, {

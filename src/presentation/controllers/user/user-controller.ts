@@ -4,6 +4,8 @@ import { AppError } from "../../../utils/app-error.js";
 import type { IUserPublic } from "../../../domain/entities/user.js";
 import type { ISetupUserProfileUseCase } from "../../../application/interfaces/user/profile/setup-profile.js";
 import type { IGetUserProfileUseCase } from "../../../application/interfaces/user/profile/get-profile.js";
+import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
+import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -19,47 +21,36 @@ interface AuthRequest extends Request {
 
 export class UserController {
   constructor(
-    private updateUserProfileUseCase: ISetupUserProfileUseCase,
-    private getUserProfileUseCase: IGetUserProfileUseCase
+    private _updateUserProfileUseCase: ISetupUserProfileUseCase,
+    private _getUserProfileUseCase: IGetUserProfileUseCase
   ) {}
 
-  updateProfile = async (req: AuthenticatedRequest, res: Response) => {
+  updateProfile = async (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction
+  ) => {
     logger.debug("Update profile api hit🚀");
     try {
       const userId = req.user?.id;
 
       if (!userId) {
-        return res.status(401).json({
-          success: false,
-          message: "Authentication required",
-        });
+        throw new AppError(
+          ResponseMessages.Unauthorized,
+          HttpStatusCode.UNAUTHORIZED
+        );
       }
 
       const profileData = req.body;
 
-      const result = await this.updateUserProfileUseCase.execute(
+      const result = await this._updateUserProfileUseCase.execute(
         userId,
         profileData
       );
 
-      return res.status(200).json(result);
+      return res.status(HttpStatusCode.OK).json(result);
     } catch (error) {
-      logger.error("Update profile error:", {
-        error: error instanceof Error ? error.message : error,
-        userId: req.user?.id,
-      });
-
-      if (error instanceof Error) {
-        res.status(400).json({
-          success: false,
-          message: error.message,
-        });
-      } else {
-        res.status(500).json({
-          success: false,
-          message: "Internal server error",
-        });
-      }
+      next(error);
     }
   };
 
@@ -72,13 +63,16 @@ export class UserController {
     try {
       const id = req.user?.id;
       if (!id) {
-        throw new AppError("Invalid User Id");
+        throw new AppError(
+          ResponseMessages.Unauthorized,
+          HttpStatusCode.UNAUTHORIZED
+        );
       }
 
       logger.debug(`user id: ${id}`);
 
-      const result = await this.getUserProfileUseCase.execute(id);
-      res.status(200).json(result);
+      const result = await this._getUserProfileUseCase.execute(id);
+      res.status(HttpStatusCode.OK).json(result);
     } catch (error) {
       next(error);
     }

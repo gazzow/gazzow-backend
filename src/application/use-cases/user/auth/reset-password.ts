@@ -1,4 +1,5 @@
 import type { IResetPasswordRequestDTO, IResetPasswordResponseDTO } from "../../../../domain/dtos/user.js";
+import { ResponseMessages } from "../../../../domain/enums/constants/response-messages.js";
 import type { AuthService } from "../../../../infrastructure/providers/auth-service.js";
 import type { HashService } from "../../../../infrastructure/providers/hash-service.js";
 import logger from "../../../../utils/logger.js";
@@ -22,7 +23,7 @@ export class ResetPasswordUseCase implements IResetPasswordUseCase{
 
       return {
         success: true,
-        message: "Password updated successfully!",
+        message:ResponseMessages.PasswordUpdatedSuccess,
       };
     } catch (error) {
       if (error instanceof Error) {

@@ -3,30 +3,31 @@ import logger from "../../../utils/logger.js";
 import type { IListUsersUseCase } from "../../../application/interfaces/admin/users-management/list-users.js";
 import type { IBlockUserUseCase } from "../../../application/interfaces/admin/users-management/block-user.js";
 import type { IGetUserUseCase } from "../../../application/interfaces/admin/users-management/get-user.js";
+import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
+import { AppError } from "../../../utils/app-error.js";
+import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
 
 export class UserManagementController {
   constructor(
-    private listUserUseCase: IListUsersUseCase,
-    private blockUserUseCase: IBlockUserUseCase,
-    private getUserUseCase: IGetUserUseCase
+    private _listUserUseCase: IListUsersUseCase,
+    private _blockUserUseCase: IBlockUserUseCase,
+    private _getUserUseCase: IGetUserUseCase
   ) {}
 
-  listUsers = async (req: Request, res: Response) => {
+  listUsers = async (req: Request, res: Response, next: NextFunction) => {
     logger.debug("admin user management list all users api 🚀");
     try {
       const { skip, limit } = req.query;
 
-      const result = await this.listUserUseCase.execute({
+      const result = await this._listUserUseCase.execute({
         skip: Number(skip),
         limit: Number(limit),
       });
       logger.info(`response result: ${result}`);
 
-      return res.status(200).json(result);
+      return res.status(HttpStatusCode.OK).json(result);
     } catch (error) {
-      if (error instanceof Error) {
-        res.status(500).json({ success: false, message: error.message });
-      }
+      next(error);
     }
   };
 
@@ -36,38 +37,34 @@ export class UserManagementController {
     try {
       const { id } = req.params;
       if (!id) {
-        throw new Error("Invalid UserId");
+        throw new AppError(ResponseMessages.BadRequest, HttpStatusCode.BAD_REQUEST);
       }
       const { status } = req.body;
 
       logger.debug(`User id: ${id} & update status ->:${status} `);
 
-      const result = await this.blockUserUseCase.execute(id, status);
+      const result = await this._blockUserUseCase.execute(id, status);
 
-      return res.status(200).json(result);
+      return res.status(HttpStatusCode.OK).json(result);
     } catch (error) {
-      if (error instanceof Error) {
-        next(error);
-      }
+      next(error);
     }
   };
 
-  getUser = async (req: Request, res: Response) => {
+  getUser = async (req: Request, res: Response, next: NextFunction) => {
     logger.debug("admin get user api 🚀");
     try {
       const { id } = req.params;
       if (!id) {
-        throw new Error("Invalid UserId");
+        throw new AppError(ResponseMessages.BadRequest, HttpStatusCode.BAD_REQUEST)
       }
       logger.debug(`user id: ${id}`);
 
-      const result = await this.getUserUseCase.execute(id);
+      const result = await this._getUserUseCase.execute(id);
 
-      return res.status(200).json(result);
+      return res.status(HttpStatusCode.OK).json(result);
     } catch (error) {
-      if (error instanceof Error) {
-        res.status(500).json({ success: false, message: error.message });
-      }
+      next(error)
     }
   };
 }

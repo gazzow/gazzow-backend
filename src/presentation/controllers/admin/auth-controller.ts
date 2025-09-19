@@ -5,14 +5,15 @@ import type { IAdminLoginUseCase } from "../../../application/interfaces/admin/a
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
 
 export class AdminAuthController {
-  constructor(private adminLoginUseCase: IAdminLoginUseCase) {}
+  constructor(private _adminLoginUseCase: IAdminLoginUseCase) {}
 
   login = async (req: Request, res: Response, next: NextFunction) => {
     logger.debug("Admin login api hit🚀");
 
     try {
       const { accessToken, refreshToken, ...result } =
-        await this.adminLoginUseCase.execute(req.body);
+        await this._adminLoginUseCase.execute(req.body);
+        
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
         maxAge: env.jwt.access_expires, // 15 minutes

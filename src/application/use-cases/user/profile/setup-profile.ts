@@ -2,6 +2,9 @@ import type {
   IUpdateProfileRequestDTO,
   IUpdateProfileResponseDTO,
 } from "../../../../domain/dtos/user.js";
+import { ResponseMessages } from "../../../../domain/enums/constants/response-messages.js";
+import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.js";
+import { AppError } from "../../../../utils/app-error.js";
 import type { IUserRepository } from "../../../interfaces/repository/user-repository.js";
 import type { ISetupUserProfileUseCase } from "../../../interfaces/user/profile/setup-profile.js";
 import type { IUserMapper } from "../../../mappers/user/user.js";
@@ -23,7 +26,7 @@ export class SetupUserProfileUseCase implements ISetupUserProfileUseCase {
       );
 
       if (!updatedUserDoc) {
-        throw new Error("User not found");
+        throw new AppError(ResponseMessages.UserNotFound, HttpStatusCode.NOT_FOUND);
       }
 
       const user = this._userMapper.toPublicDTO(updatedUserDoc);
@@ -38,7 +41,7 @@ export class SetupUserProfileUseCase implements ISetupUserProfileUseCase {
       if (error instanceof Error) {
         throw error;
       }
-      throw new Error("Unable to update profile. Please try again.");
+      throw new AppError("Unable to update profile. Please try again.");
     }
   };
 }

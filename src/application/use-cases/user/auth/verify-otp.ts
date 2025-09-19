@@ -1,4 +1,5 @@
 import type { IVerifyOtpRequestDTO, IVerifyOtpResponseDTO } from "../../../../domain/dtos/user.js";
+import { ResponseMessages } from "../../../../domain/enums/constants/response-messages.js";
 import type { AuthService } from "../../../../infrastructure/providers/auth-service.js";
 import type { IVerifyOtpUseCase } from "../../../interfaces/user/auth/verify-otp.js";
 
@@ -13,7 +14,7 @@ export class VerifyOtpUseCase implements IVerifyOtpUseCase{
 
         return {
             success: true,
-            message: 'Otp verified successfully'
+            message: ResponseMessages.OtpVerified,
         }
     } catch (error) {
       if (error instanceof Error) {

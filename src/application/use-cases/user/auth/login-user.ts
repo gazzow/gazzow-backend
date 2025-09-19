@@ -52,7 +52,7 @@ export class LoginUserUseCase implements ILoginUserUseCase{
       refreshToken,
       user,
       success:true,
-      message: "Login Successful!",
+      message: ResponseMessages.LoginSuccess,
     };
   }
 }

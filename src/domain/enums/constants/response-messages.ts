@@ -7,12 +7,16 @@ export enum ResponseMessages {
   InvalidRefreshToken = "Unauthorized: Invalid refresh token",
   AccessTokenRefreshed = "New access token generated successfully",
   LogoutSuccess = "Logged out successfully",
+  OtpVerified = "OTP verified",
+  InvalidOtp = "Invalid Otp", 
+
   // User
   UserNotFound = "User not found",
   UserCreated = "User created successfully",
   UserUpdated = "User updated successfully",
   UserBlocked = "User has been blocked",
   UserUnblocked = "User has been unblocked",
+  PasswordUpdatedSuccess = "Password updated successfully",
 
   // System
   Forbidden = "Access denied",
@@ -20,5 +24,5 @@ export enum ResponseMessages {
   InternalServerError = "Internal server error",
 
   // Admin
-  AdminNotFound = "Admin not found"
+  AdminNotFound = "Admin not found",
 }

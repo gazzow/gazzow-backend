@@ -1,4 +1,6 @@
 import type { IUserBlockResponseDTO } from "../../../../domain/dtos/admin/admin.js";
+import { ResponseMessages } from "../../../../domain/enums/constants/response-messages.js";
+import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.js";
 import type { UserStatus } from "../../../../domain/enums/user-role.js";
 import { AppError } from "../../../../utils/app-error.js";
 import logger from "../../../../utils/logger.js";
@@ -19,12 +21,18 @@ export class BlockUserUseCase implements IBlockUserUseCase {
     logger.debug("blocker user uc start process request");
     const user = await this._userRepository.findById(id);
     if (!user) {
-      throw new AppError("User Not Found", 404);
+      throw new AppError(
+        ResponseMessages.UserNotFound,
+        HttpStatusCode.NOT_FOUND
+      );
     }
 
     const updatedUserDoc = await this._userRepository.updateStatus(id, status);
     if (!updatedUserDoc) {
-      throw new Error("User not found");
+      throw new AppError(
+        ResponseMessages.UserNotFound,
+        HttpStatusCode.NOT_FOUND
+      );
     }
 
     const updatedUser = this._userMapper.toPublicDTO(updatedUserDoc);

@@ -3,6 +3,8 @@ import type { ITokenService } from "../../../application/providers/token-service
 import logger from "../../../utils/logger.js";
 import { AppError } from "../../../utils/app-error.js";
 import type { ITokenPayload } from "../../../application/interfaces/jwt/jwt-payload.js";
+import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
+import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
 
 interface AuthRequest extends Request {
   user?: ITokenPayload;
@@ -17,13 +19,13 @@ export class VerifyToken {
       // logger.info(`access token extracted from cookie: ${accessToken}`)
 
       if (!accessToken) {
-        throw new AppError("Unauthorized: No token provided", 401);
+        throw new AppError(ResponseMessages.Unauthorized, HttpStatusCode.UNAUTHORIZED);
       }
 
       const decoded = await this.tokenService.verifyAccessToken(accessToken);
       // logger.info(`decoded token data: ${JSON.stringify(decoded)}`)
       if(!decoded){
-        throw new AppError("Unauthorized: Invalid Access Token", 401)
+        throw new AppError(ResponseMessages.Unauthorized, HttpStatusCode.UNAUTHORIZED);
       }
 
       req.user = decoded;

@@ -16,13 +16,13 @@ interface AuthRequest extends Request {
 }
 
 export class CheckBlockedUserMiddleware implements ICheckBlockedUserMiddleware {
-  constructor(private userRepository: IUserRepository) {}
+  constructor(private _userRepository: IUserRepository) {}
 
   isBlocked = async (req: AuthRequest, res: Response, next: NextFunction) => {
     logger.debug("is blocked middleware check");
     try {
       if (!req.user) {
-        throw new AppError("Unauthorized: No user found", 403);
+        throw new AppError(ResponseMessages.Unauthorized, HttpStatusCode.UNAUTHORIZED);
       }
 
       logger.debug(`req user data: ${JSON.stringify(req.user)}`);
@@ -31,14 +31,14 @@ export class CheckBlockedUserMiddleware implements ICheckBlockedUserMiddleware {
       if(!id){
         throw new AppError(ResponseMessages.Unauthorized, HttpStatusCode.UNAUTHORIZED)
       }
-      const user = await this.userRepository.findById(id);
+      const user = await this._userRepository.findById(id);
       if (!user) {
         throw new AppError(ResponseMessages.UserNotFound, HttpStatusCode.NOT_FOUND);
       }
 
       if (user.status === UserStatus.BLOCKED) {
         logger.warn(`Blocked user tried to access: ${req.user.email}`);
-        throw new AppError("Access Denied: User is blocked!", 403);
+        throw new AppError(ResponseMessages.UserBlocked, HttpStatusCode.FORBIDDEN);
       }
       return next();
     } catch (error) {

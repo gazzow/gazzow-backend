@@ -11,6 +11,9 @@ import logger from "../../../../utils/logger.js";
 import type { IAuthService } from "../../../providers/auth-service.js";
 import type { ITokenPayload } from "../../../interfaces/jwt/jwt-payload.js";
 import type { IVerifyUserUseCase } from "../../../interfaces/user/auth/verify-user.js";
+import { AppError } from "../../../../utils/app-error.js";
+import { ResponseMessages } from "../../../../domain/enums/constants/response-messages.js";
+import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.js";
 
 export class VerifyUserUseCase implements IVerifyUserUseCase {
   constructor(
@@ -25,7 +28,7 @@ export class VerifyUserUseCase implements IVerifyUserUseCase {
 
     try {
       if (!email || !otp) {
-        throw new Error("Email and Otp are required");
+        throw new AppError(ResponseMessages.BadRequest, HttpStatusCode.BAD_REQUEST)
       }
 
       await this._authService.verifyOtp(normalizedEmail, otp, "register");
@@ -93,7 +96,7 @@ export class VerifyUserUseCase implements IVerifyUserUseCase {
     const tempPayload = await this._otpStore.get(tempKey);
 
     if (!tempPayload) {
-      throw new Error("Registration session has expired. Please start over.");
+      throw new AppError("Registration session has expired. Please start over.");
     }
     logger.info(`Temp payload : ${tempPayload}`);
 
@@ -103,7 +106,7 @@ export class VerifyUserUseCase implements IVerifyUserUseCase {
 
       // Validate required fields
       if (!userData.name || !userData.email || !userData.password) {
-        throw new Error("Invalid registration data");
+        throw new AppError("Invalid registration data");
       }
 
       return userData;
@@ -122,7 +125,7 @@ export class VerifyUserUseCase implements IVerifyUserUseCase {
         tempUserData.email
       );
       if (existingUser) {
-        throw new Error("Account already exists. Please sign in instead.");
+        throw new AppError("Account already exists. Please sign in instead.");
       }
 
       // Create the user
@@ -141,7 +144,7 @@ export class VerifyUserUseCase implements IVerifyUserUseCase {
           error.message.includes("duplicate") ||
           error.message.includes("unique")
         ) {
-          throw new Error("Account already exists. Please sign in instead.");
+          throw new AppError("Account already exists. Please sign in instead.");
         }
       }
       throw error;
@@ -162,6 +165,7 @@ export class VerifyUserUseCase implements IVerifyUserUseCase {
     } catch (error) {
       if (error instanceof Error) {
         logger.error(`cleanup failed: ${error}`);
+        throw new AppError(error.message)
       }
     }
   }

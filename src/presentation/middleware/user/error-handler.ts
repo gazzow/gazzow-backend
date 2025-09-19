@@ -1,6 +1,8 @@
 import type { NextFunction, Request, Response } from "express";
 import { AppError } from "../../../utils/app-error.js";
 import logger from "../../../utils/logger.js";
+import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
+import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
 
 export const errorHandler = (
   err: Error | AppError,
@@ -19,8 +21,8 @@ export const errorHandler = (
     }
 
     // Fallback for unexpected Error
-    return res.status(500).json({
+    return res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: 'Internal Server Error'
+        message: ResponseMessages.InternalServerError
     })
 };  
