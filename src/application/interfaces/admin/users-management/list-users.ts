@@ -1,5 +1,5 @@
-import type { IAdminListUsersResponseDTO } from "../../../../domain/dtos/admin/admin.js";
+import type { IAdminListUsersRequestDTO, IAdminListUsersResponseDTO } from "../../../../domain/dtos/admin/admin.js";
 
 export interface IListUsersUseCase{
-    execute(): Promise<IAdminListUsersResponseDTO>
+    execute(query: IAdminListUsersRequestDTO): Promise<IAdminListUsersResponseDTO>
 }

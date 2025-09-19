@@ -6,7 +6,6 @@ import type { ITokenPayload } from "../../../application/interfaces/jwt/jwt-payl
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
 import { UserRole } from "../../../domain/enums/user-role.js";
-import { env } from "../../../infrastructure/config/env.js";
 
 interface AuthRequest extends Request {
   admin?: ITokenPayload;
@@ -14,7 +13,7 @@ interface AuthRequest extends Request {
 
 
 export class VerifyAdmin {
-  constructor(private tokenService: ITokenService) {}
+  constructor(private _tokenService: ITokenService) {}
 
   isAdmin = async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
@@ -28,9 +27,16 @@ export class VerifyAdmin {
         );
       }
 
-      const decoded = await this.tokenService.verifyAccessToken(accessToken);
+      const decoded = await this._tokenService.verifyAccessToken(accessToken);
       logger.info(`decoded admin token data: ${JSON.stringify(decoded)}`)
-      if (decoded.role !== UserRole.ADMIN || decoded.email !== env.admin_email) {
+      if(!decoded){
+         throw new AppError(
+          ResponseMessages.Unauthorized,
+          HttpStatusCode.UNAUTHORIZED,
+        );
+      }
+
+      if (decoded.role !== UserRole.ADMIN) {
         throw new AppError(
           ResponseMessages.Forbidden,
           HttpStatusCode.FORBIDDEN

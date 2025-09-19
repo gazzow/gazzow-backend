@@ -7,7 +7,7 @@ import type {
   IUserPublicDTO,
 } from "../../domain/dtos/user.js";
 import type { ICreateUserInput } from "../../domain/entities/user.js";
-import type { UserStatus } from "../../domain/enums/user-role.js";
+import { type UserStatus } from "../../domain/enums/user-role.js";
 import { type IUserDocument } from "../db/models/user-model.js";
 import { BaseRepository } from "./base/base-repository.js";
 
@@ -64,19 +64,26 @@ export class UserRepository
     return updatedUser;
   }
 
-  async findAll(): Promise<IUserDocument[]> {
-    return await this.model.find();
+  async findAll(query: {
+    filter?: Record<string, string>;
+    skip?: number;
+    limit?: number;
+  }): Promise<IUserDocument[]> {
+    const { filter = {}, skip = 0, limit = 8 } = query;
+    return await this.model.find(filter).skip(skip).limit(limit);
+  }
+
+  count(filter: Record<string, string> = {}): Promise<number> {
+    return this.model.countDocuments(filter).lean().exec();
   }
 
   async updateStatus(
     id: string,
     status: UserStatus
   ): Promise<IUserPublicDTO | null> {
-    const updatedUserDoc = await this.model.findByIdAndUpdate(
-      id,
-      { status },
-      { new: true }
-    ).lean();
+    const updatedUserDoc = await this.model
+      .findByIdAndUpdate(id, { status }, { new: true })
+      .lean();
 
     if (!updatedUserDoc) {
       throw new Error("User not found");

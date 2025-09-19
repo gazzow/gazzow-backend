@@ -12,8 +12,18 @@ export class BaseRepository<T extends Document> implements IBaseRepository<T> {
     return await this.model.findById(id).exec();
   }
 
-  async findAll(): Promise<T[]> {
-    return await this.model.find().exec();
+  async findAll(query: {
+    filter?: Record<string, string>;
+    skip?: number;
+    limit?: number;
+  }): Promise<T[]> {
+    const { filter = {}, skip = 0, limit = 10 } = query;
+
+    return await this.model
+      .find(filter)
+      .skip(skip)
+      .limit(limit)
+      .exec();
   }
 
   async update(id: string, data: Partial<T>): Promise<T | null> {
