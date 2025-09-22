@@ -6,6 +6,8 @@ import type { IUpdateUserProfileUseCase } from "../../../application/interfaces/
 import type { IGetUserProfileUseCase } from "../../../application/interfaces/user/profile/get-profile.js";
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
+import { pickAllowedFields } from "../../../infrastructure/utils/pick-allowed-fields.js";
+import type { IUpdateProfileRequestDTO } from "../../../domain/dtos/user.js";
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -41,7 +43,22 @@ export class UserController {
         );
       }
 
-      const profileData = req.body;
+      const allowedFields: (keyof IUpdateProfileRequestDTO)[] = [
+        "name",
+        "bio",
+        "techStacks",
+        "learningGoals",
+        "experience",
+        "developerRole",
+        "imageUrl",
+      ];
+
+      const profileData = pickAllowedFields<IUpdateProfileRequestDTO>(
+        req.body,
+        allowedFields
+      );
+
+      logger.debug(`Profile date to update: ${JSON.stringify(profileData)}`);
 
       const result = await this._updateUserProfileUseCase.execute(
         userId,

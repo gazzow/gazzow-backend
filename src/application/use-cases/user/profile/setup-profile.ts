@@ -20,6 +20,7 @@ export class SetupUserProfileUseCase implements IUpdateUserProfileUseCase {
     profileData: IUpdateProfileRequestDTO
   ): Promise<IUpdateProfileResponseDTO> => {
     try {
+      
       const updatedUserDoc = await this._userRepository.updateProfile(
         userId,
         profileData
