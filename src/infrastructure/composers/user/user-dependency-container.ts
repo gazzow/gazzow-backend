@@ -11,7 +11,7 @@ import { UserRepository } from "../../repositories/user-repository.js";
 import { UserController } from "../../../presentation/controllers/user/user-controller.js";
 import type { IGetUserProfileUseCase } from "../../../application/interfaces/user/profile/get-profile.js";
 import type { IUserRepository } from "../../../application/interfaces/repository/user-repository.js";
-import type { ISetupUserProfileUseCase } from "../../../application/interfaces/user/profile/setup-profile.js";
+import type { IUpdateUserProfileUseCase } from "../../../application/interfaces/user/profile/setup-profile.js";
 import { GetUserProfileUseCase } from "../../../application/use-cases/user/profile/get-profile.js";
 import { UserModel } from "../../db/models/user-model.js";
 
@@ -30,7 +30,7 @@ export class UserDependencyContainer {
     return new UsersMapper(this.createUserMapper());
   }
 
-  createUpdateProfileUC(): ISetupUserProfileUseCase {
+  createUpdateProfileUC(): IUpdateUserProfileUseCase {
     return new SetupUserProfileUseCase(
       this.createUserRepository(),
       this.createUserMapper()
