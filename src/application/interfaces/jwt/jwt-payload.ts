@@ -1,7 +1,7 @@
 import type { UserRole } from "../../../domain/enums/user-role.js";
 
 export interface ITokenPayload {
-    id?: string | undefined,
+    id: string,
     email: string,
     role: UserRole,
 }

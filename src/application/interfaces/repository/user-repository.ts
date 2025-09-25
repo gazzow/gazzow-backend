@@ -9,6 +9,7 @@ export interface IUserRepository {
   create(user: ICreateUserInput): Promise<IUserDocument>;
   findById(id: string): Promise<IUserDocument | null>;
   findByEmail(email: string): Promise<IUserDocument | null>;
+  findByGoogleId(googleId: string): Promise<IUserDocument | null>;
   updatePassword(email: string, hashedPassword: string): Promise<void | null>;
   updateProfile(
     userId: string,

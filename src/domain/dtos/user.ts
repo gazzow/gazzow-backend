@@ -1,4 +1,4 @@
-import type { UserRole, UserStatus } from "../enums/user-role.js";
+import type { Provider, UserRole, UserStatus } from "../enums/user-role.js";
 
 export interface IUserPublicDTO {
   id: string;
@@ -6,6 +6,8 @@ export interface IUserPublicDTO {
   email: string;
   role: UserRole;
   status: UserStatus;
+  googleId?: string;
+  provider: Provider;
   bio?: string;
   techStacks?: string[];
   learningGoals?: string[];
@@ -72,13 +74,17 @@ export interface IUpdateProfileResponseDTO {
   message: string;
 }
 
-export interface IRefreshAccessTokenResponseDTO{
+export interface IRefreshAccessTokenResponseDTO {
   success: boolean;
   newAccessToken: string;
   message: string;
 }
 
-export interface IGetUserProfileResponseDTO{
-  success: true,
+export interface IGetUserProfileResponseDTO {
+  success: true;
+  user: IUserPublicDTO;
+}
+
+export interface IGoogleAuthResponseDTO{
   user: IUserPublicDTO,
 }

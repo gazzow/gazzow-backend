@@ -16,6 +16,8 @@ import type { IForgotPasswordUseCase } from "../../../application/interfaces/use
 import type { IVerifyOtpUseCase } from "../../../application/interfaces/user/auth/verify-otp.js";
 import type { IResetPasswordUseCase } from "../../../application/interfaces/user/auth/reset-password.js";
 import type { IRefreshAccessTokenUseCase } from "../../../application/interfaces/user/auth/refresh-token.js";
+import type { IUser } from "../../../domain/entities/user.js";
+import type { IGoogleCallbackUseCase } from "../../../application/interfaces/user/auth/google-callback.js";
 
 export class AuthController {
   constructor(
@@ -25,7 +27,8 @@ export class AuthController {
     private _forgotPasswordUseCase: IForgotPasswordUseCase,
     private _verifyOtpUseCase: IVerifyOtpUseCase,
     private _resetPasswordUseCase: IResetPasswordUseCase,
-    private _refreshAccessTokenUseCase: IRefreshAccessTokenUseCase
+    private _refreshAccessTokenUseCase: IRefreshAccessTokenUseCase,
+    private _googleCallbackUseCase: IGoogleCallbackUseCase
   ) {}
 
   register = async (req: Request, res: Response, next: NextFunction) => {
@@ -104,6 +107,7 @@ export class AuthController {
       if (user.status === UserStatus.BLOCKED) {
         throw new AppError("Access Denied: User is blocked", 403);
       }
+
       res.status(HttpStatusCode.OK).json({ success: true, user, message });
     } catch (err) {
       if (err instanceof Error) {
@@ -124,7 +128,10 @@ export class AuthController {
       const { email } = req.body;
 
       if (!email) {
-        throw new AppError(ResponseMessages.BadRequest, HttpStatusCode.BAD_REQUEST);
+        throw new AppError(
+          ResponseMessages.BadRequest,
+          HttpStatusCode.BAD_REQUEST
+        );
       }
 
       const result = await this._forgotPasswordUseCase.execute(email);
@@ -153,7 +160,7 @@ export class AuthController {
     } catch (e) {
       if (e instanceof Error) {
         logger.error(`forgot-password error: ${e.message}`);
-        next(e)
+        next(e);
       }
     }
   };
@@ -175,7 +182,7 @@ export class AuthController {
     } catch (error) {
       if (error instanceof Error) {
         logger.error(`reset-password error: ${error.message}`);
-        next(error)
+        next(error);
       }
     }
   };
@@ -222,5 +229,29 @@ export class AuthController {
     res
       .status(HttpStatusCode.OK)
       .json({ success: true, message: ResponseMessages.LogoutSuccess });
+  };
+
+  googleCallback = async (req: Request, res: Response) => {
+    const user = req.user as IUser;
+
+    const result = await this._googleCallbackUseCase.execute(user);
+
+    const { accessToken, refreshToken} = result;
+
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      maxAge: env.jwt.access_expires, // 15 minutes
+      sameSite: "strict",
+      secure: env.node_env,
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      maxAge: env.jwt.refresh_expires, // 7 days
+      sameSite: "strict",
+      secure: env.node_env,
+    });
+
+    res.status(HttpStatusCode.OK).redirect(`${env.base_url}/success`);
   };
 }

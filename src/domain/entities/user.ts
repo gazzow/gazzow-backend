@@ -1,4 +1,4 @@
-import type { UserRole, UserStatus } from "../enums/user-role.js";
+import type { Provider, UserRole, UserStatus } from "../enums/user-role.js";
 import type { IBaseUser } from "./base-entity.js";
 
 export interface IUser extends IBaseUser {
@@ -6,6 +6,8 @@ export interface IUser extends IBaseUser {
   email: string;
   role: UserRole;
   status: UserStatus;
+  googleId?: string;
+  provider: Provider;
   bio?: string;
   developerRole?: string;
   imageUrl?: string;
@@ -20,6 +22,8 @@ export interface IUserPublic {
   email: string;
   role: UserRole;
   status: UserStatus;
+  googleId?: string;
+  provider?: Provider;
   bio?: string;
   developerRole?: string;
   imageUrl?: string;
@@ -36,7 +40,10 @@ export interface IUserWithPassword extends IUser {
 export interface ICreateUserInput {
   name: string;
   email: string;
-  password: string;
+  password?: string;
+  googleId?: string;
+  provider?: Provider;
+  imageUrl?: string;
   role?: UserRole;
 }
 

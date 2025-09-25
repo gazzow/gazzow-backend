@@ -3,7 +3,12 @@ export enum UserRole {
   ADMIN = "admin",
 }
 
-  export enum UserStatus{
-    ACTIVE = 'active' ,
-    BLOCKED = 'blocked'
-  }
+export enum UserStatus {
+  ACTIVE = "active",
+  BLOCKED = "blocked",
+}
+
+export enum Provider {
+  LOCAL = "local",
+  GOOGLE = "google",
+}

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { AuthDependencyContainer } from "../../../infrastructure/composers/auth/auth-dependency-container.js";
 import { UserDependencyContainer } from "../../../infrastructure/composers/user/user-dependency-container.js";
+import passport from "../../../infrastructure/config/passport.js";
 
 const userRouter = Router();
 
@@ -21,6 +22,17 @@ userRouter.post("/auth/forgot-password/verify-otp", authController.verifyOtp);
 userRouter.put("/auth/reset-password", authController.resetPassword);
 
 userRouter.post("/auth/refresh", authController.refreshAccessToken);
+
+userRouter.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+userRouter.get(
+  "/auth/google/callback",
+  passport.authenticate("google", { session: false }),
+  authController.googleCallback
+);
 
 userRouter.post(
   "/auth/logout",

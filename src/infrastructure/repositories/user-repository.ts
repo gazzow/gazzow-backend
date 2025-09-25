@@ -25,6 +25,9 @@ export class UserRepository
   async findByEmail(email: string): Promise<IUserDocument | null> {
     return this.model.findOne({ email }).exec();
   }
+  findByGoogleId(googleId: string): Promise<IUserDocument | null> {
+    return this.model.findOne({ googleId }).exec();
+  }
 
   async updatePassword(
     email: string,
