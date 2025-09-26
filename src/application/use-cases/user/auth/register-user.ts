@@ -26,75 +26,60 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
   async execute(
     userData: ITempUserData
   ): Promise<{ success: boolean; message: string }> {
-    try {
-      // Check if the user exist or not
-      const existingUser = await this._userRepository.findByEmail(
-        userData.email
+    // Check if the user exist or not
+    const existingUser = await this._userRepository.findByEmail(userData.email);
+
+    const hashedPassword = await this._hashService.hash(userData.password);
+
+    const tempUserData = {
+      name: userData.name,
+      email: userData.email,
+      password: hashedPassword,
+    };
+
+    // Generate Otp and store hashed otp in redis
+    const otp = generateOtp();
+    const hashedOtp = await this._hashService.hash(otp);
+
+    if (existingUser) {
+      // User exists - send different email like registration attempt
+      await this._emailService.sendAccountExistsNotification(
+        userData.email,
+        this._otpConfig.emailSubject,
+        "An account with this email already exists. If this wasn't you, please ignore this email."
+      );
+    } else {
+      const tempUserKey = `temp:user:${tempUserData.email}`;
+      const otpKey = `otp:register:${tempUserData.email}`;
+
+      // Store temp user data and otp on redis
+      logger.info(`temp user data before storing redis cache: ${tempUserData}`);
+      await Promise.all([
+        await this._otpStore.set(
+          tempUserKey,
+          JSON.stringify(tempUserData),
+          this._otpConfig.ttlSeconds
+        ),
+        await this._otpStore.set(otpKey, hashedOtp, this._otpConfig.ttlSeconds),
+      ]);
+
+      // Send OTP via email
+      const emailContent = this._otpConfig.emailTemplate(
+        otp,
+        Math.floor(this._otpConfig.ttlSeconds / 60)
       );
 
-      const hashedPassword = await this._hashService.hash(userData.password);
-
-      const tempUserData = {
-        name: userData.name,
-        email: userData.email,
-        password: hashedPassword,
-      };
-
-      // Generate Otp and store hashed otp in redis
-      const otp = generateOtp();
-      const hashedOtp = await this._hashService.hash(otp);
-
-      if (existingUser) {
-        // User exists - send different email like registration attempt
-        await this._emailService.sendAccountExistsNotification(
-          userData.email,
-          this._otpConfig.emailSubject,
-          "An account with this email already exists. If this wasn't you, please ignore this email."
-        );
-      } else {
-        const tempUserKey = `temp:user:${tempUserData.email}`;
-        const otpKey = `otp:register:${tempUserData.email}`;
-
-        // Store temp user data and otp on redis
-        logger.info(
-          `temp user data before storing redis cache: ${tempUserData}`
-        );
-        await Promise.all([
-          await this._otpStore.set(
-            tempUserKey,
-            JSON.stringify(tempUserData),
-            this._otpConfig.ttlSeconds
-          ),
-          await this._otpStore.set(
-            otpKey,
-            hashedOtp,
-            this._otpConfig.ttlSeconds
-          ),
-        ]);
-
-        // Send OTP via email
-        const emailContent = this._otpConfig.emailTemplate(
-          otp,
-          Math.floor(this._otpConfig.ttlSeconds / 60)
-        );
-
-        await this._emailService.sendOtpNotification(
-          userData.email,
-          this._otpConfig.emailSubject,
-          emailContent
-        );
-      }
-
-      return {
-        success: true,
-        message: `You will receive a verification code shortly. Please check your email.[${otp}]`,
-      };
-    } catch (error) {
-      console.error("Error in StoreTempUserAndSentOtpUC:", error);
-      throw new Error(
-        "Unable to process registration request. Please try again."
+      await this._emailService.sendOtpNotification(
+        userData.email,
+        this._otpConfig.emailSubject,
+        emailContent
       );
     }
+
+    return {
+      success: true,
+      message: `You will receive a verification code shortly. Please check your email.[${otp}]`,
+    };
   }
 }
 

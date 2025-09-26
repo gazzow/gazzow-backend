@@ -19,7 +19,7 @@ export class SetupUserProfileUseCase implements IUpdateUserProfileUseCase {
     userId: string,
     profileData: IUpdateProfileRequestDTO
   ): Promise<IUpdateProfileResponseDTO> => {
-    try {
+
       
       const updatedUserDoc = await this._userRepository.updateProfile(
         userId,
@@ -39,13 +39,5 @@ export class SetupUserProfileUseCase implements IUpdateUserProfileUseCase {
         user,
         message: "Profile updated successfully",
       };
-    } catch (error) {
-      console.error("Update profile error:", error);
-
-      if (error instanceof Error) {
-        throw error;
-      }
-      throw new AppError("Unable to update profile. Please try again.");
-    }
   };
 }
