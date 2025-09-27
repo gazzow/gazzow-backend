@@ -1,4 +1,5 @@
 import type { IUserPublicDTO } from "../../../domain/dtos/user.js";
+import { Provider } from "../../../domain/enums/user-role.js";
 import type { IUserDocument } from "../../../infrastructure/db/models/user-model.js";
 
 export interface IUserMapper {
@@ -19,6 +20,8 @@ export class UserMapper implements IUserMapper {
       experience: user.experience ?? "",
       developerRole: user.developerRole ?? "",
       imageUrl: user.imageUrl ?? "",
+      googleId: user.googleId ?? "",
+      provider: user.provider ?? Provider.LOCAL,
       createdAt: user.createdAt,
     };
   }

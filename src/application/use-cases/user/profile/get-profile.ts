@@ -7,7 +7,10 @@ import type { IGetUserProfileUseCase } from "../../../interfaces/user/profile/ge
 import type { IUserMapper } from "../../../mappers/user/user.js";
 
 export class GetUserProfileUseCase implements IGetUserProfileUseCase {
-  constructor(private _userRepository: IUserRepository, private _userMapper: IUserMapper) {}
+  constructor(
+    private _userRepository: IUserRepository,
+    private _userMapper: IUserMapper
+  ) {}
 
   execute = async (id: string): Promise<IGetUserProfileResponseDTO> => {
     const userDoc = await this._userRepository.findById(id);
@@ -18,7 +21,7 @@ export class GetUserProfileUseCase implements IGetUserProfileUseCase {
       );
     }
 
-const user  = this._userMapper.toPublicDTO(userDoc);
+    const user = this._userMapper.toPublicDTO(userDoc);
 
     return {
       success: true,

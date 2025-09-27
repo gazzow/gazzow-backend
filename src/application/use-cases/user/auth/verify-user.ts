@@ -25,12 +25,9 @@ export class VerifyUserUseCase implements IVerifyUserUseCase {
 
   async execute(email: string, otp: string): Promise<IVerificationResult> {
     const normalizedEmail = email.toLowerCase().trim();
-
-    try {
       if (!email || !otp) {
         throw new AppError(ResponseMessages.BadRequest, HttpStatusCode.BAD_REQUEST)
       }
-
       await this._authService.verifyOtp(normalizedEmail, otp, "register");
 
       // Get and validate temp user data
@@ -67,12 +64,7 @@ export class VerifyUserUseCase implements IVerifyUserUseCase {
         },
         message: "Account created successfully",
       };
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(error.message);
-      }
-      throw error;
-    }
+    
   }
 
   private async verifyOtp(email: string, otp: string): Promise<void> {
@@ -89,7 +81,7 @@ export class VerifyUserUseCase implements IVerifyUserUseCase {
     if (!isValid) {
       throw new Error("Invalid verification code. Please check and try again.");
     }
-  } // Update this method re-usable
+  } // Update this method - re-usable
 
   private async getTempUserData(email: string): Promise<ITempUserData> {
     const tempKey = `temp:user:${email}`;
@@ -161,7 +153,7 @@ export class VerifyUserUseCase implements IVerifyUserUseCase {
         this._otpStore.delete(tempKey),
       ]);
 
-      console.log("Cleanup completed for:", email);
+      logger.debug("Cleanup completed for:", email);
     } catch (error) {
       if (error instanceof Error) {
         logger.error(`cleanup failed: ${error}`);

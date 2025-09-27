@@ -35,6 +35,8 @@ import { RefreshAccessTokenUseCase } from "../../../application/use-cases/user/a
 import type { IRefreshAccessTokenUseCase } from "../../../application/interfaces/user/auth/refresh-token.js";
 import { VerifyToken } from "../../../presentation/middleware/user/verify-token.js";
 import { UserModel } from "../../db/models/user-model.js";
+import type { IGoogleCallbackUseCase } from "../../../application/interfaces/user/auth/google-callback.js";
+import { GoogleCallBackUseCase } from "../../../application/use-cases/user/auth/google-callback.js";
 
 export interface IAppConfig {
   otpTtlSeconds: number;
@@ -58,9 +60,7 @@ export class AuthDependencyContainer {
   }
 
   createUserRepository(): IUserRepository {
-    return new UserRepository(
-      UserModel,
-    );
+    return new UserRepository(UserModel);
   }
 
   createUserMapper(): IUserMapper {
@@ -161,6 +161,10 @@ export class AuthDependencyContainer {
     return new RefreshAccessTokenUseCase(this.createTokenService());
   };
 
+  createGoogleCallbackUC = (): IGoogleCallbackUseCase => {
+    return new GoogleCallBackUseCase(this.createAuthService());
+  };
+
   // auth controller
   createAuthController(): AuthController {
     return new AuthController(
@@ -170,7 +174,8 @@ export class AuthDependencyContainer {
       this.createForgotUC(),
       this.createVerifyUC(),
       this.createResetPasswordUC(),
-      this.createRefreshAccessTokenUC()
+      this.createRefreshAccessTokenUC(),
+      this.createGoogleCallbackUC(),
     );
   }
 

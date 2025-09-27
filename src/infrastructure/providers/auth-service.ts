@@ -41,7 +41,7 @@ export class AuthService implements IAuthService {
 
     const isValid = await this.hashService.compare(otp, storedHashedOtp);
     if (!isValid) {
-      throw new Error("Invalid verification code. Please check and try again.");
+      throw new AppError("Invalid verification code!", HttpStatusCode.BAD_REQUEST);
     }
   }
 

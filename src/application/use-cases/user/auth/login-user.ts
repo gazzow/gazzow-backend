@@ -46,7 +46,6 @@ export class LoginUserUseCase implements ILoginUserUseCase{
     const [accessToken, refreshToken] =
       await this._authService.generateTokens(payload);
 
-    // return user + tokens
     return {
       accessToken,
       refreshToken,

@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
 import type { IUserWithPassword } from "../../../domain/entities/user.js";
-import { UserRole, UserStatus } from "../../../domain/enums/user-role.js";
+import { Provider, UserRole, UserStatus } from "../../../domain/enums/user-role.js";
 
 export type IUserDocument = Document &
   IUserWithPassword & {
@@ -11,7 +11,13 @@ const userSchema = new Schema<IUserDocument>(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    password: { type: String },
+    googleId: { type: String },
+    provider: {
+      type: String,
+      enum: Object.values(Provider),
+      default: Provider.LOCAL,
+    },
     role: {
       type: String,
       enum: Object.values(UserRole),

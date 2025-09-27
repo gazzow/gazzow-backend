@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import logger from "../../../utils/logger.js";
 import { AppError } from "../../../utils/app-error.js";
-import type { IUserPublic } from "../../../domain/entities/user.js";
+// import type { IUserPublic } from "../../../domain/entities/user.js";
 import type { IUpdateUserProfileUseCase } from "../../../application/interfaces/user/profile/setup-profile.js";
 import type { IGetUserProfileUseCase } from "../../../application/interfaces/user/profile/get-profile.js";
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
@@ -9,17 +9,6 @@ import { ResponseMessages } from "../../../domain/enums/constants/response-messa
 import { pickAllowedFields } from "../../../infrastructure/utils/pick-allowed-fields.js";
 import type { IUpdateProfileRequestDTO } from "../../../domain/dtos/user.js";
 
-interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-    email: string;
-    role: string;
-  };
-}
-
-interface AuthRequest extends Request {
-  user?: IUserPublic;
-}
 
 export class UserController {
   constructor(
@@ -28,7 +17,7 @@ export class UserController {
   ) {}
 
   updateProfile = async (
-    req: AuthenticatedRequest,
+    req: Request,
     res: Response,
     next: NextFunction
   ) => {
@@ -65,14 +54,14 @@ export class UserController {
         profileData
       );
 
-      return res.status(HttpStatusCode.OK).json(result);
+       res.status(HttpStatusCode.OK).json(result);
     } catch (error) {
       next(error);
     }
   };
 
   getUserProfile = async (
-    req: AuthRequest,
+    req: Request,
     res: Response,
     next: NextFunction
   ) => {
