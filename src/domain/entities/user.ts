@@ -50,8 +50,7 @@ export interface ICreateUserInput {
 export interface IVerificationResult {
   accessToken: string;
   refreshToken: string;
-  user: IUserPublic;
-  message: string;
+  data: IUserPublic;
 }
 
 export interface ITempUserData {

@@ -3,6 +3,8 @@ import logger from "../../../utils/logger.js";
 import { env } from "../../../infrastructure/config/env.js";
 import type { IAdminLoginUseCase } from "../../../application/interfaces/admin/auth/login.js";
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
+import { ApiResponse } from "../../common/api-response.js";
+import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
 
 export class AdminAuthController {
   constructor(private _adminLoginUseCase: IAdminLoginUseCase) {}
@@ -11,7 +13,7 @@ export class AdminAuthController {
     logger.debug("Admin login api hit🚀");
 
     try {
-      const { accessToken, refreshToken, ...result } =
+      const { accessToken, refreshToken, data } =
         await this._adminLoginUseCase.execute(req.body);
         
       res.cookie("accessToken", accessToken, {
@@ -26,7 +28,8 @@ export class AdminAuthController {
         sameSite: "strict",
         secure: env.node_env,
       });
-      res.status(HttpStatusCode.OK).json(result);
+      
+      res.status(HttpStatusCode.OK).json(ApiResponse.success(ResponseMessages.LoginSuccess, data));
     } catch (error) {
       next(error);
     }

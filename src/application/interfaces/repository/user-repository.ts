@@ -14,7 +14,7 @@ export interface IUserRepository {
   updateProfile(
     userId: string,
     profileData: IUpdateProfileRequestDTO
-  ): Promise<IUserDocument>;
+  ): Promise<IUserDocument | null>;
   findAll(query: {
     filter?: Record<string, string>;
     skip?: number;

@@ -1,4 +1,3 @@
-import type { IForgotPasswordResponseDTO } from "../../../../domain/dtos/user.js";
 import { generateOtp } from "../../../../infrastructure/utils/generate-otp.js";
 import logger from "../../../../utils/logger.js";
 import type { IForgotPasswordUseCase } from "../../../interfaces/user/auth/forgot-password.js";
@@ -22,44 +21,34 @@ export class ForgotPasswordUseCase implements IForgotPasswordUseCase {
     private _otpConfig: IOtpConfig
   ) {}
 
-  async execute(email: string): Promise<IForgotPasswordResponseDTO> {
-    try {
-      // Check if the user exists
-      const userDoc = await this._authService.checkUserExists(email);
-      const otp = generateOtp();
+  async execute(email: string): Promise<void> {
+    // Check if the user exists
+    const userDoc = await this._authService.checkUserExists(email);
 
-      if (userDoc) {
-        // Generate Otp and store hashed otp in redis
-        const hashedOtp = await this._hashService.hash(otp);
+    const otp = generateOtp();
+    logger.info(`Otp for forgot password: [${otp}]`);
 
-        logger.info(`Otp for forgot password: [${otp}]`);
+    if (userDoc) {
+      // Generate Otp and store hashed otp in redis
+      const hashedOtp = await this._hashService.hash(otp);
 
-        const otpKey = `otp:reset:${email}`;
-        logger.info(`otpKey in forgot-password: ${otpKey}`);
-        await this._otpStore.set(otpKey, hashedOtp, this._otpConfig.ttlSeconds);
+      const otpKey = `otp:reset:${email}`;
+      logger.info(`otpKey in forgot-password: ${otpKey}`);
 
-        // Send OTP via email
-        const emailContent = this._otpConfig.emailTemplate(
-          otp,
-          Math.floor(this._otpConfig.ttlSeconds / 60)
-        );
+      await this._otpStore.set(otpKey, hashedOtp, this._otpConfig.ttlSeconds);
 
-        await this._emailService.sendOtpNotification(
-          email,
-          this._otpConfig.emailSubject,
-          emailContent
-        );
-      }
+      // Send OTP via email
+      const emailContent = this._otpConfig.emailTemplate(
+        otp,
+        Math.floor(this._otpConfig.ttlSeconds / 60)
+      );
 
-      return {
-        success: true,
-        message: `You will receive a verification code shortly. Please check your email.${otp}`,
-      };
-    } catch (error) {
-      console.log(error);
-      throw new Error(
-        "Unable to process password reset request. Please try again."
+      await this._emailService.sendOtpNotification(
+        email,
+        this._otpConfig.emailSubject,
+        emailContent
       );
     }
+
   }
 }

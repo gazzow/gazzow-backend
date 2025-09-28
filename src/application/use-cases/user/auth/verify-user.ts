@@ -14,57 +14,51 @@ import type { IVerifyUserUseCase } from "../../../interfaces/user/auth/verify-us
 import { AppError } from "../../../../utils/app-error.js";
 import { ResponseMessages } from "../../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.js";
+import type { IUserMapper } from "../../../mappers/user/user.js";
 
 export class VerifyUserUseCase implements IVerifyUserUseCase {
   constructor(
     private _otpStore: IOtpStore,
     private _passwordHash: IHashService,
     private _userRepository: IUserRepository,
-    private _authService: IAuthService
+    private _authService: IAuthService,
+    private _userMapper: IUserMapper
   ) {}
 
   async execute(email: string, otp: string): Promise<IVerificationResult> {
     const normalizedEmail = email.toLowerCase().trim();
-      if (!email || !otp) {
-        throw new AppError(ResponseMessages.BadRequest, HttpStatusCode.BAD_REQUEST)
-      }
-      await this._authService.verifyOtp(normalizedEmail, otp, "register");
-
-      // Get and validate temp user data
-      const tempUserData = await this.getTempUserData(normalizedEmail);
-
-      // Create user in database with transaction-like behavior
-      const createdUser = await this.createUserSafely(tempUserData);
-      logger.info(
-        `Created user info in verify-otp: ${JSON.stringify(createdUser)}`
+    if (!email || !otp) {
+      throw new AppError(
+        ResponseMessages.BadRequest,
+        HttpStatusCode.BAD_REQUEST
       );
+    }
+    await this._authService.verifyOtp(normalizedEmail, otp, "register");
 
-      // Generate tokens after successful user creation
-      const payload: ITokenPayload = {
-        id: createdUser.id,
-        email: createdUser.email,
-        role: createdUser.role,
-      };
+    // Get and validate temp user data
+    const tempUserData = await this.getTempUserData(normalizedEmail);
 
-      const [accessToken, refreshToken] =
-        await this._authService.generateTokens(payload);
+    // Create user in database with transaction-like behavior
+    const user = await this.createUserSafely(tempUserData);
+    logger.info(`Created user info in verify-otp: ${JSON.stringify(user)}`);
 
-      await this.cleanupTempData(normalizedEmail);
+    // Generate tokens after successful user creation
+    const payload: ITokenPayload = {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    };
 
-      return {
-        accessToken,
-        refreshToken,
-        user: {
-          id: createdUser.id,
-          name: createdUser.name,
-          email: createdUser.email,
-          role: createdUser.role,
-          status: createdUser.status,
-          createdAt: createdUser.createdAt,
-        },
-        message: "Account created successfully",
-      };
-    
+    const [accessToken, refreshToken] =
+      await this._authService.generateTokens(payload);
+
+    await this.cleanupTempData(normalizedEmail);
+
+    return {
+      accessToken,
+      refreshToken,
+      data: user,
+    };
   }
 
   private async verifyOtp(email: string, otp: string): Promise<void> {
@@ -88,7 +82,9 @@ export class VerifyUserUseCase implements IVerifyUserUseCase {
     const tempPayload = await this._otpStore.get(tempKey);
 
     if (!tempPayload) {
-      throw new AppError("Registration session has expired. Please start over.");
+      throw new AppError(
+        "Registration session has expired. Please start over."
+      );
     }
     logger.info(`Temp payload : ${tempPayload}`);
 
@@ -121,12 +117,14 @@ export class VerifyUserUseCase implements IVerifyUserUseCase {
       }
 
       // Create the user
-      const user = await this._userRepository.create({
+      const userDoc = await this._userRepository.create({
         name: tempUserData.name,
         email: tempUserData.email,
         password: tempUserData.password,
         role: UserRole.USER,
       });
+
+      const user = this._userMapper.toPublicDTO(userDoc);
 
       return user;
     } catch (error) {
@@ -157,7 +155,7 @@ export class VerifyUserUseCase implements IVerifyUserUseCase {
     } catch (error) {
       if (error instanceof Error) {
         logger.error(`cleanup failed: ${error}`);
-        throw new AppError(error.message)
+        throw new AppError(error.message);
       }
     }
   }

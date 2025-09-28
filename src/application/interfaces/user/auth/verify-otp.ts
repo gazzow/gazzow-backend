@@ -1,5 +1,5 @@
-import type { IVerifyOtpRequestDTO, IVerifyOtpResponseDTO } from "../../../../domain/dtos/user.js";
+import type { IVerifyOtpRequestDTO } from "../../../../domain/dtos/user.js";
 
 export interface IVerifyOtpUseCase{
-  execute(data: IVerifyOtpRequestDTO):Promise<IVerifyOtpResponseDTO>
+  execute(data: IVerifyOtpRequestDTO):Promise<void>
 }

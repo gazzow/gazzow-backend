@@ -11,14 +11,15 @@ interface AuthRequest extends Request {
   admin?: ITokenPayload;
 }
 
-
 export class VerifyAdmin {
   constructor(private _tokenService: ITokenService) {}
 
   isAdmin = async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const { accessToken } = req.cookies;
-      logger.debug(`admin access token extracted from cookie: ${accessToken}`);
+      logger.debug(
+        `admin access token extracted from cookie: ${JSON.stringify(accessToken)}`
+      );
 
       if (!accessToken) {
         throw new AppError(
@@ -28,11 +29,11 @@ export class VerifyAdmin {
       }
 
       const decoded = await this._tokenService.verifyAccessToken(accessToken);
-      logger.info(`decoded admin token data: ${JSON.stringify(decoded)}`)
-      if(!decoded){
-         throw new AppError(
+      logger.info(`decoded admin token data: ${JSON.stringify(decoded)}`);
+      if (!decoded) {
+        throw new AppError(
           ResponseMessages.Unauthorized,
-          HttpStatusCode.UNAUTHORIZED,
+          HttpStatusCode.UNAUTHORIZED
         );
       }
 

@@ -17,7 +17,7 @@ export class ListUsersUseCase implements IListUsersUseCase {
   execute = async (
     query: IAdminListUsersRequestDTO
   ): Promise<IAdminListUsersResponseDTO> => {
-    const { skip = 0, limit = 8 } = query;
+    const { skip = 0, limit = 6 } = query;
     logger.debug(`List user query: ${query}`);
     const usersDoc = await this._userRepository.findAll({
       filter: { role: UserRole.USER },
@@ -30,7 +30,6 @@ export class ListUsersUseCase implements IListUsersUseCase {
     const users = this._usersMapper.toPublicUsersDTO(usersDoc);
 
     return {
-      success: true,
       data: users,
       pagination: {
         limit,

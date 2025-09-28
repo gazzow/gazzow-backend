@@ -44,14 +44,10 @@ export class UserRepository
   async updateProfile(
     userId: string,
     profileData: IUpdateProfileRequestDTO
-  ): Promise<IUserDocument> {
+  ): Promise<IUserDocument | null> {
     const updatedUserDoc = await this.model
       .findByIdAndUpdate(userId, { $set: profileData }, { new: true })
       .lean();
-
-    if (!updatedUserDoc) {
-      throw new Error("User not found");
-    }
 
     return updatedUserDoc;
   }
@@ -61,7 +57,7 @@ export class UserRepository
     skip?: number;
     limit?: number;
   }): Promise<IUserDocument[]> {
-    const { filter = {}, skip = 0, limit = 8 } = query;
+    const { filter = {}, skip = 0, limit = 6 } = query;
     return await this.model.find(filter).skip(skip).limit(limit);
   }
 
@@ -76,11 +72,6 @@ export class UserRepository
     const updatedUserDoc = await this.model
       .findByIdAndUpdate(id, { status }, { new: true })
       .lean();
-
-    if (!updatedUserDoc) {
-      throw new Error("User not found");
-    }
-
     return updatedUserDoc;
   }
 }

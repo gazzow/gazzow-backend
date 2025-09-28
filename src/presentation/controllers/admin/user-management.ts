@@ -6,6 +6,7 @@ import type { IGetUserUseCase } from "../../../application/interfaces/admin/user
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
 import { AppError } from "../../../utils/app-error.js";
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
+import { ApiResponse } from "../../common/api-response.js";
 
 export class UserManagementController {
   constructor(
@@ -19,13 +20,17 @@ export class UserManagementController {
     try {
       const { skip, limit } = req.query;
 
-      const result = await this._listUserUseCase.execute({
+      const { data, pagination } = await this._listUserUseCase.execute({
         skip: Number(skip),
         limit: Number(limit),
       });
-      logger.info(`response result: ${result}`);
+      logger.info(`response result: ${data}`);
 
-      return res.status(HttpStatusCode.OK).json(result);
+      res
+        .status(HttpStatusCode.OK)
+        .json(
+          ApiResponse.paginated(ResponseMessages.FetchedUsers, data, pagination)
+        );
     } catch (error) {
       next(error);
     }
@@ -37,15 +42,20 @@ export class UserManagementController {
     try {
       const { id } = req.params;
       if (!id) {
-        throw new AppError(ResponseMessages.BadRequest, HttpStatusCode.BAD_REQUEST);
+        throw new AppError(
+          ResponseMessages.BadRequest,
+          HttpStatusCode.BAD_REQUEST
+        );
       }
       const { status } = req.body;
 
       logger.debug(`User id: ${id} & update status ->:${status} `);
 
-      const result = await this._blockUserUseCase.execute(id, status);
+      const { data } = await this._blockUserUseCase.execute(id, status);
 
-      return res.status(HttpStatusCode.OK).json(result);
+      res
+        .status(HttpStatusCode.OK)
+        .json(ApiResponse.success(ResponseMessages.UserStatusUpdated, data));
     } catch (error) {
       next(error);
     }
@@ -56,15 +66,20 @@ export class UserManagementController {
     try {
       const { id } = req.params;
       if (!id) {
-        throw new AppError(ResponseMessages.BadRequest, HttpStatusCode.BAD_REQUEST)
+        throw new AppError(
+          ResponseMessages.BadRequest,
+          HttpStatusCode.BAD_REQUEST
+        );
       }
       logger.debug(`user id: ${id}`);
 
-      const result = await this._getUserUseCase.execute(id);
+      const {data} = await this._getUserUseCase.execute(id);
 
-      return res.status(HttpStatusCode.OK).json(result);
+      res
+        .status(HttpStatusCode.OK)
+        .json(ApiResponse.success(ResponseMessages.UserRetrieved, data));
     } catch (error) {
-      next(error)
+      next(error);
     }
   };
 }

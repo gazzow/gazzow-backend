@@ -8,7 +8,7 @@ import type { IRefreshAccessTokenUseCase } from "../../../interfaces/user/auth/r
 
 export class RefreshAccessTokenUseCase implements IRefreshAccessTokenUseCase {
   constructor(private _tokenService: ITokenService) {}
-  
+
   execute = async (token: string): Promise<IRefreshAccessTokenResponseDTO> => {
     const decoded = await this._tokenService.verifyRefreshToken(token);
     if (!decoded || !decoded.email || !decoded.role) {
@@ -24,12 +24,10 @@ export class RefreshAccessTokenUseCase implements IRefreshAccessTokenUseCase {
       role: decoded.role,
     };
 
-    const newAccessToken = await this._tokenService.createAccessToken(payload);
+    const accessToken = await this._tokenService.createAccessToken(payload);
 
     return {
-      success: true,
-      message: ResponseMessages.AccessTokenRefreshed,
-      newAccessToken,
+      accessToken,
     };
   };
 }
