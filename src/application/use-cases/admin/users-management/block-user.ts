@@ -19,16 +19,10 @@ export class BlockUserUseCase implements IBlockUserUseCase {
     status: UserStatus
   ): Promise<IUserBlockResponseDTO> {
     logger.debug("blocker user uc start process request");
-    const user = await this._userRepository.findById(id);
-    if (!user) {
-      throw new AppError(
-        ResponseMessages.UserNotFound,
-        HttpStatusCode.NOT_FOUND
-      );
-    }
 
     const updatedUserDoc = await this._userRepository.updateStatus(id, status);
     if (!updatedUserDoc) {
+      logger.debug('User not found on block user uc')
       throw new AppError(
         ResponseMessages.UserNotFound,
         HttpStatusCode.NOT_FOUND
@@ -38,9 +32,7 @@ export class BlockUserUseCase implements IBlockUserUseCase {
     const updatedUser = this._userMapper.toPublicDTO(updatedUserDoc);
 
     return {
-      success: true,
-      message: `User status updated to ${status}`,
-      user: updatedUser,
+      data: updatedUser,
     };
   }
 }

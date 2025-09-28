@@ -21,11 +21,10 @@ export class GetUserProfileUseCase implements IGetUserProfileUseCase {
       );
     }
 
-    const user = this._userMapper.toPublicDTO(userDoc);
+    const data = this._userMapper.toPublicDTO(userDoc);
 
     return {
-      success: true,
-      user,
+      data,
     };
   };
 }

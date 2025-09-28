@@ -32,7 +32,7 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
     }
 
     if (adminDoc.role !== UserRole.ADMIN) {
-      logger.debug('user try to login admin page')
+      logger.debug("user try to login admin page");
       throw new AppError(ResponseMessages.Forbidden, HttpStatusCode.FORBIDDEN);
     }
 
@@ -61,11 +61,9 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
     ]);
 
     return {
-      success: true,
       accessToken,
       refreshToken,
       data: admin,
-      message: ResponseMessages.LoginSuccess,
     };
   }
 }

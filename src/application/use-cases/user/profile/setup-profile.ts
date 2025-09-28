@@ -19,25 +19,21 @@ export class SetupUserProfileUseCase implements IUpdateUserProfileUseCase {
     userId: string,
     profileData: IUpdateProfileRequestDTO
   ): Promise<IUpdateProfileResponseDTO> => {
+    const updatedUserDoc = await this._userRepository.updateProfile(
+      userId,
+      profileData
+    );
 
-      
-      const updatedUserDoc = await this._userRepository.updateProfile(
-        userId,
-        profileData
+    if (!updatedUserDoc) {
+      throw new AppError(
+        ResponseMessages.UserNotFound,
+        HttpStatusCode.NOT_FOUND
       );
+    }
 
-      if (!updatedUserDoc) {
-        throw new AppError(
-          ResponseMessages.UserNotFound,
-          HttpStatusCode.NOT_FOUND
-        );
-      }
-
-      const user = this._userMapper.toPublicDTO(updatedUserDoc);
-      return {
-        success: true,
-        user,
-        message: "Profile updated successfully",
-      };
+    const data = this._userMapper.toPublicDTO(updatedUserDoc);
+    return {
+      data
+    };
   };
 }

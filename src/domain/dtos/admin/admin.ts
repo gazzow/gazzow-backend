@@ -14,8 +14,6 @@ export interface IAdminLoginRequestDTO {
 }
 
 export interface IAdminLoginResponseDTO {
-  success: boolean;
-  message: string;
   accessToken: string;
   refreshToken: string;
   data: IAdminDTO;
@@ -28,13 +26,12 @@ export interface IAdminListUsersRequestDTO {
 }
 
 export interface IAdminListUsersResponseDTO {
-  success: true;
   data: IUserPublic[];
   pagination: {
-    skip: number,
-    limit: number,
-    total: number,
-  }
+    skip: number;
+    limit: number;
+    total: number;
+  };
 }
 
 export interface IUserBlockRequestDTO {
@@ -42,13 +39,9 @@ export interface IUserBlockRequestDTO {
 }
 
 export interface IUserBlockResponseDTO {
-  success: boolean;
-  message: string;
-  user: IUserPublic;
+  data: IUserPublic;
 }
 
 export interface IGetUserResponseDTO {
-  success: boolean;
-  message: string;
-  user: IUserPublic;
+  data: IUserPublic;
 }

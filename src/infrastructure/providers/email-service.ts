@@ -3,10 +3,10 @@ import nodemailer from "nodemailer";
 import type { IEmailService } from "../../application/providers/email-service.js";
 
 export class EmailService implements IEmailService {
-  private transporter: nodemailer.Transporter;
+  private _transporter: nodemailer.Transporter;
 
   constructor() {
-    this.transporter = nodemailer.createTransport({
+    this._transporter = nodemailer.createTransport({
       host: env.smtp.host,
       port: env.smtp.port,
       secure: false,
@@ -23,7 +23,7 @@ export class EmailService implements IEmailService {
     text: string,
     html?: string
   ): Promise<void> {
-    await this.transporter.sendMail({
+    await this._transporter.sendMail({
       from: env.smtp.from,
       to,
       subject,
@@ -38,7 +38,7 @@ export class EmailService implements IEmailService {
     text: string,
     html?: string
   ): Promise<void> {
-    await this.transporter.sendMail({
+    await this._transporter.sendMail({
       from: env.smtp.from,
       to,
       subject,

@@ -1,10 +1,10 @@
 // application/use-cases/Auth/GoogleAuthUseCase.ts
 import type { IUserPublicDTO } from "../../../../domain/dtos/user.js";
-import { Provider } from "../../../../domain/enums/user-role.js";
-import { AppError } from "../../../../utils/app-error.js";
 import type { IUserRepository } from "../../../interfaces/repository/user-repository.js";
 import type { IGoogleAuthUseCase } from "../../../interfaces/user/auth/google-auth.js";
 import type { IUserMapper } from "../../../mappers/user/user.js";
+import { Provider } from "../../../../domain/enums/user-role.js";
+import { AppError } from "../../../../utils/app-error.js";
 import type { Profile } from "passport-google-oauth20";
 
 export class GoogleAuthUseCase implements IGoogleAuthUseCase {

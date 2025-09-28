@@ -8,14 +8,16 @@ export enum ResponseMessages {
   AccessTokenRefreshed = "New access token generated successfully",
   LogoutSuccess = "Logged out successfully",
   OtpVerified = "OTP verified",
-  InvalidOtp = "Invalid Otp", 
+  InvalidVerificationCode = "Invalid verification code",
+  VerificationCodeExpired = "Verification code has expired",
 
   // User
   UserNotFound = "User not found",
+  UserRetrieved = "User retrieved successfully",
   UserCreated = "User created successfully",
-  UserUpdated = "User updated successfully",
+  ProfileUpdated = "Profile updated successfully",
   UserBlocked = "User has been blocked",
-  UserUnblocked = "User has been unblocked",
+  UserStatusUpdated = "User status updated",
   PasswordUpdatedSuccess = "Password updated successfully",
 
   // System
@@ -25,4 +27,5 @@ export enum ResponseMessages {
 
   // Admin
   AdminNotFound = "Admin not found",
+  FetchedUsers = "Users fetched successfully",
 }

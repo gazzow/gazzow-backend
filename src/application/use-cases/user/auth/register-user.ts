@@ -23,9 +23,7 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
   ) {}
 
   // Store user temp info in redis
-  async execute(
-    userData: ITempUserData
-  ): Promise<{ success: boolean; message: string }> {
+  async execute(userData: ITempUserData): Promise<void> {
     // Check if the user exist or not
     const existingUser = await this._userRepository.findByEmail(userData.email);
 
@@ -39,6 +37,7 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
 
     // Generate Otp and store hashed otp in redis
     const otp = generateOtp();
+     logger.info(`Otp for register: [${otp}]`);
     const hashedOtp = await this._hashService.hash(otp);
 
     if (existingUser) {
@@ -75,11 +74,6 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
         emailContent
       );
     }
-
-    return {
-      success: true,
-      message: `You will receive a verification code shortly. Please check your email.[${otp}]`,
-    };
   }
 }
 

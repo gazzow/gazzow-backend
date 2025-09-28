@@ -24,9 +24,7 @@ export class GetUserUseCase implements IGetUserUseCase {
     const user = this._userMapper.toPublicDTO(userDoc);
 
     return {
-      success: true,
-      user,
-      message: "User data retrieved!",
+      data: user,
     };
   }
 }

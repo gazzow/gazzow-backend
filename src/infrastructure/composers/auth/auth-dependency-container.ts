@@ -118,7 +118,8 @@ export class AuthDependencyContainer {
       this.createOtpStore(),
       this.createHashService(),
       this.createUserRepository(),
-      this.createAuthService()
+      this.createAuthService(),
+      this.createUserMapper()
     );
   }
 
@@ -175,7 +176,7 @@ export class AuthDependencyContainer {
       this.createVerifyUC(),
       this.createResetPasswordUC(),
       this.createRefreshAccessTokenUC(),
-      this.createGoogleCallbackUC(),
+      this.createGoogleCallbackUC()
     );
   }
 
