@@ -18,13 +18,10 @@ export class UserManagementController {
   listUsers = async (req: Request, res: Response, next: NextFunction) => {
     logger.debug("admin user management list all users api 🚀");
     try {
-      const { skip, limit } = req.query;
-
-      const { data, pagination } = await this._listUserUseCase.execute({
-        skip: Number(skip),
-        limit: Number(limit),
-      });
-      logger.info(`response result: ${data}`);
+      const { data, pagination } = await this._listUserUseCase.execute(
+        req.query
+      );
+      // logger.info(`response result: ${JSON.stringify(data)}`);
 
       res
         .status(HttpStatusCode.OK)
@@ -73,7 +70,7 @@ export class UserManagementController {
       }
       logger.debug(`user id: ${id}`);
 
-      const {data} = await this._getUserUseCase.execute(id);
+      const { data } = await this._getUserUseCase.execute(id);
 
       res
         .status(HttpStatusCode.OK)

@@ -1,6 +1,5 @@
-import type {
-  IUpdateProfileRequestDTO,
-} from "../../../domain/dtos/user.js";
+import type { IAdminListUsersRequestDTO } from "../../../domain/dtos/admin/admin.js";
+import type { IUpdateProfileRequestDTO } from "../../../domain/dtos/user.js";
 import type { ICreateUserInput } from "../../../domain/entities/user.js";
 import type { UserStatus } from "../../../domain/enums/user-role.js";
 import type { IUserDocument } from "../../../infrastructure/db/models/user-model.js";
@@ -15,11 +14,17 @@ export interface IUserRepository {
     userId: string,
     profileData: IUpdateProfileRequestDTO
   ): Promise<IUserDocument | null>;
-  findAll(query: {
-    filter?: Record<string, string>;
-    skip?: number;
-    limit?: number;
+  findAll({
+    filter,
+    sort,
+    skip,
+    limit,
+  }: {
+    skip: number;
+    limit: number;
+    filter: any;
+    sort?: any;
   }): Promise<IUserDocument[]>;
   updateStatus(id: string, status: UserStatus): Promise<IUserDocument | null>;
-  count (filter: Record<string, string >): Promise<number>
+  count(filter: Record<string, string>): Promise<number>;
 }

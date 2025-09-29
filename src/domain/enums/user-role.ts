@@ -12,3 +12,5 @@ export enum Provider {
   LOCAL = "local",
   GOOGLE = "google",
 }
+
+export type SortOrder = "asc" | "desc" | 1 | -1;
