@@ -22,8 +22,8 @@ export class LoginUserUseCase implements ILoginUserUseCase {
     const userDoc = await this._authService.checkUserExists(data.email);
     if (!userDoc) {
       throw new AppError(
-        ResponseMessages.UserNotFound,
-        HttpStatusCode.NOT_FOUND
+        ResponseMessages.LoginFailed,
+        HttpStatusCode.BAD_REQUEST
       );
     }
 
