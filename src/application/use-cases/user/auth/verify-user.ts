@@ -92,14 +92,6 @@ export class VerifyUserUseCase implements IVerifyUserUseCase {
     tempUserData: ITempUserData
   ): Promise<IUserPublic> {
     try {
-      // Check if user was created
-      const existingUser = await this._userRepository.findByEmail(
-        tempUserData.email
-      );
-      if (existingUser) {
-        throw new AppError("Account already exists. Please sign in instead.");
-      }
-
       // Create the user
       const userDoc = await this._userRepository.create({
         name: tempUserData.name,
@@ -113,12 +105,15 @@ export class VerifyUserUseCase implements IVerifyUserUseCase {
       return user;
     } catch (error) {
       if (error instanceof Error) {
-        // Handle specific database errors
         if (
+          error.message.includes("E11000") ||
           error.message.includes("duplicate") ||
           error.message.includes("unique")
         ) {
-          throw new AppError("Account already exists. Please sign in instead.");
+          throw new AppError(
+            ResponseMessages.UserAlreadyExists,
+            HttpStatusCode.CONFLICT
+          );
         }
       }
       throw error;
