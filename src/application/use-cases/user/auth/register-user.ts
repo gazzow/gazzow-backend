@@ -6,6 +6,9 @@ import { generateOtp } from "../../../../infrastructure/utils/generate-otp.js";
 import type { IUserRepository } from "../../../interfaces/repository/user-repository.js";
 import logger from "../../../../utils/logger.js";
 import type { IRegisterUserUseCase } from "../../../interfaces/user/auth/register-user.js";
+import { AppError } from "../../../../utils/app-error.js";
+import { ResponseMessages } from "../../../../domain/enums/constants/response-messages.js";
+import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.js";
 
 export interface IOtpConfig {
   ttlSeconds: number;
@@ -47,6 +50,8 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
         this._otpConfig.emailSubject,
         "An account with this email already exists. If this wasn't you, please ignore this email."
       );
+
+      throw new AppError(ResponseMessages.UserAlreadyExists, HttpStatusCode.BAD_REQUEST)
     } else {
       const tempUserKey = `temp:user:${tempUserData.email}`;
       const otpKey = `otp:register:${tempUserData.email}`;

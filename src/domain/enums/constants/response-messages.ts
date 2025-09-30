@@ -13,6 +13,7 @@ export enum ResponseMessages {
 
   // User
   UserNotFound = "User not found",
+  UserAlreadyExists = "User already in use",
   UserRetrieved = "User retrieved successfully",
   UserCreated = "User created successfully",
   ProfileUpdated = "Profile updated successfully",
