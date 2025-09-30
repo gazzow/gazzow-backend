@@ -61,22 +61,6 @@ export class VerifyUserUseCase implements IVerifyUserUseCase {
     };
   }
 
-  private async verifyOtp(email: string, otp: string): Promise<void> {
-    const otpKey = `otp:register:${email}`;
-
-    const storedHashedOtp = await this._otpStore.get(otpKey);
-    if (!storedHashedOtp) {
-      throw new Error(
-        "Verification code has expired. Please request a new one."
-      );
-    }
-
-    const isValid = await this._passwordHash.compare(otp, storedHashedOtp);
-    if (!isValid) {
-      throw new Error("Invalid verification code. Please check and try again.");
-    }
-  } // Update this method - re-usable
-
   private async getTempUserData(email: string): Promise<ITempUserData> {
     const tempKey = `temp:user:${email}`;
     const tempPayload = await this._otpStore.get(tempKey);

@@ -2,7 +2,6 @@ import type { NextFunction, Request, Response } from "express";
 import { env } from "../../../infrastructure/config/env.js";
 import logger from "../../../utils/logger.js";
 import { AppError } from "../../../utils/app-error.js";
-import { UserStatus } from "../../../domain/enums/user-role.js";
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
 import type { IRegisterUserUseCase } from "../../../application/interfaces/user/auth/register-user.js";
