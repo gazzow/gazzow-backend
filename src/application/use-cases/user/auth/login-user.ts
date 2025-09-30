@@ -9,6 +9,7 @@ import type { IUserMapper } from "../../../mappers/user/user.js";
 import type { IAuthService } from "../../../providers/auth-service.js";
 import type { ITokenPayload } from "../../../interfaces/jwt/jwt-payload.js";
 import type { ILoginUserUseCase } from "../../../interfaces/user/auth/login-user.js";
+import { UserStatus } from "../../../../domain/enums/user-role.js";
 
 export class LoginUserUseCase implements ILoginUserUseCase {
   constructor(
@@ -24,6 +25,10 @@ export class LoginUserUseCase implements ILoginUserUseCase {
         ResponseMessages.UserNotFound,
         HttpStatusCode.NOT_FOUND
       );
+    }
+
+    if(userDoc.status === UserStatus.BLOCKED){
+      throw new AppError(ResponseMessages.UserBlocked, HttpStatusCode.FORBIDDEN)
     }
 
     // Compare password

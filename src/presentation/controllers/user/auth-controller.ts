@@ -100,9 +100,6 @@ export class AuthController {
         secure: env.node_env,
       });
 
-      if (data.status === UserStatus.BLOCKED) {
-        throw new AppError("Access Denied: User is blocked", 403);
-      }
 
       res
         .status(HttpStatusCode.OK)
