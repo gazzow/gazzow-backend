@@ -1,4 +1,3 @@
-import { generateOtp } from "../../../../infrastructure/utils/generate-otp.js";
 import logger from "../../../../utils/logger.js";
 import type { IForgotPasswordUseCase } from "../../../interfaces/user/auth/forgot-password.js";
 import type { IAuthService } from "../../../providers/auth-service.js";
@@ -25,7 +24,7 @@ export class ForgotPasswordUseCase implements IForgotPasswordUseCase {
     // Check if the user exists
     const userDoc = await this._authService.checkUserExists(email);
 
-    const otp = generateOtp();
+    const otp = this._authService.generateOtp();
     logger.info(`Otp for forgot password: [${otp}]`);
 
     if (userDoc) {

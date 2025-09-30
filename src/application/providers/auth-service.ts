@@ -7,4 +7,5 @@ export interface IAuthService {
   verifyOtp(email: string, otp: string, purpose: string): Promise<void>;
   generateTokens(payload: ITokenPayload): Promise<[string, string]>;
   updatePassword(userId: string, hashedPassword: string): Promise<void | null>;
+  generateOtp(): string;
 }

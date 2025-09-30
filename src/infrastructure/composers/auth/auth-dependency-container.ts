@@ -109,6 +109,7 @@ export class AuthDependencyContainer {
       this.createEmailService(),
       this.createHashService(),
       this.createUserRepository(),
+      this.createAuthService(),
       otpConfig
     );
   }

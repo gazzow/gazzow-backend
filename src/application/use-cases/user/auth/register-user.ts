@@ -2,13 +2,13 @@ import type { IEmailService } from "../../../providers/email-service.js";
 import type { IOtpStore } from "../../../providers/otp-service.js";
 import type { IHashService } from "../../../providers/hash-service.js";
 import type { ITempUserData } from "../../../../domain/entities/user.js";
-import { generateOtp } from "../../../../infrastructure/utils/generate-otp.js";
 import type { IUserRepository } from "../../../interfaces/repository/user-repository.js";
 import logger from "../../../../utils/logger.js";
 import type { IRegisterUserUseCase } from "../../../interfaces/user/auth/register-user.js";
 import { AppError } from "../../../../utils/app-error.js";
 import { ResponseMessages } from "../../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.js";
+import type { IAuthService } from "../../../providers/auth-service.js";
 
 export interface IOtpConfig {
   ttlSeconds: number;
@@ -22,7 +22,8 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
     private _emailService: IEmailService,
     private _hashService: IHashService,
     private _userRepository: IUserRepository,
-    private _otpConfig: IOtpConfig
+    private _authService: IAuthService,
+    private _otpConfig: IOtpConfig,
   ) {}
 
   // Store user temp info in redis
@@ -39,7 +40,7 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
     };
 
     // Generate Otp and store hashed otp in redis
-    const otp = generateOtp();
+    const otp = this._authService.generateOtp();
      logger.info(`Otp for register: [${otp}]`);
     const hashedOtp = await this._hashService.hash(otp);
 
@@ -82,31 +83,3 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
   }
 }
 
-// dependency injection with factory function
-export class StoreTempUserAndSentOtpUCFactory {
-  static create(
-    otpStore: IOtpStore,
-    emailService: IEmailService,
-    hashService: IHashService,
-    userRepository: IUserRepository,
-    config: {
-      otpTtlSeconds: number;
-      emailSubject: string;
-    }
-  ): IRegisterUserUseCase {
-    const otpConfig: IOtpConfig = {
-      ttlSeconds: config.otpTtlSeconds,
-      emailSubject: config.emailSubject,
-      emailTemplate: (otp: string, expiryMinutes: number) =>
-        `Your Gazzow verification code is: ${otp}\n\nThis code expires in ${expiryMinutes} minutes.\n\nIf you didn't request this, please ignore this email.`,
-    };
-
-    return new RegisterUserUseCase(
-      otpStore,
-      emailService,
-      hashService,
-      userRepository,
-      otpConfig
-    );
-  }
-}

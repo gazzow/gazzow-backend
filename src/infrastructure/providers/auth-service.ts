@@ -62,4 +62,13 @@ export class AuthService implements IAuthService {
   ): Promise<void | null> {
     return this._userRepository.updatePassword(email, hashedPassword);
   }
+
+  generateOtp(): string {
+    const length = 6;
+    const max = 10 ** length;
+    return Math.floor(Math.random() * max)
+      .toString()
+      .padStart(length, "0");
+  }
+  
 }
