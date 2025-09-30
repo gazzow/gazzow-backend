@@ -56,7 +56,6 @@ export class UserController {
         "learningGoals",
         "experience",
         "developerRole",
-        "provider",
         "imageUrl",
       ];
 

@@ -1,5 +1,5 @@
 import type { IUserPublic } from "../../entities/user.js";
-import type { UserRole, UserStatus } from "../../enums/user-role.js";
+import type { UserRole, UserStatus, SortOrder } from "../../enums/user-role.js";
 
 export interface IAdminDTO {
   id: string;
@@ -20,7 +20,11 @@ export interface IAdminLoginResponseDTO {
 }
 
 export interface IAdminListUsersRequestDTO {
-  filter?: Record<string, string>;
+  search?: string;
+  status?: string;
+  role?: string;
+  sortField?: string;
+  sortOrder?: "asc" | "desc";
   skip?: number;
   limit?: number;
 }

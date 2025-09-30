@@ -52,13 +52,23 @@ export class UserRepository
     return updatedUserDoc;
   }
 
-  async findAll(query: {
-    filter?: Record<string, string>;
-    skip?: number;
-    limit?: number;
+  async findAll({
+    filter,
+    sort,
+    skip,
+    limit,
+  }: {
+    skip: number;
+    limit: number;
+    filter: any;
+    sort?: any;
   }): Promise<IUserDocument[]> {
-    const { filter = {}, skip = 0, limit = 6 } = query;
-    return await this.model.find(filter).skip(skip).limit(limit);
+    return this.model
+      .find(filter)
+      .skip(skip || 0)
+      .limit(limit || 6)
+      .sort(sort)
+      .exec();
   }
 
   count(filter: Record<string, string> = {}): Promise<number> {

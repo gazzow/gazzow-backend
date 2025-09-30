@@ -17,16 +17,50 @@ export class ListUsersUseCase implements IListUsersUseCase {
   execute = async (
     query: IAdminListUsersRequestDTO
   ): Promise<IAdminListUsersResponseDTO> => {
-    const { skip = 0, limit = 6 } = query;
-    logger.debug(`List user query: ${query}`);
+    logger.debug(`List user query: ${JSON.stringify(query)}`);
+    const {
+      skip = 0,
+      limit = 6,
+      search,
+      status,
+      role,
+      sortField,
+      sortOrder,
+    } = query;
+
+    const dbFilter: any = { role: UserRole.USER };
+
+    if(search){
+      dbFilter.$or = [
+        {name: {$regex: search, $options: "i"}},
+        {email: {$regex: search, $options: "i"}}
+      ]
+    }
+
+    if (status) dbFilter.status = status;
+    if (role) dbFilter.role = role;
+
+    const sortQuery: any = {};
+    if (sortField) {
+      sortQuery[sortField] = sortOrder === "asc" ? 1 : -1;
+    } else {
+      sortQuery.createdAt = -1;
+    }
+
+    logger.debug(`filter query: ${JSON.stringify(dbFilter)}`);
+    logger.debug(`sort query: ${JSON.stringify(sortQuery)}`);
+
+    // Fetch users
     const usersDoc = await this._userRepository.findAll({
-      filter: { role: UserRole.USER },
+      filter: dbFilter,
       skip,
       limit,
+      sort: sortQuery,
     });
-    const total = await this._userRepository.count({ role: UserRole.USER });
 
-    // logger.debug(`users list: ${users}`);
+    // Use SAME filter for count
+    const total = await this._userRepository.count(dbFilter);
+
     const users = this._usersMapper.toPublicUsersDTO(usersDoc);
 
     return {
