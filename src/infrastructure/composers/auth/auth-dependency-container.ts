@@ -117,7 +117,6 @@ export class AuthDependencyContainer {
   createVerifyUserUC(): IVerifyUserUseCase {
     return new VerifyUserUseCase(
       this.createOtpStore(),
-      this.createHashService(),
       this.createUserRepository(),
       this.createAuthService(),
       this.createUserMapper()

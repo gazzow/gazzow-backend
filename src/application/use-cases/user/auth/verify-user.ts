@@ -6,7 +6,6 @@ import type {
 import { UserRole } from "../../../../domain/enums/user-role.js";
 import type { IUserRepository } from "../../../interfaces/repository/user-repository.js";
 import type { IOtpStore } from "../../../providers/otp-service.js";
-import type { IHashService } from "../../../providers/hash-service.js";
 import logger from "../../../../utils/logger.js";
 import type { IAuthService } from "../../../providers/auth-service.js";
 import type { ITokenPayload } from "../../../interfaces/jwt/jwt-payload.js";
@@ -19,7 +18,6 @@ import type { IUserMapper } from "../../../mappers/user/user.js";
 export class VerifyUserUseCase implements IVerifyUserUseCase {
   constructor(
     private _otpStore: IOtpStore,
-    private _passwordHash: IHashService,
     private _userRepository: IUserRepository,
     private _authService: IAuthService,
     private _userMapper: IUserMapper
