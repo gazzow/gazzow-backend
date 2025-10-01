@@ -24,8 +24,8 @@ passport.use(
     async (_accessToken, _refreshToken, profile, done) => {
       logger.debug("google auth api got hit");
       try {
-        const user = await googleAuthUseCase.execute(profile);
-        done(null, user);
+        const result = await googleAuthUseCase.execute(profile);
+        done(null, {...result.data, isNewUser: result.isNewUser});
       } catch (err) {
         done(err, undefined);
       }

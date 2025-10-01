@@ -99,7 +99,6 @@ export class AuthController {
         secure: env.node_env,
       });
 
-
       res
         .status(HttpStatusCode.OK)
         .json(ApiResponse.success(ResponseMessages.LoginSuccess, data));
@@ -219,7 +218,7 @@ export class AuthController {
   googleCallback = async (req: Request, res: Response) => {
     const user = req.user as IUser;
 
-    const { accessToken, refreshToken } =
+    const { accessToken, refreshToken, data } =
       await this._googleCallbackUseCase.execute(user);
 
     res.cookie("accessToken", accessToken, {
@@ -236,6 +235,8 @@ export class AuthController {
       secure: env.node_env,
     });
 
-    res.status(HttpStatusCode.OK).redirect(`${env.base_url}/success`);
+    res
+      .status(HttpStatusCode.OK)
+      .redirect(`${env.base_url}/success?isNewUser=${data.isNewUser}`);
   };
 }
