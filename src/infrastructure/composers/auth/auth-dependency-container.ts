@@ -37,6 +37,8 @@ import { VerifyToken } from "../../../presentation/middleware/user/verify-token.
 import { UserModel } from "../../db/models/user-model.js";
 import type { IGoogleCallbackUseCase } from "../../../application/interfaces/user/auth/google-callback.js";
 import { GoogleCallBackUseCase } from "../../../application/use-cases/user/auth/google-callback.js";
+import type { IResendOtpUseCase } from "../../../application/interfaces/user/auth/resend-otp.js";
+import { ResendOtpUseCase } from "../../../application/use-cases/user/auth/resend-otp.js";
 
 export interface IAppConfig {
   otpTtlSeconds: number;
@@ -158,6 +160,24 @@ export class AuthDependencyContainer {
     );
   }
 
+  createResendOtpUC(): IResendOtpUseCase {
+    const otpConfig = {
+      ttlSeconds: this.config.otpTtlSeconds,
+      emailSubject: this.config.emailSubject,
+      emailTemplate: (otp: string, expiryMinutes: number) =>
+        `Your verification code is: ${otp}\n\nThis code expires in ${expiryMinutes} minutes.`,
+    };
+
+    return new ResendOtpUseCase(
+      this.createUserRepository(),
+      this.createAuthService(),
+      this.createHashService(),
+      this.createEmailService(),
+      this.createOtpStore(),
+      otpConfig
+    );
+  }
+
   createRefreshAccessTokenUC = (): IRefreshAccessTokenUseCase => {
     return new RefreshAccessTokenUseCase(this.createTokenService());
   };
@@ -175,6 +195,7 @@ export class AuthDependencyContainer {
       this.createForgotUC(),
       this.createVerifyUC(),
       this.createResetPasswordUC(),
+      this.createResendOtpUC(),
       this.createRefreshAccessTokenUC(),
       this.createGoogleCallbackUC()
     );

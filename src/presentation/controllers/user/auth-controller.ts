@@ -14,6 +14,7 @@ import type { IRefreshAccessTokenUseCase } from "../../../application/interfaces
 import type { IUser } from "../../../domain/entities/user.js";
 import type { IGoogleCallbackUseCase } from "../../../application/interfaces/user/auth/google-callback.js";
 import { ApiResponse } from "../../common/api-response.js";
+import type { IResendOtpUseCase } from "../../../application/interfaces/user/auth/resend-otp.js";
 
 export class AuthController {
   constructor(
@@ -23,6 +24,7 @@ export class AuthController {
     private _forgotPasswordUseCase: IForgotPasswordUseCase,
     private _verifyOtpUseCase: IVerifyOtpUseCase,
     private _resetPasswordUseCase: IResetPasswordUseCase,
+    private _resendOtpUseCase: IResendOtpUseCase,
     private _refreshAccessTokenUseCase: IRefreshAccessTokenUseCase,
     private _googleCallbackUseCase: IGoogleCallbackUseCase
   ) {}
@@ -164,6 +166,23 @@ export class AuthController {
       res
         .status(HttpStatusCode.OK)
         .json(ApiResponse.success(ResponseMessages.PasswordUpdatedSuccess));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  resendOtp = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { email, purpose } = req.body;
+
+      await this._resendOtpUseCase.execute({ email, purpose });
+      res
+        .status(HttpStatusCode.OK)
+        .json(
+          ApiResponse.success(
+            "OTP has been sent. Please check your email."
+          )
+        );
     } catch (error) {
       next(error);
     }
