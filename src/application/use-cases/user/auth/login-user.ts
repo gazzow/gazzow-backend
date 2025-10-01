@@ -1,7 +1,7 @@
 import type {
   ILoginRequestDTO,
   ILoginResponseDTO,
-} from "../../../../domain/dtos/user.js";
+} from "../../../dtos/user/user.js";
 import { AppError } from "../../../../utils/app-error.js";
 import { ResponseMessages } from "../../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.js";

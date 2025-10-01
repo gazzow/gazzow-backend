@@ -1,4 +1,4 @@
-import type { IGetUserResponseDTO } from "../../../../domain/dtos/admin/admin.js";
+import type { IGetUserResponseDTO } from "../../../dtos/admin/admin.js";
 import { ResponseMessages } from "../../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.js";
 import { AppError } from "../../../../utils/app-error.js";

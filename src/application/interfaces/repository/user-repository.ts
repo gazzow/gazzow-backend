@@ -1,5 +1,4 @@
-import type { IAdminListUsersRequestDTO } from "../../../domain/dtos/admin/admin.js";
-import type { IUpdateProfileRequestDTO } from "../../../domain/dtos/user.js";
+import type { IUpdateProfileRequestDTO } from "../../dtos/user/user.js";
 import type { ICreateUserInput } from "../../../domain/entities/user.js";
 import type { UserStatus } from "../../../domain/enums/user-role.js";
 import type { IUserDocument } from "../../../infrastructure/db/models/user-model.js";

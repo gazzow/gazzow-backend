@@ -1,7 +1,7 @@
 import type {
   IAdminListUsersRequestDTO,
   IAdminListUsersResponseDTO,
-} from "../../../../domain/dtos/admin/admin.js";
+} from "../../../dtos/admin/admin.js";
 import { UserRole } from "../../../../domain/enums/user-role.js";
 import logger from "../../../../utils/logger.js";
 import type { IListUsersUseCase } from "../../../interfaces/admin/users-management/list-users.js";

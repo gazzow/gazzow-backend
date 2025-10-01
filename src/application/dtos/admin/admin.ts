@@ -1,5 +1,5 @@
-import type { IUserPublic } from "../../entities/user.js";
-import type { UserRole, UserStatus, SortOrder } from "../../enums/user-role.js";
+import type { IUserPublic } from "../../../domain/entities/user.js";
+import type { UserRole, UserStatus } from "../../../domain/enums/user-role.js";
 
 export interface IAdminDTO {
   id: string;

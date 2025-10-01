@@ -1,7 +1,7 @@
 import type {
   IAdminLoginRequestDTO,
   IAdminLoginResponseDTO,
-} from "../../../../domain/dtos/admin/admin.js";
+} from "../../../dtos/admin/admin.js";
 import { ResponseMessages } from "../../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.js";
 import { AppError } from "../../../../utils/app-error.js";

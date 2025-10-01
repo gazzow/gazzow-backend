@@ -1,4 +1,4 @@
-import type { IAdminDTO } from "../../../domain/dtos/admin/admin.js";
+import type { IAdminDTO } from "../../dtos/admin/admin.js";
 import type { IUserDocument } from "../../../infrastructure/db/models/user-model.js";
 
 export interface IAdminMapper{

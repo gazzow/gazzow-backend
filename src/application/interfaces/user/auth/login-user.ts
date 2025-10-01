@@ -1,4 +1,4 @@
-import type { ILoginRequestDTO, ILoginResponseDTO } from "../../../../domain/dtos/user.js";
+import type { ILoginRequestDTO, ILoginResponseDTO } from "../../../dtos/user/user.js";
 
 export interface ILoginUserUseCase{
   execute(data: ILoginRequestDTO): Promise<ILoginResponseDTO>

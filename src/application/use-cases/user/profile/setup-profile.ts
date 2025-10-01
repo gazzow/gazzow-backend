@@ -1,7 +1,7 @@
 import type {
   IUpdateProfileRequestDTO,
   IUpdateProfileResponseDTO,
-} from "../../../../domain/dtos/user.js";
+} from "../../../dtos/user/user.js";
 import { ResponseMessages } from "../../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.js";
 import { AppError } from "../../../../utils/app-error.js";

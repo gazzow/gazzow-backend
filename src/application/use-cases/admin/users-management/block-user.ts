@@ -1,4 +1,4 @@
-import type { IUserBlockResponseDTO } from "../../../../domain/dtos/admin/admin.js";
+import type { IUserBlockResponseDTO } from "../../../dtos/admin/admin.js";
 import { ResponseMessages } from "../../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.js";
 import type { UserStatus } from "../../../../domain/enums/user-role.js";

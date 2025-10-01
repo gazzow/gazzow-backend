@@ -1,4 +1,4 @@
-import type { IUserPublicDTO } from "../../../domain/dtos/user.js";
+import type { IUserPublicDTO } from "../../dtos/user/user.js";
 import { Provider } from "../../../domain/enums/user-role.js";
 import type { IUserDocument } from "../../../infrastructure/db/models/user-model.js";
 

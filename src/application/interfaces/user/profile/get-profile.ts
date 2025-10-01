@@ -1,4 +1,4 @@
-import type { IGetUserProfileResponseDTO } from "../../../../domain/dtos/user.js";
+import type { IGetUserProfileResponseDTO } from "../../../dtos/user/user.js";
 
 export interface IGetUserProfileUseCase {
   execute(id: string): Promise<IGetUserProfileResponseDTO>;

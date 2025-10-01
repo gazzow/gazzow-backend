@@ -1,4 +1,4 @@
-import type { Provider, UserRole, UserStatus } from "../enums/user-role.js";
+import type { Provider, UserRole, UserStatus } from "../../../domain/enums/user-role.js";
 
 export interface IUserPublicDTO {
   id: string;

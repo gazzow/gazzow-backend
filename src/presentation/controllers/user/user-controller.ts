@@ -6,7 +6,7 @@ import type { IGetUserProfileUseCase } from "../../../application/interfaces/use
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
 import { pickAllowedFields } from "../../../infrastructure/utils/pick-allowed-fields.js";
-import type { IUpdateProfileRequestDTO } from "../../../domain/dtos/user.js";
+import type { IUpdateProfileRequestDTO } from "../../../application/dtos/user/user.js";
 import { ApiResponse } from "../../common/api-response.js";
 
 export class UserController {

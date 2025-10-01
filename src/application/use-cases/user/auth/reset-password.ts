@@ -1,6 +1,6 @@
 import type {
   IResetPasswordRequestDTO,
-} from "../../../../domain/dtos/user.js";
+} from "../../../dtos/user/user.js";
 import type { AuthService } from "../../../../infrastructure/providers/auth-service.js";
 import type { HashService } from "../../../../infrastructure/providers/hash-service.js";
 import logger from "../../../../utils/logger.js";

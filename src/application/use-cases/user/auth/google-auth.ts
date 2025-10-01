@@ -1,5 +1,4 @@
-// application/use-cases/Auth/GoogleAuthUseCase.ts
-import type { IUserPublicDTO } from "../../../../domain/dtos/user.js";
+import type { IUserPublicDTO } from "../../../dtos/user/user.js";
 import type { IUserRepository } from "../../../interfaces/repository/user-repository.js";
 import type { IGoogleAuthUseCase } from "../../../interfaces/user/auth/google-auth.js";
 import type { IUserMapper } from "../../../mappers/user/user.js";

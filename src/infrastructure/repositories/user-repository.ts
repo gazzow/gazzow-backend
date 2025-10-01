@@ -1,6 +1,6 @@
 import type { Model } from "mongoose";
 import type { IUserRepository } from "../../application/interfaces/repository/user-repository.js";
-import type { IUpdateProfileRequestDTO } from "../../domain/dtos/user.js";
+import type { IUpdateProfileRequestDTO } from "../../application/dtos/user/user.js";
 import type { ICreateUserInput } from "../../domain/entities/user.js";
 import type { UserStatus } from "../../domain/enums/user-role.js";
 import type { IUserDocument } from "../db/models/user-model.js";
