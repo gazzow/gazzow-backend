@@ -15,12 +15,12 @@ export class BlockUserUseCase implements IBlockUserUseCase {
   ) {}
 
   async execute(
-    id: string,
+    userId: string,
     status: UserStatus
   ): Promise<IUserBlockResponseDTO> {
     logger.debug("blocker user uc start process request");
 
-    const updatedUserDoc = await this._userRepository.updateStatus(id, status);
+    const updatedUserDoc = await this._userRepository.updateStatus(userId, status);
     if (!updatedUserDoc) {
       logger.debug('User not found on block user uc')
       throw new AppError(

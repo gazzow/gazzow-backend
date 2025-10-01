@@ -12,8 +12,8 @@ export class GetUserUseCase implements IGetUserUseCase {
     private _userMapper: IUserMapper
   ) {}
 
-  async execute(id: string): Promise<IGetUserResponseDTO> {
-    const userDoc = await this._userRepository.findById(id);
+  async execute(userId: string): Promise<IGetUserResponseDTO> {
+    const userDoc = await this._userRepository.findById(userId);
     if (!userDoc) {
       throw new AppError(
         ResponseMessages.UserNotFound,

@@ -1,15 +1,15 @@
 import type {
   IResetPasswordRequestDTO,
 } from "../../../dtos/user/user.js";
-import type { AuthService } from "../../../../infrastructure/providers/auth-service.js";
-import type { HashService } from "../../../../infrastructure/providers/hash-service.js";
 import logger from "../../../../utils/logger.js";
 import type { IResetPasswordUseCase } from "../../../interfaces/user/auth/reset-password.js";
+import type { IHashService } from "../../../providers/hash-service.js";
+import type { IAuthService } from "../../../providers/auth-service.js";
 
 export class ResetPasswordUseCase implements IResetPasswordUseCase {
   constructor(
-    private _hashService: HashService,
-    private _authService: AuthService
+    private _hashService: IHashService,
+    private _authService: IAuthService,
   ) {}
 
   async execute(
