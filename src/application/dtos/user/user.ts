@@ -8,6 +8,7 @@ export interface IUserPublicDTO {
   status: UserStatus;
   googleId?: string;
   provider: Provider;
+  isNewUser?: boolean;
   bio?: string;
   techStacks?: string[];
   learningGoals?: string[];
@@ -70,4 +71,5 @@ export interface IGetUserProfileResponseDTO {
 
 export interface IGoogleAuthResponseDTO{
   data: IUserPublicDTO,
+  isNewUser: boolean,
 }

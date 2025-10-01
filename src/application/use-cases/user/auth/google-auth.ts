@@ -1,4 +1,4 @@
-import type { IUserPublicDTO } from "../../../dtos/user/user.js";
+import type { IGoogleAuthResponseDTO, IUserPublicDTO } from "../../../dtos/user/user.js";
 import type { IUserRepository } from "../../../interfaces/repository/user-repository.js";
 import type { IGoogleAuthUseCase } from "../../../interfaces/user/auth/google-auth.js";
 import type { IUserMapper } from "../../../mappers/user/user.js";
@@ -12,8 +12,9 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
     private _userMapper: IUserMapper
   ) {}
 
-  async execute(profile: Profile): Promise<IUserPublicDTO> {
+  async execute(profile: Profile): Promise<IGoogleAuthResponseDTO> {
     let userDoc = await this._userRepository.findByGoogleId(profile.id);
+    let isNewUser: boolean = false
 
     if (!profile.emails?.[0]?.value) {
       throw new AppError("Google profile does not have email");
@@ -30,8 +31,12 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
         imageUrl: profile.photos?.[0].value,
         provider: Provider.GOOGLE,
       });
+      isNewUser = true
     }
     const user = this._userMapper.toPublicDTO(userDoc);
-    return user;
+    return {
+      data: user,
+      isNewUser,
+    }
   }
 }
