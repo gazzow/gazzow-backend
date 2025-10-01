@@ -1,4 +1,5 @@
 import type { Provider, UserRole, UserStatus } from "../../../domain/enums/user-role.js";
+import type { OtpPurpose } from "../../../domain/types/auth.js";
 
 export interface IUserPublicDTO {
   id: string;
@@ -39,7 +40,10 @@ export interface IVerifyOtpRequestDTO {
   otp: string;
 }
 
-
+export interface IResendOtpRequestDTO{
+  email: string;
+  purpose: OtpPurpose;
+}
 
 export interface IResetPasswordRequestDTO {
   email: string;

@@ -20,6 +20,7 @@ userRouter.post("/auth/login", authController.login);
 userRouter.post("/auth/forgot-password", authController.forgotPassword);
 userRouter.post("/auth/forgot-password/verify-otp", authController.verifyOtp);
 userRouter.put("/auth/reset-password", authController.resetPassword);
+userRouter.post("/auth/resend-otp", authController.resendOtp)
 
 userRouter.post("/auth/refresh", authController.refreshAccessToken);
 
