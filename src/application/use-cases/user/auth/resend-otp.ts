@@ -3,7 +3,7 @@ import type { IResendOtpRequestDTO } from "../../../dtos/user/user.js";
 import type { IUserRepository } from "../../../interfaces/repository/user-repository.js";
 import type {
   IResendOtpUseCase,
-} from "../../../interfaces/user/auth/resend-otp.js";
+} from "../../../interfaces/usecase/user/auth/resend-otp.js";
 
 import type { IAuthService } from "../../../providers/auth-service.js";
 import type { IEmailService } from "../../../providers/email-service.js";

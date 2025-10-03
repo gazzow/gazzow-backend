@@ -1,8 +1,8 @@
 import type { NextFunction, Request, Response } from "express";
 import logger from "../../../utils/logger.js";
-import type { IListUsersUseCase } from "../../../application/interfaces/admin/users-management/list-users.js";
-import type { IBlockUserUseCase } from "../../../application/interfaces/admin/users-management/block-user.js";
-import type { IGetUserUseCase } from "../../../application/interfaces/admin/users-management/get-user.js";
+import type { IListUsersUseCase } from "../../../application/interfaces/usecase/admin/users-management/list-users.js";
+import type { IBlockUserUseCase } from "../../../application/interfaces/usecase/admin/users-management/block-user.js";
+import type { IGetUserUseCase } from "../../../application/interfaces/usecase/admin/users-management/get-user.js";
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
 import { AppError } from "../../../utils/app-error.js";
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";

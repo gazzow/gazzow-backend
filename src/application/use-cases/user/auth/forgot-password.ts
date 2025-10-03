@@ -1,5 +1,5 @@
 import logger from "../../../../utils/logger.js";
-import type { IForgotPasswordUseCase } from "../../../interfaces/user/auth/forgot-password.js";
+import type { IForgotPasswordUseCase } from "../../../interfaces/usecase/user/auth/forgot-password.js";
 import type { IAuthService } from "../../../providers/auth-service.js";
 import type { IEmailService } from "../../../providers/email-service.js";
 import type { IHashService } from "../../../providers/hash-service.js";

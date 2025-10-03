@@ -2,11 +2,15 @@ export enum ResponseMessages {
   // Auth
   LoginSuccess = "Login successful",
   LoginFailed = "Invalid email or password",
-  Unauthorized = "Unauthorized: No token provided",
-  NoRefreshToken = "Unauthorized: No refresh token provided",
-  InvalidRefreshToken = "Unauthorized: Invalid refresh token",
-  AccessTokenRefreshed = "New access token generated successfully",
   LogoutSuccess = "Logged out successfully",
+  Unauthorized = "Unauthorized: No token provided",
+
+  // JWT Token
+  NoRefreshToken = "Unauthorized: No refresh token provided",
+  AccessTokenRefreshed = "New access token generated successfully",
+  InvalidRefreshToken = "Unauthorized: Invalid refresh token",
+
+  // OTP
   OtpVerified = "OTP verified",
   InvalidVerificationCode = "Invalid verification code",
   VerificationCodeExpired = "Verification code has expired",
@@ -20,6 +24,7 @@ export enum ResponseMessages {
   UserBlocked = "User has been blocked",
   UserStatusUpdated = "User status updated",
   PasswordUpdatedSuccess = "Password updated successfully",
+  FetchedUsers = "Users fetched successfully",
 
   // System
   Forbidden = "Access denied",
@@ -28,5 +33,8 @@ export enum ResponseMessages {
 
   // Admin
   AdminNotFound = "Admin not found",
-  FetchedUsers = "Users fetched successfully",
+
+  // Project
+  ProjectCreated = "Project created successfully",
+  FetchedProjects = "Projects fetched successfully",
 }

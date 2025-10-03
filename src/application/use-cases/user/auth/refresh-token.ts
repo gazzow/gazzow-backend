@@ -4,7 +4,7 @@ import { ResponseMessages } from "../../../../domain/enums/constants/response-me
 import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.js";
 import type { ITokenService } from "../../../providers/token-service.js";
 import type { ITokenPayload } from "../../../interfaces/jwt/jwt-payload.js";
-import type { IRefreshAccessTokenUseCase } from "../../../interfaces/user/auth/refresh-token.js";
+import type { IRefreshAccessTokenUseCase } from "../../../interfaces/usecase/user/auth/refresh-token.js";
 
 export class RefreshAccessTokenUseCase implements IRefreshAccessTokenUseCase {
   constructor(private _tokenService: ITokenService) {}

@@ -9,7 +9,7 @@ import type { IOtpStore } from "../../../providers/otp-service.js";
 import logger from "../../../../utils/logger.js";
 import type { IAuthService } from "../../../providers/auth-service.js";
 import type { ITokenPayload } from "../../../interfaces/jwt/jwt-payload.js";
-import type { IVerifyUserUseCase } from "../../../interfaces/user/auth/verify-user.js";
+import type { IVerifyUserUseCase } from "../../../interfaces/usecase/user/auth/verify-user.js";
 import { AppError } from "../../../../utils/app-error.js";
 import { ResponseMessages } from "../../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.js";

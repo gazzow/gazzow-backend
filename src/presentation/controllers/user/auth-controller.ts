@@ -4,17 +4,17 @@ import logger from "../../../utils/logger.js";
 import { AppError } from "../../../utils/app-error.js";
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
-import type { IRegisterUserUseCase } from "../../../application/interfaces/user/auth/register-user.js";
-import type { IVerifyUserUseCase } from "../../../application/interfaces/user/auth/verify-user.js";
-import type { ILoginUserUseCase } from "../../../application/interfaces/user/auth/login-user.js";
-import type { IForgotPasswordUseCase } from "../../../application/interfaces/user/auth/forgot-password.js";
-import type { IVerifyOtpUseCase } from "../../../application/interfaces/user/auth/verify-otp.js";
-import type { IResetPasswordUseCase } from "../../../application/interfaces/user/auth/reset-password.js";
-import type { IRefreshAccessTokenUseCase } from "../../../application/interfaces/user/auth/refresh-token.js";
+import type { IRegisterUserUseCase } from "../../../application/interfaces/usecase/user/auth/register-user.js";
+import type { IVerifyUserUseCase } from "../../../application/interfaces/usecase/user/auth/verify-user.js";
+import type { ILoginUserUseCase } from "../../../application/interfaces/usecase/user/auth/login-user.js";
+import type { IForgotPasswordUseCase } from "../../../application/interfaces/usecase/user/auth/forgot-password.js";
+import type { IVerifyOtpUseCase } from "../../../application/interfaces/usecase/user/auth/verify-otp.js";
+import type { IResetPasswordUseCase } from "../../../application/interfaces/usecase/user/auth/reset-password.js";
+import type { IRefreshAccessTokenUseCase } from "../../../application/interfaces/usecase/user/auth/refresh-token.js";
 import type { IUser } from "../../../domain/entities/user.js";
-import type { IGoogleCallbackUseCase } from "../../../application/interfaces/user/auth/google-callback.js";
+import type { IGoogleCallbackUseCase } from "../../../application/interfaces/usecase/user/auth/google-callback.js";
 import { ApiResponse } from "../../common/api-response.js";
-import type { IResendOtpUseCase } from "../../../application/interfaces/user/auth/resend-otp.js";
+import type { IResendOtpUseCase } from "../../../application/interfaces/usecase/user/auth/resend-otp.js";
 
 export class AuthController {
   constructor(

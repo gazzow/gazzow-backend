@@ -4,7 +4,7 @@ import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.
 import type { UserStatus } from "../../../../domain/enums/user-role.js";
 import { AppError } from "../../../../utils/app-error.js";
 import logger from "../../../../utils/logger.js";
-import type { IBlockUserUseCase } from "../../../interfaces/admin/users-management/block-user.js";
+import type { IBlockUserUseCase } from "../../../interfaces/usecase/admin/users-management/block-user.js";
 import type { IUserRepository } from "../../../interfaces/repository/user-repository.js";
 import type { IUserMapper } from "../../../mappers/user/user.js";
 

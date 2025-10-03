@@ -1,4 +1,4 @@
-import type { ITempUserData } from "../../../../domain/entities/user.js";
+import type { ITempUserData } from "../../../../../domain/entities/user.js";
 
 export interface IRegisterUserUseCase {
   execute(

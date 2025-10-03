@@ -1,7 +1,7 @@
 import type {
   IVerifyOtpRequestDTO,
 } from "../../../dtos/user/user.js";
-import type { IVerifyOtpUseCase } from "../../../interfaces/user/auth/verify-otp.js";
+import type { IVerifyOtpUseCase } from "../../../interfaces/usecase/user/auth/verify-otp.js";
 import type { IAuthService } from "../../../providers/auth-service.js";
 
 export class VerifyOtpUseCase implements IVerifyOtpUseCase {

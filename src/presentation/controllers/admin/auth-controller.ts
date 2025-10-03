@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import logger from "../../../utils/logger.js";
 import { env } from "../../../infrastructure/config/env.js";
-import type { IAdminLoginUseCase } from "../../../application/interfaces/admin/auth/login.js";
+import type { IAdminLoginUseCase } from "../../../application/interfaces/usecase/admin/auth/login.js";
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
 import { ApiResponse } from "../../common/api-response.js";
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";

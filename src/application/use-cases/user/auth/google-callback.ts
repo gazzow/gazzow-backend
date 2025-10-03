@@ -3,7 +3,7 @@ import type {
   IUserPublicDTO,
 } from "../../../dtos/user/user.js";
 import type { ITokenPayload } from "../../../interfaces/jwt/jwt-payload.js";
-import type { IGoogleCallbackUseCase } from "../../../interfaces/user/auth/google-callback.js";
+import type { IGoogleCallbackUseCase } from "../../../interfaces/usecase/user/auth/google-callback.js";
 import type { IAuthService } from "../../../providers/auth-service.js";
 
 export class GoogleCallBackUseCase implements IGoogleCallbackUseCase {
