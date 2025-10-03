@@ -1,11 +1,28 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
-import type { IUserWithPassword } from "../../../domain/entities/user.js";
-import { Provider, UserRole, UserStatus } from "../../../domain/enums/user-role.js";
+import {
+  Provider,
+  UserRole,
+  UserStatus,
+} from "../../../domain/enums/user-role.js";
 
-export type IUserDocument = Document &
-  IUserWithPassword & {
-    _id: Types.ObjectId;
-  };
+export type IUserDocument = Document & {
+  _id: Types.ObjectId;
+  name: string;
+  email: string;
+  role: UserRole;
+  status: UserStatus;
+  password: string;
+  googleId?: string;
+  provider: Provider;
+  bio?: string;
+  developerRole?: string;
+  imageUrl?: string;
+  experience?: string;
+  techStacks?: string[];
+  learningGoals?: string[];
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 const userSchema = new Schema<IUserDocument>(
   {

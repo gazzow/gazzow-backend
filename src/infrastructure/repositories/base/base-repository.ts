@@ -1,7 +1,7 @@
-import type { Document, Model } from "mongoose";
+import type { Model } from "mongoose";
 import type { IBaseRepository } from "../../../application/interfaces/repository/base-repository.js";
 
-export class BaseRepository<T extends Document> implements IBaseRepository<T> {
+export class BaseRepository<T> implements IBaseRepository<T> {
   constructor(protected model: Model<T>) {}
 
   async create(data: Partial<T>): Promise<T> {

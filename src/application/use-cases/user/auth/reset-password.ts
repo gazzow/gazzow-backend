@@ -2,7 +2,7 @@ import type {
   IResetPasswordRequestDTO,
 } from "../../../dtos/user/user.js";
 import logger from "../../../../utils/logger.js";
-import type { IResetPasswordUseCase } from "../../../interfaces/user/auth/reset-password.js";
+import type { IResetPasswordUseCase } from "../../../interfaces/usecase/user/auth/reset-password.js";
 import type { IHashService } from "../../../providers/hash-service.js";
 import type { IAuthService } from "../../../providers/auth-service.js";
 

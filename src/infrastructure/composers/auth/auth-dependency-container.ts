@@ -19,25 +19,25 @@ import {
 } from "../../../presentation/middleware/user/check-blocked-user.js";
 import type { IUserRepository } from "../../../application/interfaces/repository/user-repository.js";
 import { UserRepository } from "../../repositories/user-repository.js";
-import type { IRegisterUserUseCase } from "../../../application/interfaces/user/auth/register-user.js";
+import type { IRegisterUserUseCase } from "../../../application/interfaces/usecase/user/auth/register-user.js";
 import { RegisterUserUseCase } from "../../../application/use-cases/user/auth/register-user.js";
-import type { IVerifyUserUseCase } from "../../../application/interfaces/user/auth/verify-user.js";
+import type { IVerifyUserUseCase } from "../../../application/interfaces/usecase/user/auth/verify-user.js";
 import { VerifyUserUseCase } from "../../../application/use-cases/user/auth/verify-user.js";
-import type { ILoginUserUseCase } from "../../../application/interfaces/user/auth/login-user.js";
+import type { ILoginUserUseCase } from "../../../application/interfaces/usecase/user/auth/login-user.js";
 import { LoginUserUseCase } from "../../../application/use-cases/user/auth/login-user.js";
-import type { IForgotPasswordUseCase } from "../../../application/interfaces/user/auth/forgot-password.js";
+import type { IForgotPasswordUseCase } from "../../../application/interfaces/usecase/user/auth/forgot-password.js";
 import { ForgotPasswordUseCase } from "../../../application/use-cases/user/auth/forgot-password.js";
-import type { IVerifyOtpUseCase } from "../../../application/interfaces/user/auth/verify-otp.js";
+import type { IVerifyOtpUseCase } from "../../../application/interfaces/usecase/user/auth/verify-otp.js";
 import { VerifyOtpUseCase } from "../../../application/use-cases/user/auth/verify-otp.js";
-import type { IResetPasswordUseCase } from "../../../application/interfaces/user/auth/reset-password.js";
+import type { IResetPasswordUseCase } from "../../../application/interfaces/usecase/user/auth/reset-password.js";
 import { ResetPasswordUseCase } from "../../../application/use-cases/user/auth/reset-password.js";
 import { RefreshAccessTokenUseCase } from "../../../application/use-cases/user/auth/refresh-token.js";
-import type { IRefreshAccessTokenUseCase } from "../../../application/interfaces/user/auth/refresh-token.js";
+import type { IRefreshAccessTokenUseCase } from "../../../application/interfaces/usecase/user/auth/refresh-token.js";
 import { VerifyToken } from "../../../presentation/middleware/user/verify-token.js";
 import { UserModel } from "../../db/models/user-model.js";
-import type { IGoogleCallbackUseCase } from "../../../application/interfaces/user/auth/google-callback.js";
+import type { IGoogleCallbackUseCase } from "../../../application/interfaces/usecase/user/auth/google-callback.js";
 import { GoogleCallBackUseCase } from "../../../application/use-cases/user/auth/google-callback.js";
-import type { IResendOtpUseCase } from "../../../application/interfaces/user/auth/resend-otp.js";
+import type { IResendOtpUseCase } from "../../../application/interfaces/usecase/user/auth/resend-otp.js";
 import { ResendOtpUseCase } from "../../../application/use-cases/user/auth/resend-otp.js";
 
 export interface IAppConfig {

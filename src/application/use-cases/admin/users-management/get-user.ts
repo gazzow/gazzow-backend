@@ -2,7 +2,7 @@ import type { IGetUserResponseDTO } from "../../../dtos/admin/admin.js";
 import { ResponseMessages } from "../../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.js";
 import { AppError } from "../../../../utils/app-error.js";
-import type { IGetUserUseCase } from "../../../interfaces/admin/users-management/get-user.js";
+import type { IGetUserUseCase } from "../../../interfaces/usecase/admin/users-management/get-user.js";
 import type { IUserRepository } from "../../../interfaces/repository/user-repository.js";
 import type { IUserMapper } from "../../../mappers/user/user.js";
 

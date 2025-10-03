@@ -5,7 +5,7 @@ import type {
 import { ResponseMessages } from "../../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.js";
 import { AppError } from "../../../../utils/app-error.js";
-import type { IAdminLoginUseCase } from "../../../interfaces/admin/auth/login.js";
+import type { IAdminLoginUseCase } from "../../../interfaces/usecase/admin/auth/login.js";
 import type { ITokenPayload } from "../../../interfaces/jwt/jwt-payload.js";
 import type { IUserRepository } from "../../../interfaces/repository/user-repository.js";
 import type { IHashService } from "../../../providers/hash-service.js";

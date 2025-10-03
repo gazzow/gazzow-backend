@@ -4,7 +4,7 @@ import type { IHashService } from "../../../providers/hash-service.js";
 import type { ITempUserData } from "../../../../domain/entities/user.js";
 import type { IUserRepository } from "../../../interfaces/repository/user-repository.js";
 import logger from "../../../../utils/logger.js";
-import type { IRegisterUserUseCase } from "../../../interfaces/user/auth/register-user.js";
+import type { IRegisterUserUseCase } from "../../../interfaces/usecase/user/auth/register-user.js";
 import { AppError } from "../../../../utils/app-error.js";
 import { ResponseMessages } from "../../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.js";

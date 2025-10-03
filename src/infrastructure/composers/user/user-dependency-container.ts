@@ -9,9 +9,9 @@ import {
 import { SetupUserProfileUseCase } from "../../../application/use-cases/user/profile/setup-profile.js";
 import { UserRepository } from "../../repositories/user-repository.js";
 import { UserController } from "../../../presentation/controllers/user/user-controller.js";
-import type { IGetUserProfileUseCase } from "../../../application/interfaces/user/profile/get-profile.js";
+import type { IGetUserProfileUseCase } from "../../../application/interfaces/usecase/user/profile/get-profile.js";
 import type { IUserRepository } from "../../../application/interfaces/repository/user-repository.js";
-import type { IUpdateUserProfileUseCase } from "../../../application/interfaces/user/profile/setup-profile.js";
+import type { IUpdateUserProfileUseCase } from "../../../application/interfaces/usecase/user/profile/setup-profile.js";
 import { GetUserProfileUseCase } from "../../../application/use-cases/user/profile/get-profile.js";
 import { UserModel } from "../../db/models/user-model.js";
 

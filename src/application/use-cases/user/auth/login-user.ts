@@ -8,7 +8,7 @@ import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.
 import type { IUserMapper } from "../../../mappers/user/user.js";
 import type { IAuthService } from "../../../providers/auth-service.js";
 import type { ITokenPayload } from "../../../interfaces/jwt/jwt-payload.js";
-import type { ILoginUserUseCase } from "../../../interfaces/user/auth/login-user.js";
+import type { ILoginUserUseCase } from "../../../interfaces/usecase/user/auth/login-user.js";
 import { UserStatus } from "../../../../domain/enums/user-role.js";
 
 export class LoginUserUseCase implements ILoginUserUseCase {
