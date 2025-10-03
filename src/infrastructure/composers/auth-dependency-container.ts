@@ -1,44 +1,65 @@
-import { env } from "../../config/env.js";
-import { EmailService } from "../../providers/email-service.js";
-import { OtpStore } from "../../providers/otp-service.js";
-import { HashService } from "../../providers/hash-service.js";
-import { TokenService } from "../../providers/token-service.js";
-import { AuthController } from "../../../presentation/controllers/user/auth-controller.js";
-import { AuthService } from "../../providers/auth-service.js";
+import { env } from "process";
+
+import { UserModel } from "../db/models/user-model.js";
+
 import {
   UserMapper,
   type IUserMapper,
-} from "../../../application/mappers/user/user.js";
-import {
-  UsersMapper,
-  type IUsersMapper,
-} from "../../../application/mappers/admin/users.js";
+} from "../../application/mappers/user/user.js";
+
+import type { IUserRepository } from "../../application/interfaces/repository/user-repository.js";
+import { UserRepository } from "../repositories/user-repository.js";
+
+import type { ITokenService } from "../../application/providers/token-service.js";
+import { TokenService } from "../providers/token-service.js";
+
+import type { IHashService } from "../../application/providers/hash-service.js";
+import { HashService } from "../providers/hash-service.js";
+
+import type { IAuthService } from "../../application/providers/auth-service.js";
+import { AuthService } from "../providers/auth-service.js";
+
+import type { IOtpStore } from "../../application/providers/otp-service.js";
+import { OtpStore } from "../providers/otp-service.js";
+
+import type { IRegisterUserUseCase } from "../../application/interfaces/usecase/user/auth/register-user.js";
+import { RegisterUserUseCase } from "../../application/use-cases/user/auth/register-user.js";
+
+import type { IEmailService } from "../../application/providers/email-service.js";
+import { EmailService } from "../providers/email-service.js";
+
+import type { IVerifyUserUseCase } from "../../application/interfaces/usecase/user/auth/verify-user.js";
+import { VerifyUserUseCase } from "../../application/use-cases/user/auth/verify-user.js";
+
+import type { ILoginUserUseCase } from "../../application/interfaces/usecase/user/auth/login-user.js";
+import { LoginUserUseCase } from "../../application/use-cases/user/auth/login-user.js";
+
+import type { IForgotPasswordUseCase } from "../../application/interfaces/usecase/user/auth/forgot-password.js";
+import { ForgotPasswordUseCase } from "../../application/use-cases/user/auth/forgot-password.js";
+
+import type { IVerifyOtpUseCase } from "../../application/interfaces/usecase/user/auth/verify-otp.js";
+import { VerifyOtpUseCase } from "../../application/use-cases/user/auth/verify-otp.js";
+
+import type { IResetPasswordUseCase } from "../../application/interfaces/usecase/user/auth/reset-password.js";
+import { ResetPasswordUseCase } from "../../application/use-cases/user/auth/reset-password.js";
+
+import type { IResendOtpUseCase } from "../../application/interfaces/usecase/user/auth/resend-otp.js";
+import { ResendOtpUseCase } from "../../application/use-cases/user/auth/resend-otp.js";
+
+import type { IRefreshAccessTokenUseCase } from "../../application/interfaces/usecase/user/auth/refresh-token.js";
+import { RefreshAccessTokenUseCase } from "../../application/use-cases/user/auth/refresh-token.js";
+
+import type { IGoogleCallbackUseCase } from "../../application/interfaces/usecase/user/auth/google-callback.js";
+import { GoogleCallBackUseCase } from "../../application/use-cases/user/auth/google-callback.js";
+
+import { AuthController } from "../../presentation/controllers/user/auth-controller.js";
+
+import { VerifyToken } from "../../presentation/middleware/user/verify-token.js";
+
 import {
   CheckBlockedUserMiddleware,
   type ICheckBlockedUserMiddleware,
-} from "../../../presentation/middleware/user/check-blocked-user.js";
-import type { IUserRepository } from "../../../application/interfaces/repository/user-repository.js";
-import { UserRepository } from "../../repositories/user-repository.js";
-import type { IRegisterUserUseCase } from "../../../application/interfaces/usecase/user/auth/register-user.js";
-import { RegisterUserUseCase } from "../../../application/use-cases/user/auth/register-user.js";
-import type { IVerifyUserUseCase } from "../../../application/interfaces/usecase/user/auth/verify-user.js";
-import { VerifyUserUseCase } from "../../../application/use-cases/user/auth/verify-user.js";
-import type { ILoginUserUseCase } from "../../../application/interfaces/usecase/user/auth/login-user.js";
-import { LoginUserUseCase } from "../../../application/use-cases/user/auth/login-user.js";
-import type { IForgotPasswordUseCase } from "../../../application/interfaces/usecase/user/auth/forgot-password.js";
-import { ForgotPasswordUseCase } from "../../../application/use-cases/user/auth/forgot-password.js";
-import type { IVerifyOtpUseCase } from "../../../application/interfaces/usecase/user/auth/verify-otp.js";
-import { VerifyOtpUseCase } from "../../../application/use-cases/user/auth/verify-otp.js";
-import type { IResetPasswordUseCase } from "../../../application/interfaces/usecase/user/auth/reset-password.js";
-import { ResetPasswordUseCase } from "../../../application/use-cases/user/auth/reset-password.js";
-import { RefreshAccessTokenUseCase } from "../../../application/use-cases/user/auth/refresh-token.js";
-import type { IRefreshAccessTokenUseCase } from "../../../application/interfaces/usecase/user/auth/refresh-token.js";
-import { VerifyToken } from "../../../presentation/middleware/user/verify-token.js";
-import { UserModel } from "../../db/models/user-model.js";
-import type { IGoogleCallbackUseCase } from "../../../application/interfaces/usecase/user/auth/google-callback.js";
-import { GoogleCallBackUseCase } from "../../../application/use-cases/user/auth/google-callback.js";
-import type { IResendOtpUseCase } from "../../../application/interfaces/usecase/user/auth/resend-otp.js";
-import { ResendOtpUseCase } from "../../../application/use-cases/user/auth/resend-otp.js";
+} from "../../presentation/middleware/user/check-blocked-user.js";
 
 export interface IAppConfig {
   otpTtlSeconds: number;
@@ -48,57 +69,39 @@ export interface IAppConfig {
 
 const getConfig = (): IAppConfig => {
   return {
-    otpTtlSeconds: env.otp_ttl_seconds || 300,
+    otpTtlSeconds: Number(env.otp_ttl_seconds) || 300,
     emailSubject: "Your Verification Code",
-    saltRounds: env.bcrypt_salt_rounds,
+    saltRounds: Number(env.bcrypt_salt_rounds) || 6,
   };
 };
 
 export class AuthDependencyContainer {
   private config: IAppConfig;
+  private readonly userRepository: IUserRepository;
+  private readonly userMapper: IUserMapper;
+  private readonly emailService: IEmailService;
+  private readonly tokenService: ITokenService;
+  private readonly otpStore: IOtpStore;
+  private readonly authService: IAuthService;
+  private readonly hashService: IHashService;
 
   constructor() {
     this.config = getConfig();
-  }
-
-  createUserRepository(): IUserRepository {
-    return new UserRepository(UserModel);
-  }
-
-  createUserMapper(): IUserMapper {
-    return new UserMapper();
-  }
-
-  createUsersMapper(): IUsersMapper {
-    return new UsersMapper(this.createUserMapper());
-  }
-
-  createHashService(): HashService {
-    return new HashService(this.config.saltRounds);
-  }
-
-  createOtpStore(): OtpStore {
-    return new OtpStore();
-  }
-
-  createEmailService(): EmailService {
-    return new EmailService();
-  }
-
-  createTokenService(): TokenService {
-    return new TokenService();
-  }
-
-  createAuthService(): AuthService {
-    return new AuthService(
-      this.createUserRepository(),
-      this.createTokenService(),
-      this.createOtpStore(),
-      this.createHashService()
+    this.userRepository = new UserRepository(UserModel);
+    this.userMapper = new UserMapper();
+    this.emailService = new EmailService();
+    this.tokenService = new TokenService();
+    this.hashService = new HashService();
+    this.otpStore = new OtpStore();
+    this.authService = new AuthService(
+      this.userRepository,
+      this.tokenService,
+      this.otpStore,
+      this.hashService
     );
   }
 
-  createStoreTempUC(): IRegisterUserUseCase {
+  createStoreTempUseCase(): IRegisterUserUseCase {
     const otpConfig = {
       ttlSeconds: this.config.otpTtlSeconds,
       emailSubject: this.config.emailSubject,
@@ -107,32 +110,29 @@ export class AuthDependencyContainer {
     };
 
     return new RegisterUserUseCase(
-      this.createOtpStore(),
-      this.createEmailService(),
-      this.createHashService(),
-      this.createUserRepository(),
-      this.createAuthService(),
+      this.otpStore,
+      this.emailService,
+      this.hashService,
+      this.userRepository,
+      this.authService,
       otpConfig
     );
   }
 
-  createVerifyUserUC(): IVerifyUserUseCase {
+  createVerifyUserUseCase(): IVerifyUserUseCase {
     return new VerifyUserUseCase(
-      this.createOtpStore(),
-      this.createUserRepository(),
-      this.createAuthService(),
-      this.createUserMapper()
+      this.otpStore,
+      this.userRepository,
+      this.authService,
+      this.userMapper
     );
   }
 
-  createLoginUC(): ILoginUserUseCase {
-    return new LoginUserUseCase(
-      this.createAuthService(),
-      this.createUserMapper()
-    );
+  createLoginUseCase(): ILoginUserUseCase {
+    return new LoginUserUseCase(this.authService, this.userMapper);
   }
 
-  createForgotUC(): IForgotPasswordUseCase {
+  createForgotUseCase(): IForgotPasswordUseCase {
     const otpConfig = {
       ttlSeconds: this.config.otpTtlSeconds,
       emailSubject: this.config.emailSubject,
@@ -141,26 +141,23 @@ export class AuthDependencyContainer {
     };
 
     return new ForgotPasswordUseCase(
-      this.createAuthService(),
-      this.createHashService(),
-      this.createEmailService(),
-      this.createOtpStore(),
+      this.authService,
+      this.hashService,
+      this.emailService,
+      this.otpStore,
       otpConfig
     );
   }
 
-  createVerifyUC(): IVerifyOtpUseCase {
-    return new VerifyOtpUseCase(this.createAuthService());
+  createVerifyOtpUseCase(): IVerifyOtpUseCase {
+    return new VerifyOtpUseCase(this.authService);
   }
 
-  createResetPasswordUC(): IResetPasswordUseCase {
-    return new ResetPasswordUseCase(
-      this.createHashService(),
-      this.createAuthService()
-    );
+  createResetPasswordUseCase(): IResetPasswordUseCase {
+    return new ResetPasswordUseCase(this.hashService, this.authService);
   }
 
-  createResendOtpUC(): IResendOtpUseCase {
+  createResendOtpUseCase(): IResendOtpUseCase {
     const otpConfig = {
       ttlSeconds: this.config.otpTtlSeconds,
       emailSubject: this.config.emailSubject,
@@ -169,45 +166,45 @@ export class AuthDependencyContainer {
     };
 
     return new ResendOtpUseCase(
-      this.createUserRepository(),
-      this.createAuthService(),
-      this.createHashService(),
-      this.createEmailService(),
-      this.createOtpStore(),
+      this.userRepository,
+      this.authService,
+      this.hashService,
+      this.emailService,
+      this.otpStore,
       otpConfig
     );
   }
 
-  createRefreshAccessTokenUC = (): IRefreshAccessTokenUseCase => {
-    return new RefreshAccessTokenUseCase(this.createTokenService());
+  createRefreshAccessTokenUseCase = (): IRefreshAccessTokenUseCase => {
+    return new RefreshAccessTokenUseCase(this.tokenService);
   };
 
-  createGoogleCallbackUC = (): IGoogleCallbackUseCase => {
-    return new GoogleCallBackUseCase(this.createAuthService());
+  createGoogleCallbackUseCase = (): IGoogleCallbackUseCase => {
+    return new GoogleCallBackUseCase(this.authService);
   };
 
-  // auth controller
+  // Auth controller
   createAuthController(): AuthController {
     return new AuthController(
-      this.createStoreTempUC(),
-      this.createVerifyUserUC(),
-      this.createLoginUC(),
-      this.createForgotUC(),
-      this.createVerifyUC(),
-      this.createResetPasswordUC(),
-      this.createResendOtpUC(),
-      this.createRefreshAccessTokenUC(),
-      this.createGoogleCallbackUC()
+      this.createStoreTempUseCase(),
+      this.createVerifyUserUseCase(),
+      this.createLoginUseCase(),
+      this.createForgotUseCase(),
+      this.createVerifyOtpUseCase(),
+      this.createResetPasswordUseCase(),
+      this.createResendOtpUseCase(),
+      this.createRefreshAccessTokenUseCase(),
+      this.createGoogleCallbackUseCase()
     );
   }
 
-  // token middleware
+  // Token middleware
   createTokenMiddleware(): VerifyToken {
-    return new VerifyToken(this.createTokenService());
+    return new VerifyToken(this.tokenService);
   }
 
   // Check blocked user middleware
   createBlockedUserMiddleware(): ICheckBlockedUserMiddleware {
-    return new CheckBlockedUserMiddleware(this.createUserRepository());
+    return new CheckBlockedUserMiddleware(this.userRepository);
   }
 }
