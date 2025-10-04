@@ -14,20 +14,20 @@ import { ProjectController } from "../../presentation/controllers/project-contro
 import { ProjectModel } from "../db/models/project-model.js";
 
 export class ProjectDependencyContainer {
-  private readonly projectRepository: IProjectRepository;
-  private readonly projectMapper: IProjectMapper;
+  private readonly _projectRepository: IProjectRepository;
+  private readonly _projectMapper: IProjectMapper;
 
   constructor() {
-    this.projectRepository = new ProjectRepository(ProjectModel);
-    this.projectMapper = new ProjectMapper();
+    this._projectRepository = new ProjectRepository(ProjectModel);
+    this._projectMapper = new ProjectMapper();
   }
 
   private createProjectUseCase(): ICreateProjectUseCase {
-    return new CreateProjectUseCase(this.projectRepository, this.projectMapper);
+    return new CreateProjectUseCase(this._projectRepository, this._projectMapper);
   }
 
   private createListProjectUseCase(): IListProjectUseCase {
-    return new ListProjectUseCase(this.projectRepository, this.projectMapper);
+    return new ListProjectUseCase(this._projectRepository, this._projectMapper);
   }
 
   createProjectController(): ProjectController {
