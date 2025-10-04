@@ -38,7 +38,7 @@ export class AuthController {
         .status(HttpStatusCode.OK)
         .json(
           ApiResponse.success(
-            "You will receive a verification code shortly. Please check your email."
+           ResponseMessages.OtpHasBeenSent
           )
         );
     } catch (error) {
@@ -128,7 +128,7 @@ export class AuthController {
         .status(HttpStatusCode.OK)
         .json(
           ApiResponse.success(
-            "You will receive a verification code shortly. Please check your email."
+           ResponseMessages.OtpHasBeenSent
           )
         );
     } catch (e) {
@@ -180,7 +180,7 @@ export class AuthController {
         .status(HttpStatusCode.OK)
         .json(
           ApiResponse.success(
-            "OTP has been sent. Please check your email."
+            ResponseMessages.OtpHasBeenSent
           )
         );
     } catch (error) {

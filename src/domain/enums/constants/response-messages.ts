@@ -11,7 +11,8 @@ export enum ResponseMessages {
   InvalidRefreshToken = "Unauthorized: Invalid refresh token",
 
   // OTP
-  OtpVerified = "OTP verified",
+  OtpVerified = "OTP verified successfully",
+  OtpHasBeenSent = "OTP has been sent. Please check your email.",
   InvalidVerificationCode = "Invalid verification code",
   VerificationCodeExpired = "Verification code has expired",
 
