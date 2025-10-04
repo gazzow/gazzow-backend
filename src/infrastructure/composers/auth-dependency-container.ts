@@ -101,7 +101,7 @@ export class AuthDependencyContainer {
     );
   }
 
-  createStoreTempUseCase(): IRegisterUserUseCase {
+  private createStoreTempUseCase(): IRegisterUserUseCase {
     const otpConfig = {
       ttlSeconds: this.config.otpTtlSeconds,
       emailSubject: this.config.emailSubject,
@@ -119,7 +119,7 @@ export class AuthDependencyContainer {
     );
   }
 
-  createVerifyUserUseCase(): IVerifyUserUseCase {
+  private createVerifyUserUseCase(): IVerifyUserUseCase {
     return new VerifyUserUseCase(
       this._otpStore,
       this._userRepository,
@@ -128,11 +128,11 @@ export class AuthDependencyContainer {
     );
   }
 
-  createLoginUseCase(): ILoginUserUseCase {
+  private createLoginUseCase(): ILoginUserUseCase {
     return new LoginUserUseCase(this._authService, this._userMapper);
   }
 
-  createForgotUseCase(): IForgotPasswordUseCase {
+  private createForgotUseCase(): IForgotPasswordUseCase {
     const otpConfig = {
       ttlSeconds: this.config.otpTtlSeconds,
       emailSubject: this.config.emailSubject,
@@ -149,15 +149,15 @@ export class AuthDependencyContainer {
     );
   }
 
-  createVerifyOtpUseCase(): IVerifyOtpUseCase {
+  private createVerifyOtpUseCase(): IVerifyOtpUseCase {
     return new VerifyOtpUseCase(this._authService);
   }
 
-  createResetPasswordUseCase(): IResetPasswordUseCase {
+  private createResetPasswordUseCase(): IResetPasswordUseCase {
     return new ResetPasswordUseCase(this._hashService, this._authService);
   }
 
-  createResendOtpUseCase(): IResendOtpUseCase {
+  private createResendOtpUseCase(): IResendOtpUseCase {
     const otpConfig = {
       ttlSeconds: this.config.otpTtlSeconds,
       emailSubject: this.config.emailSubject,
@@ -175,11 +175,11 @@ export class AuthDependencyContainer {
     );
   }
 
-  createRefreshAccessTokenUseCase = (): IRefreshAccessTokenUseCase => {
+  private createRefreshAccessTokenUseCase = (): IRefreshAccessTokenUseCase => {
     return new RefreshAccessTokenUseCase(this._tokenService);
   };
 
-  createGoogleCallbackUseCase = (): IGoogleCallbackUseCase => {
+  private createGoogleCallbackUseCase = (): IGoogleCallbackUseCase => {
     return new GoogleCallBackUseCase(this._authService);
   };
 

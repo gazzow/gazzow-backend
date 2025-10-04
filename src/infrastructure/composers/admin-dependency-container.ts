@@ -59,7 +59,7 @@ export class AdminDependencyContainer {
     this._hashService = new HashService();
   }
 
-  createLoginUseCase(): IAdminLoginUseCase {
+  private createLoginUseCase(): IAdminLoginUseCase {
     return new AdminLoginUseCase(
       this._tokenService,
       this._userRepository,
@@ -68,15 +68,15 @@ export class AdminDependencyContainer {
     );
   }
 
-  createListUsersUseCase(): IListUsersUseCase {
+  private createListUsersUseCase(): IListUsersUseCase {
     return new ListUsersUseCase(this._userRepository, this._usersMapper);
   }
 
-  createBlockUserUseCase(): IBlockUserUseCase {
+  private createBlockUserUseCase(): IBlockUserUseCase {
     return new BlockUserUseCase(this._userRepository, this._userMapper);
   }
 
-  createGetUserUseCase(): IGetUserUseCase {
+  private createGetUserUseCase(): IGetUserUseCase {
     return new GetUserUseCase(this._userRepository, this._userMapper);
   }
 

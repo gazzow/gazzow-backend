@@ -28,11 +28,11 @@ export class UserDependencyContainer {
     this._userMapper = new UserMapper();
   }
 
-  createUpdateProfileUseCase(): IUpdateUserProfileUseCase {
+  private createUpdateProfileUseCase(): IUpdateUserProfileUseCase {
     return new SetupUserProfileUseCase(this._userRepository, this._userMapper);
   }
 
-  createGetUserProfileUseCase(): IGetUserProfileUseCase {
+  private createGetUserProfileUseCase(): IGetUserProfileUseCase {
     return new GetUserProfileUseCase(this._userRepository, this._userMapper);
   }
 
