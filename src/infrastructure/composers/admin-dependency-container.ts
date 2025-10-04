@@ -43,41 +43,41 @@ import { UserManagementController } from "../../presentation/controllers/admin/u
 import { VerifyAdmin } from "../../presentation/middleware/admin/is-admin.js";
 
 export class AdminDependencyContainer {
-  private readonly userRepository: IUserRepository;
-  private readonly userMapper: IUserMapper;
-  private readonly usersMapper: IUsersMapper;
-  private readonly adminMapper: IAdminMapper;
-  private readonly tokenService: ITokenService;
-  private readonly hashService: IHashService;
+  private readonly _userRepository: IUserRepository;
+  private readonly _userMapper: IUserMapper;
+  private readonly _usersMapper: IUsersMapper;
+  private readonly _adminMapper: IAdminMapper;
+  private readonly _tokenService: ITokenService;
+  private readonly _hashService: IHashService;
 
   constructor() {
-    this.userRepository = new UserRepository(UserModel);
-    this.userMapper = new UserMapper();
-    this.usersMapper = new UsersMapper(this.userMapper);
-    this.adminMapper = new AdminMapper();
-    this.tokenService = new TokenService();
-    this.hashService = new HashService();
+    this._userRepository = new UserRepository(UserModel);
+    this._userMapper = new UserMapper();
+    this._usersMapper = new UsersMapper(this._userMapper);
+    this._adminMapper = new AdminMapper();
+    this._tokenService = new TokenService();
+    this._hashService = new HashService();
   }
 
   createLoginUseCase(): IAdminLoginUseCase {
     return new AdminLoginUseCase(
-      this.tokenService,
-      this.userRepository,
-      this.hashService,
-      this.adminMapper
+      this._tokenService,
+      this._userRepository,
+      this._hashService,
+      this._adminMapper
     );
   }
 
   createListUsersUseCase(): IListUsersUseCase {
-    return new ListUsersUseCase(this.userRepository, this.usersMapper);
+    return new ListUsersUseCase(this._userRepository, this._usersMapper);
   }
 
   createBlockUserUseCase(): IBlockUserUseCase {
-    return new BlockUserUseCase(this.userRepository, this.userMapper);
+    return new BlockUserUseCase(this._userRepository, this._userMapper);
   }
 
   createGetUserUseCase(): IGetUserUseCase {
-    return new GetUserUseCase(this.userRepository, this.userMapper);
+    return new GetUserUseCase(this._userRepository, this._userMapper);
   }
 
   // Admin auth Controller
@@ -96,6 +96,6 @@ export class AdminDependencyContainer {
 
   // Verify Middleware
   createVerifyAdminMiddleware(): VerifyAdmin {
-    return new VerifyAdmin(this.tokenService);
+    return new VerifyAdmin(this._tokenService);
   }
 }

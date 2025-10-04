@@ -77,27 +77,27 @@ const getConfig = (): IAppConfig => {
 
 export class AuthDependencyContainer {
   private config: IAppConfig;
-  private readonly userRepository: IUserRepository;
-  private readonly userMapper: IUserMapper;
-  private readonly emailService: IEmailService;
-  private readonly tokenService: ITokenService;
-  private readonly otpStore: IOtpStore;
-  private readonly authService: IAuthService;
-  private readonly hashService: IHashService;
+  private readonly _userRepository: IUserRepository;
+  private readonly _userMapper: IUserMapper;
+  private readonly _emailService: IEmailService;
+  private readonly _tokenService: ITokenService;
+  private readonly _otpStore: IOtpStore;
+  private readonly _authService: IAuthService;
+  private readonly _hashService: IHashService;
 
   constructor() {
     this.config = getConfig();
-    this.userRepository = new UserRepository(UserModel);
-    this.userMapper = new UserMapper();
-    this.emailService = new EmailService();
-    this.tokenService = new TokenService();
-    this.hashService = new HashService();
-    this.otpStore = new OtpStore();
-    this.authService = new AuthService(
-      this.userRepository,
-      this.tokenService,
-      this.otpStore,
-      this.hashService
+    this._userRepository = new UserRepository(UserModel);
+    this._userMapper = new UserMapper();
+    this._emailService = new EmailService();
+    this._tokenService = new TokenService();
+    this._hashService = new HashService();
+    this._otpStore = new OtpStore();
+    this._authService = new AuthService(
+      this._userRepository,
+      this._tokenService,
+      this._otpStore,
+      this._hashService
     );
   }
 
@@ -110,26 +110,26 @@ export class AuthDependencyContainer {
     };
 
     return new RegisterUserUseCase(
-      this.otpStore,
-      this.emailService,
-      this.hashService,
-      this.userRepository,
-      this.authService,
+      this._otpStore,
+      this._emailService,
+      this._hashService,
+      this._userRepository,
+      this._authService,
       otpConfig
     );
   }
 
   createVerifyUserUseCase(): IVerifyUserUseCase {
     return new VerifyUserUseCase(
-      this.otpStore,
-      this.userRepository,
-      this.authService,
-      this.userMapper
+      this._otpStore,
+      this._userRepository,
+      this._authService,
+      this._userMapper
     );
   }
 
   createLoginUseCase(): ILoginUserUseCase {
-    return new LoginUserUseCase(this.authService, this.userMapper);
+    return new LoginUserUseCase(this._authService, this._userMapper);
   }
 
   createForgotUseCase(): IForgotPasswordUseCase {
@@ -141,20 +141,20 @@ export class AuthDependencyContainer {
     };
 
     return new ForgotPasswordUseCase(
-      this.authService,
-      this.hashService,
-      this.emailService,
-      this.otpStore,
+      this._authService,
+      this._hashService,
+      this._emailService,
+      this._otpStore,
       otpConfig
     );
   }
 
   createVerifyOtpUseCase(): IVerifyOtpUseCase {
-    return new VerifyOtpUseCase(this.authService);
+    return new VerifyOtpUseCase(this._authService);
   }
 
   createResetPasswordUseCase(): IResetPasswordUseCase {
-    return new ResetPasswordUseCase(this.hashService, this.authService);
+    return new ResetPasswordUseCase(this._hashService, this._authService);
   }
 
   createResendOtpUseCase(): IResendOtpUseCase {
@@ -166,21 +166,21 @@ export class AuthDependencyContainer {
     };
 
     return new ResendOtpUseCase(
-      this.userRepository,
-      this.authService,
-      this.hashService,
-      this.emailService,
-      this.otpStore,
+      this._userRepository,
+      this._authService,
+      this._hashService,
+      this._emailService,
+      this._otpStore,
       otpConfig
     );
   }
 
   createRefreshAccessTokenUseCase = (): IRefreshAccessTokenUseCase => {
-    return new RefreshAccessTokenUseCase(this.tokenService);
+    return new RefreshAccessTokenUseCase(this._tokenService);
   };
 
   createGoogleCallbackUseCase = (): IGoogleCallbackUseCase => {
-    return new GoogleCallBackUseCase(this.authService);
+    return new GoogleCallBackUseCase(this._authService);
   };
 
   // Auth controller
@@ -200,11 +200,11 @@ export class AuthDependencyContainer {
 
   // Token middleware
   createTokenMiddleware(): VerifyToken {
-    return new VerifyToken(this.tokenService);
+    return new VerifyToken(this._tokenService);
   }
 
   // Check blocked user middleware
   createBlockedUserMiddleware(): ICheckBlockedUserMiddleware {
-    return new CheckBlockedUserMiddleware(this.userRepository);
+    return new CheckBlockedUserMiddleware(this._userRepository);
   }
 }
