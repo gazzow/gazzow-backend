@@ -1,53 +1,45 @@
+import { UserModel } from "../db/models/user-model.js";
+
 import {
   UserMapper,
   type IUserMapper,
-} from "../../../application/mappers/user/user.js";
-import {
-  UsersMapper,
-  type IUsersMapper,
-} from "../../../application/mappers/admin/users.js";
-import { SetupUserProfileUseCase } from "../../../application/use-cases/user/profile/setup-profile.js";
-import { UserRepository } from "../../repositories/user-repository.js";
-import { UserController } from "../../../presentation/controllers/user/user-controller.js";
-import type { IGetUserProfileUseCase } from "../../../application/interfaces/usecase/user/profile/get-profile.js";
-import type { IUserRepository } from "../../../application/interfaces/repository/user-repository.js";
-import type { IUpdateUserProfileUseCase } from "../../../application/interfaces/usecase/user/profile/setup-profile.js";
-import { GetUserProfileUseCase } from "../../../application/use-cases/user/profile/get-profile.js";
-import { UserModel } from "../../db/models/user-model.js";
+} from "../../application/mappers/user/user.js";
+
+
+import type { IUserRepository } from "../../application/interfaces/repository/user-repository.js";
+import { UserRepository } from "../repositories/user-repository.js";
+
+import type { IUpdateUserProfileUseCase } from "../../application/interfaces/usecase/user/profile/setup-profile.js";
+import { SetupUserProfileUseCase } from "../../application/use-cases/user/profile/setup-profile.js";
+
+import type { IGetUserProfileUseCase } from "../../application/interfaces/usecase/user/profile/get-profile.js";
+import { GetUserProfileUseCase } from "../../application/use-cases/user/profile/get-profile.js";
+
+import { UserController } from "../../presentation/controllers/user/user-controller.js";
+
+
 
 export class UserDependencyContainer {
-  constructor() {}
+  private readonly _userRepository: IUserRepository;
+  private readonly _userMapper: IUserMapper;
 
-  createUserRepository(): IUserRepository {
-    return new UserRepository(UserModel);
+  constructor() {
+    this._userRepository = new UserRepository(UserModel);
+    this._userMapper = new UserMapper();
   }
 
-  createUserMapper(): IUserMapper {
-    return new UserMapper();
+  createUpdateProfileUseCase(): IUpdateUserProfileUseCase {
+    return new SetupUserProfileUseCase(this._userRepository, this._userMapper);
   }
 
-  createUsersMapper(): IUsersMapper {
-    return new UsersMapper(this.createUserMapper());
-  }
-
-  createUpdateProfileUC(): IUpdateUserProfileUseCase {
-    return new SetupUserProfileUseCase(
-      this.createUserRepository(),
-      this.createUserMapper()
-    );
-  }
-
-  createGetUserProfileUC(): IGetUserProfileUseCase {
-    return new GetUserProfileUseCase(
-      this.createUserRepository(),
-      this.createUserMapper()
-    );
+  createGetUserProfileUseCase(): IGetUserProfileUseCase {
+    return new GetUserProfileUseCase(this._userRepository, this._userMapper);
   }
 
   createUserController(): UserController {
     return new UserController(
-      this.createUpdateProfileUC(),
-      this.createGetUserProfileUC()
+      this.createUpdateProfileUseCase(),
+      this.createGetUserProfileUseCase()
     );
   }
 }
