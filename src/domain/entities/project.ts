@@ -1,5 +1,6 @@
 import type {
   ContributorStatus,
+  ProjectDurationUnit,
   ProjectExperience,
   ProjectStatus,
   ProjectVisibility,
@@ -10,11 +11,14 @@ export interface IProject {
   title: string;
   creatorId: string;
   description: string;
-  budgetAmount: number;
+  budgetMin: number;
+  budgetMax: number;
   requiredSkills: string[];
-  developerNeeded: number;
-  experience: ProjectExperience,
-  deadline: string;
+  developersNeeded: number;
+  durationMin: number;
+  durationMax: number;
+  durationUnit: ProjectDurationUnit;
+  experience: ProjectExperience;
   visibility: ProjectVisibility;
   status: ProjectStatus;
   contributors: IContributor[];

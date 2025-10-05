@@ -9,17 +9,22 @@ export interface IProjectMapper {
 }
 
 export class ProjectMapper implements IProjectMapper {
-  toPersistenceEntity(dto: ICreateProjectRequestDTO): Partial<IProjectDocument> {
+  toPersistenceEntity(
+    dto: ICreateProjectRequestDTO
+  ): Partial<IProjectDocument> {
     return {
       title: dto.title,
       creatorId: new Types.ObjectId(dto.creatorId),
       description: dto.description,
-      budgetAmount: dto.budgetAmount,
+      budgetMin: dto.budgetMin,
+      budgetMax: dto.budgetMax,
       requiredSkills: dto.requiredSkills,
       experience: dto.experience,
-      developerNeeded: dto.developerNeeded,
+      developersNeeded: dto.developersNeeded,
       contributors: [],
-      deadline: new Date(dto.deadline),
+      durationMin: dto.durationMin,
+      durationMax: dto.durationMax,
+      durationUnit: dto.durationUnit,
       visibility: dto.visibility,
       status: dto.status,
       createdAt: new Date(),
@@ -33,7 +38,7 @@ export class ProjectMapper implements IProjectMapper {
       creatorId: projectDoc.creatorId.toString(),
       title: projectDoc.title,
       description: projectDoc.description,
-      developerNeeded: projectDoc.developerNeeded,
+      developersNeeded: projectDoc.developersNeeded,
       experience: projectDoc.experience,
       contributors: projectDoc.contributors.map((c) => ({
         userId: c.userId.toString(),
@@ -42,15 +47,16 @@ export class ProjectMapper implements IProjectMapper {
         createdAt: c.createdAt?.toISOString() ?? "",
         updatedAt: projectDoc.updatedAt?.toISOString() ?? "",
       })),
-      budgetAmount: projectDoc.budgetAmount,
+      budgetMin: projectDoc.budgetMin,
+      budgetMax: projectDoc.budgetMax,
       requiredSkills: projectDoc.requiredSkills,
-      deadline: projectDoc.deadline.toISOString(), 
+      durationMin: projectDoc.durationMin,
+      durationMax: projectDoc.durationMax,
+      durationUnit: projectDoc.durationUnit,
       visibility: projectDoc.visibility,
       status: projectDoc.status,
       createdAt: projectDoc.createdAt?.toISOString() ?? "",
       updatedAt: projectDoc.updatedAt?.toISOString() ?? "",
     };
   }
-
-
 }

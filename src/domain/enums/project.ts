@@ -20,3 +20,8 @@ export enum ProjectExperience {
   INTERMEDIATE = 'intermediate',
   EXPERT = 'expert'
 }
+
+export enum ProjectDurationUnit{
+  WEEKS = 'weeks',
+  MONTHS = 'months'
+}

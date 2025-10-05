@@ -3,6 +3,7 @@ import {
   ProjectExperience,
   ProjectStatus,
   ProjectVisibility,
+  ProjectDurationUnit,
   type ContributorStatus,
 } from "../../../domain/enums/project.js";
 
@@ -19,11 +20,14 @@ export type IProjectDocument = Document & {
   title: string;
   creatorId: Types.ObjectId;
   description: string;
-  budgetAmount: number;
+  budgetMin: number;
+  budgetMax: number;
   requiredSkills: string[];
-  developerNeeded: number;
+  developersNeeded: number;
+  durationMin: number;
+  durationMax: number;
+  durationUnit: ProjectDurationUnit;
   experience: ProjectExperience;
-  deadline: Date;
   visibility: ProjectVisibility;
   status: ProjectStatus;
   contributors: IContributor[];
@@ -66,10 +70,21 @@ const projectSchema = new Schema<IProjectDocument>(
       required: true,
       maxlength: 5000,
     },
-    budgetAmount: {
+    budgetMin: {
       type: Number,
       required: true,
       min: 0,
+    },
+    budgetMax: {
+      type: Number,
+      required: true,
+      min: 0,
+      validate: {
+        validator: function(this: IProjectDocument, value: number) {
+          return value >= this.budgetMin;
+        },
+        message: "Budget max must be greater than or equal to budget min.",
+      },
     },
     requiredSkills: [
       {
@@ -77,8 +92,29 @@ const projectSchema = new Schema<IProjectDocument>(
         trim: true,
       },
     ],
-    developerNeeded: {
+    developersNeeded: {
       type: Number,
+      required: true,
+    },
+    durationMin: {
+      type: Number,
+      required: true,
+      min: 1,
+    },
+    durationMax: {
+      type: Number,
+      required: true,
+      min: 1,
+      validate: {
+        validator: function(this: IProjectDocument, value: number) {
+          return value >= this.durationMin;
+        },
+        message: "Duration max must be greater than or equal to duration min.",
+      },
+    },
+    durationUnit: {
+      type: String,
+      enum: ["days", "weeks", "months"],
       required: true,
     },
     experience: {
@@ -87,14 +123,6 @@ const projectSchema = new Schema<IProjectDocument>(
       required: true,
     },
     contributors: [contributorSchema],
-    deadline: {
-      type: Date,
-      required: true,
-      validate: {
-        validator: (value: Date) => value > new Date(),
-        message: "Deadline must be a future date.",
-      },
-    },
     visibility: {
       type: String,
       enum: ["public", "invite"],
