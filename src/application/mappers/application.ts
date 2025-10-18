@@ -6,6 +6,7 @@ import type { IApplicationRequestDTO } from "../dtos/application.js";
 export interface IApplicationMapper {
   toPersistence(dto: IApplicationRequestDTO): Partial<IApplicationDocument>;
   toResponseDTO(applicationDoc: IApplicationDocument): IApplication;
+  
 }
 
 export class ApplicationMapper implements IApplicationMapper {

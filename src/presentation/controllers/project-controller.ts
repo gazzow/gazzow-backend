@@ -2,22 +2,25 @@ import type { NextFunction, Request, Response } from "express";
 
 import type { ICreateProjectUseCase } from "../../application/interfaces/usecase/project/create-project.js";
 import type { IListProjectUseCase } from "../../application/interfaces/usecase/project/list-projects.js";
-import type { IApplyProjectUseCase } from "../../application/interfaces/usecase/project/apply-project.js";
+import type { ICreateApplicationUseCase } from "../../application/interfaces/usecase/project/apply-project.js";
 
 import { ApiResponse } from "../common/api-response.js";
 import { HttpStatusCode } from "../../domain/enums/constants/status-codes.js";
 import { ResponseMessages } from "../../domain/enums/constants/response-messages.js";
 
 import logger from "../../utils/logger.js";
+import type { IListApplicationsUseCase } from "../../application/interfaces/usecase/project/list-applications.js";
+import { AppError } from "../../utils/app-error.js";
 
 export class ProjectController {
   constructor(
     private _createProjectUseCase: ICreateProjectUseCase,
     private _listProjectUseCase: IListProjectUseCase,
-    private _applyProjectUseCase: IApplyProjectUseCase
+    private _createApplicationUseCase: ICreateApplicationUseCase,
+    private _listApplicationsUseCase: IListApplicationsUseCase
   ) {}
 
-  create = async (req: Request, res: Response, next: NextFunction) => {
+  createProject = async (req: Request, res: Response, next: NextFunction) => {
     logger.debug("create project API hit🚀");
     try {
       const { data } = await this._createProjectUseCase.execute(req.body);
@@ -29,7 +32,7 @@ export class ProjectController {
     }
   };
 
-  listAll = async (req: Request, res: Response, next: NextFunction) => {
+  listProjects = async (req: Request, res: Response, next: NextFunction) => {
     logger.debug("List Project API hit 🚀");
     try {
       const { data } = await this._listProjectUseCase.execute();
@@ -41,7 +44,11 @@ export class ProjectController {
     }
   };
 
-  applyProject = async (req: Request, res: Response, next: NextFunction) => {
+  createApplication = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     logger.debug("Apply project API hit 🚀");
 
     try {
@@ -49,19 +56,35 @@ export class ProjectController {
       const userId = req.user!.id;
       logger.debug(`apply project request body: ${JSON.stringify(req.body)}`);
 
-      const { data } = await this._applyProjectUseCase.execute({
+      const { data } = await this._createApplicationUseCase.execute({
         ...req.body,
         projectId,
         applicantId: userId,
       });
       res
         .status(HttpStatusCode.CREATED)
-        .json(
-          ApiResponse.success(
-            ResponseMessages.ApplicationSubmitted,
-            data
-          )
-        );
+        .json(ApiResponse.success(ResponseMessages.ApplicationSubmitted, data));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  listApplications = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const projectId = req.params.projectId;
+    if (!projectId) {
+      throw new AppError("Project id required", HttpStatusCode.BAD_REQUEST);
+    }
+    try {
+      const { data } = await this._listApplicationsUseCase.execute({
+        projectId,
+      });
+      res
+        .status(HttpStatusCode.OK)
+        .json(ApiResponse.success(ResponseMessages.FetchedApplications, data));
     } catch (error) {
       next(error);
     }
