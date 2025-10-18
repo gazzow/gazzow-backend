@@ -18,6 +18,11 @@ router.get(
   tokenMiddleware.verifyToken,
   projectController.listMyProjects
 );
+router.get(
+  "/:projectId",
+  tokenMiddleware.verifyToken,
+  projectController.getProject
+);
 
 // Application routes
 router.post(

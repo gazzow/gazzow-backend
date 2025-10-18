@@ -37,3 +37,11 @@ export interface IListMyProjectRequestDTO {
 export interface IListMyProjectsResponseDTO {
   data: IProject[];
 }
+
+export interface IGetProjectRequestDTO {
+  projectId: string;
+}
+
+export interface IGetProjectResponseDTO {
+  data: IProject;
+}

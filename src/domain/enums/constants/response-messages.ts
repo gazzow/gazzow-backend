@@ -38,6 +38,7 @@ export enum ResponseMessages {
   // Project
   ProjectCreated = "Project created successfully",
   FetchedProjects = "Projects fetched successfully",
+  ProjectRetrieved = "Project retrieved successfully",
   ProjectNotFound = "Project not found",
 
   //Application

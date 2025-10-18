@@ -14,7 +14,7 @@ import type { IListProjectUseCase } from "../../application/interfaces/usecase/p
 import { ListProjectUseCase } from "../../application/use-cases/project/list-projects.js";
 
 import type { ICreateApplicationUseCase } from "../../application/interfaces/usecase/project/apply-project.js";
-import { ApplyProjectUseCase } from "../../application/use-cases/project/apply-project.js";
+import { ApplyProjectUseCase } from "../../application/use-cases/project/create-application.js";
 
 import type { IListApplicationsUseCase } from "../../application/interfaces/usecase/project/list-applications.js";
 import { ListApplicationsUseCase } from "../../application/use-cases/project/list-applications.js";
@@ -32,6 +32,8 @@ import { ProjectModel } from "../db/models/project-model.js";
 import { UserModel } from "../db/models/user-model.js";
 import type { IListMyProjectsUsecase } from "../../application/interfaces/usecase/project/list-my-projects.js";
 import { ListMyProjectsUseCase } from "../../application/use-cases/project/list-my-projects.js";
+import type { IGetProjectUseCase } from "../../application/interfaces/usecase/project/get-project.js";
+import { GetProjectUseCase } from "../../application/use-cases/project/get-project.js";
 
 export class ProjectDependencyContainer {
   private readonly _userRepository: IUserRepository;
@@ -53,6 +55,10 @@ export class ProjectDependencyContainer {
       this._projectRepository,
       this._projectMapper
     );
+  }
+
+  private createGetProjectUseCase(): IGetProjectUseCase {
+    return new GetProjectUseCase(this._projectRepository, this._projectMapper);
   }
 
   private createListProjectUseCase(): IListProjectUseCase {
@@ -86,6 +92,7 @@ export class ProjectDependencyContainer {
   createProjectController(): ProjectController {
     return new ProjectController(
       this.createProjectUseCase(),
+      this.createGetProjectUseCase(),
       this.createListProjectUseCase(),
       this.createApplyProjectUseCase(),
       this.createListApplicationsUseCase(),

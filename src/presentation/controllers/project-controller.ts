@@ -12,10 +12,12 @@ import logger from "../../utils/logger.js";
 import type { IListApplicationsUseCase } from "../../application/interfaces/usecase/project/list-applications.js";
 import { AppError } from "../../utils/app-error.js";
 import type { IListMyProjectsUsecase } from "../../application/interfaces/usecase/project/list-my-projects.js";
+import type { IGetProjectUseCase } from "../../application/interfaces/usecase/project/get-project.js";
 
 export class ProjectController {
   constructor(
     private _createProjectUseCase: ICreateProjectUseCase,
+    private _getProjectUseCase: IGetProjectUseCase,
     private _listProjectUseCase: IListProjectUseCase,
     private _createApplicationUseCase: ICreateApplicationUseCase,
     private _listApplicationsUseCase: IListApplicationsUseCase,
@@ -29,6 +31,23 @@ export class ProjectController {
       res
         .status(HttpStatusCode.CREATED)
         .json(ApiResponse.success("project created", data));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getProject = async (req: Request, res: Response, next: NextFunction) => {
+    logger.debug("Get Project API hit 🚀");
+
+    try {
+      const { projectId } = req.params;
+      if (!projectId) {
+        throw new AppError("Project id required", HttpStatusCode.BAD_REQUEST);
+      }
+      const { data } = await this._getProjectUseCase.execute({ projectId });
+      res
+        .status(HttpStatusCode.OK)
+        .json(ApiResponse.success(ResponseMessages.ProjectRetrieved, data));
     } catch (error) {
       next(error);
     }
@@ -101,7 +120,7 @@ export class ProjectController {
       throw new AppError("Creator id required", HttpStatusCode.BAD_REQUEST);
     }
 
-    logger.debug(`My project api creatorId: ${creatorId}`)
+    logger.debug(`My project api creatorId: ${creatorId}`);
     try {
       const { data } = await this._listMyProjectsUsecase.execute({ creatorId });
       res
