@@ -4,7 +4,7 @@ import {
   ProjectStatus,
   ProjectVisibility,
   ProjectDurationUnit,
-  type ContributorStatus,
+  ContributorStatus,
 } from "../../../domain/enums/project.js";
 
 interface IContributor {
@@ -44,8 +44,7 @@ const contributorSchema = new Schema<IContributor>(
     },
     status: {
       type: String,
-      enum: ["invited", "active", "removed"],
-      required: true,
+      enum: Object.values(ContributorStatus),
     },
     invitedAt: { type: Date },
   },
@@ -80,7 +79,7 @@ const projectSchema = new Schema<IProjectDocument>(
       required: true,
       min: 0,
       validate: {
-        validator: function(this: IProjectDocument, value: number) {
+        validator: function (this: IProjectDocument, value: number) {
           return value >= this.budgetMin;
         },
         message: "Budget max must be greater than or equal to budget min.",
@@ -106,7 +105,7 @@ const projectSchema = new Schema<IProjectDocument>(
       required: true,
       min: 1,
       validate: {
-        validator: function(this: IProjectDocument, value: number) {
+        validator: function (this: IProjectDocument, value: number) {
           return value >= this.durationMin;
         },
         message: "Duration max must be greater than or equal to duration min.",
@@ -114,24 +113,23 @@ const projectSchema = new Schema<IProjectDocument>(
     },
     durationUnit: {
       type: String,
-      enum: ["days", "weeks", "months"],
+      enum:  Object.values(ProjectDurationUnit),
       required: true,
     },
     experience: {
       type: String,
-      enum: ["beginner", "intermediate", "expert"],
+      enum:  Object.values(ProjectExperience),
       required: true,
     },
     contributors: [contributorSchema],
     visibility: {
       type: String,
-      enum: ["public", "invite"],
-      default: ProjectVisibility.PUBLIC,
+      enum: Object.values(ProjectVisibility),
       required: true,
     },
     status: {
       type: String,
-      enum: ["open", "in_progress", "completed"],
+      enum: Object.values(ProjectStatus),
       default: ProjectStatus.OPEN,
     },
   },

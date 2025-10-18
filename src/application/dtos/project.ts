@@ -29,3 +29,11 @@ export interface ICreateProjectResponseDTO {
 export interface IListProjectResponseDTO {
   data: IProject[];
 }
+
+export interface IListMyProjectRequestDTO {
+  creatorId: string;
+}
+
+export interface IListMyProjectsResponseDTO {
+  data: IProject[];
+}

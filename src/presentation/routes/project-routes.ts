@@ -13,6 +13,11 @@ const projectController = projectContainer.createProjectController();
 // Project routes
 router.post("/", tokenMiddleware.verifyToken, projectController.createProject);
 router.get("/", tokenMiddleware.verifyToken, projectController.listProjects);
+router.get(
+  "/me",
+  tokenMiddleware.verifyToken,
+  projectController.listMyProjects
+);
 
 // Application routes
 router.post(

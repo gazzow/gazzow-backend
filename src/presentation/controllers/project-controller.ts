@@ -11,13 +11,15 @@ import { ResponseMessages } from "../../domain/enums/constants/response-messages
 import logger from "../../utils/logger.js";
 import type { IListApplicationsUseCase } from "../../application/interfaces/usecase/project/list-applications.js";
 import { AppError } from "../../utils/app-error.js";
+import type { IListMyProjectsUsecase } from "../../application/interfaces/usecase/project/list-my-projects.js";
 
 export class ProjectController {
   constructor(
     private _createProjectUseCase: ICreateProjectUseCase,
     private _listProjectUseCase: IListProjectUseCase,
     private _createApplicationUseCase: ICreateApplicationUseCase,
-    private _listApplicationsUseCase: IListApplicationsUseCase
+    private _listApplicationsUseCase: IListApplicationsUseCase,
+    private _listMyProjectsUsecase: IListMyProjectsUsecase
   ) {}
 
   createProject = async (req: Request, res: Response, next: NextFunction) => {
@@ -74,6 +76,8 @@ export class ProjectController {
     res: Response,
     next: NextFunction
   ) => {
+    logger.debug("List Application API hit 🚀");
+
     const projectId = req.params.projectId;
     if (!projectId) {
       throw new AppError("Project id required", HttpStatusCode.BAD_REQUEST);
@@ -85,6 +89,24 @@ export class ProjectController {
       res
         .status(HttpStatusCode.OK)
         .json(ApiResponse.success(ResponseMessages.FetchedApplications, data));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  listMyProjects = async (req: Request, res: Response, next: NextFunction) => {
+    logger.debug("List Project By Creator Id API hit 🚀");
+    const creatorId = req.user?.id;
+    if (!creatorId) {
+      throw new AppError("Creator id required", HttpStatusCode.BAD_REQUEST);
+    }
+
+    logger.debug(`My project api creatorId: ${creatorId}`)
+    try {
+      const { data } = await this._listMyProjectsUsecase.execute({ creatorId });
+      res
+        .status(HttpStatusCode.OK)
+        .json(ApiResponse.success(ResponseMessages.FetchedProjects, data));
     } catch (error) {
       next(error);
     }

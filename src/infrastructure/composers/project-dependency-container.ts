@@ -1,17 +1,20 @@
-import type { ICreateProjectUseCase } from "../../application/interfaces/usecase/project/create-project.js";
-import { CreateProjectUseCase } from "../../application/use-cases/project/create-project.js";
+import type { IApplicationRepository } from "../../application/interfaces/repository/application-repository.js";
+import { ApplicationRepository } from "../repositories/application-repository.js";
+
+import type { IUserRepository } from "../../application/interfaces/repository/user-repository.js";
+import { UserRepository } from "../repositories/user-repository.js";
 
 import type { IProjectRepository } from "../../application/interfaces/repository/project-repository.js";
 import { ProjectRepository } from "../repositories/project-repository.js";
+
+import type { ICreateProjectUseCase } from "../../application/interfaces/usecase/project/create-project.js";
+import { CreateProjectUseCase } from "../../application/use-cases/project/create-project.js";
 
 import type { IListProjectUseCase } from "../../application/interfaces/usecase/project/list-projects.js";
 import { ListProjectUseCase } from "../../application/use-cases/project/list-projects.js";
 
 import type { ICreateApplicationUseCase } from "../../application/interfaces/usecase/project/apply-project.js";
 import { ApplyProjectUseCase } from "../../application/use-cases/project/apply-project.js";
-
-import type { IApplicationRepository } from "../../application/interfaces/repository/application-repository.js";
-import { ApplicationRepository } from "../repositories/application-repository.js";
 
 import type { IListApplicationsUseCase } from "../../application/interfaces/usecase/project/list-applications.js";
 import { ListApplicationsUseCase } from "../../application/use-cases/project/list-applications.js";
@@ -26,14 +29,19 @@ import { ProjectController } from "../../presentation/controllers/project-contro
 
 import { ApplicationModel } from "../db/models/application-model.js";
 import { ProjectModel } from "../db/models/project-model.js";
+import { UserModel } from "../db/models/user-model.js";
+import type { IListMyProjectsUsecase } from "../../application/interfaces/usecase/project/list-my-projects.js";
+import { ListMyProjectsUseCase } from "../../application/use-cases/project/list-my-projects.js";
 
 export class ProjectDependencyContainer {
+  private readonly _userRepository: IUserRepository;
   private readonly _projectRepository: IProjectRepository;
   private readonly _applicationRepository: IApplicationRepository;
   private readonly _projectMapper: IProjectMapper;
   private readonly _applicationMapper: IApplicationMapper;
 
   constructor() {
+    this._userRepository = new UserRepository(UserModel);
     this._projectRepository = new ProjectRepository(ProjectModel);
     this._applicationRepository = new ApplicationRepository(ApplicationModel);
     this._projectMapper = new ProjectMapper();
@@ -67,12 +75,21 @@ export class ProjectDependencyContainer {
     );
   }
 
+  private createListMyProjectUseCase(): IListMyProjectsUsecase {
+    return new ListMyProjectsUseCase(
+      this._userRepository,
+      this._projectRepository,
+      this._projectMapper
+    );
+  }
+
   createProjectController(): ProjectController {
     return new ProjectController(
       this.createProjectUseCase(),
       this.createListProjectUseCase(),
       this.createApplyProjectUseCase(),
-      this.createListApplicationsUseCase()
+      this.createListApplicationsUseCase(),
+      this.createListMyProjectUseCase()
     );
   }
 }

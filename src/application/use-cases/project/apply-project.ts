@@ -26,7 +26,7 @@ export class ApplyProjectUseCase implements ICreateApplicationUseCase {
     }
 
     const existingApplication =
-      await this._applicationRepository.findByUserAndProject(
+      await this._applicationRepository.findByApplicantAndProject(
         dto.applicantId,
         dto.projectId
       );
