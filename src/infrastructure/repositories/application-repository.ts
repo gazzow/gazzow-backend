@@ -15,7 +15,7 @@ export class ApplicationRepository
     return this.model.find({ projectId: projectId }).exec();
   }
 
-  findByUserAndProject(
+  findByApplicantAndProject(
     applicantId: string,
     projectId: string
   ): Promise<IApplicationDocument | null> {

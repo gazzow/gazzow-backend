@@ -7,10 +7,10 @@ import type {
 } from "../../dtos/application.js";
 import type { IApplicationRepository } from "../../interfaces/repository/application-repository.js";
 import type { IProjectRepository } from "../../interfaces/repository/project-repository.js";
-import type { IApplyProjectUseCase } from "../../interfaces/usecase/project/apply-project.js";
+import type { ICreateApplicationUseCase } from "../../interfaces/usecase/project/apply-project.js";
 import type { IApplicationMapper } from "../../mappers/application.js";
 
-export class ApplyProjectUseCase implements IApplyProjectUseCase {
+export class ApplyProjectUseCase implements ICreateApplicationUseCase {
   constructor(
     private _projectRepository: IProjectRepository,
     private _applicationRepository: IApplicationRepository,
@@ -26,7 +26,7 @@ export class ApplyProjectUseCase implements IApplyProjectUseCase {
     }
 
     const existingApplication =
-      await this._applicationRepository.findByUserAndProject(
+      await this._applicationRepository.findByApplicantAndProject(
         dto.applicantId,
         dto.projectId
       );

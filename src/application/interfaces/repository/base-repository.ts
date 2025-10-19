@@ -2,7 +2,7 @@ export interface IBaseRepository<T> {
   create(data: Partial<T>): Promise<T>;
   findById(id: string): Promise<T | null>;
   findAll(query: {
-    filter?: Record<string, string>;
+    filter?: Partial<T>;
     skip?: number;
     limit?: number;
   }): Promise<T[]>;

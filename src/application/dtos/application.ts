@@ -10,3 +10,11 @@ export interface IApplicationRequestDTO {
 export interface IApplicationResponseDTO {
   data: IApplication;
 }
+
+export interface IListApplicationRequestDTO{
+  projectId: string;
+}
+
+export interface IListApplicationResponseDTO{
+  data: IApplication[] | []
+}

@@ -13,7 +13,7 @@ export class BaseRepository<T> implements IBaseRepository<T> {
   }
 
   async findAll(query: {
-    filter?: Record<string, string>;
+    filter?: Partial<T>;
     skip?: number;
     limit?: number;
   }): Promise<T[]> {
