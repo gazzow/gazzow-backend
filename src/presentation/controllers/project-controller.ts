@@ -28,8 +28,10 @@ export class ProjectController {
 
   createProject = async (req: Request, res: Response, next: NextFunction) => {
     logger.debug("create project API hit🚀");
+    const userId = req.user!.id;
+    const dto = { ...req.body, creatorId: userId };
     try {
-      const { data } = await this._createProjectUseCase.execute(req.body);
+      const { data } = await this._createProjectUseCase.execute(dto);
       res
         .status(HttpStatusCode.CREATED)
         .json(ApiResponse.success("project created", data));
