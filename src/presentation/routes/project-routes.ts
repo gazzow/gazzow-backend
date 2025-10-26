@@ -35,5 +35,10 @@ router.get(
   tokenMiddleware.verifyToken,
   projectController.listApplications
 );
+router.patch(
+  "/:projectId/applications/:applicationId",
+  tokenMiddleware.verifyToken,
+  projectController.updateApplicationStatus
+);
 
 export default router;

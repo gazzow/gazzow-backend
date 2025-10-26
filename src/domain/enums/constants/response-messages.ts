@@ -46,5 +46,6 @@ export enum ResponseMessages {
   ApplicationSubmitted = "Application submitted successfully",
   ApplicationNotFound = "Application not found",
   FetchedApplications = "Applications fetched successfully",
-
+  ApplicationStatusUpdated = "Application status updated",
+  SelfApplicationNotAllowed = "You cannot apply to your own project",
 }

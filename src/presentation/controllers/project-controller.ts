@@ -13,6 +13,7 @@ import type { IListApplicationsUseCase } from "../../application/interfaces/usec
 import { AppError } from "../../utils/app-error.js";
 import type { IListMyProjectsUsecase } from "../../application/interfaces/usecase/project/list-my-projects.js";
 import type { IGetProjectUseCase } from "../../application/interfaces/usecase/project/get-project.js";
+import type { IUpdateApplicationStatusUseCase } from "../../application/interfaces/usecase/project/update-application-status.js";
 
 export class ProjectController {
   constructor(
@@ -21,7 +22,8 @@ export class ProjectController {
     private _listProjectUseCase: IListProjectUseCase,
     private _createApplicationUseCase: ICreateApplicationUseCase,
     private _listApplicationsUseCase: IListApplicationsUseCase,
-    private _listMyProjectsUsecase: IListMyProjectsUsecase
+    private _listMyProjectsUseCase: IListMyProjectsUsecase,
+    private _updateApplicationStatusUseCase: IUpdateApplicationStatusUseCase
   ) {}
 
   createProject = async (req: Request, res: Response, next: NextFunction) => {
@@ -55,8 +57,9 @@ export class ProjectController {
 
   listProjects = async (req: Request, res: Response, next: NextFunction) => {
     logger.debug("List Project API hit 🚀");
+    const userId = req.user!.id;
     try {
-      const { data } = await this._listProjectUseCase.execute();
+      const { data } = await this._listProjectUseCase.execute({ userId });
       res
         .status(HttpStatusCode.OK)
         .json(ApiResponse.success(ResponseMessages.FetchedProjects, data));
@@ -122,10 +125,41 @@ export class ProjectController {
 
     logger.debug(`My project api creatorId: ${creatorId}`);
     try {
-      const { data } = await this._listMyProjectsUsecase.execute({ creatorId });
+      const { data } = await this._listMyProjectsUseCase.execute({ creatorId });
       res
         .status(HttpStatusCode.OK)
         .json(ApiResponse.success(ResponseMessages.FetchedProjects, data));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  updateApplicationStatus = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    logger.debug("Update Application Status API hit 🚀");
+    const { status } = req.body;
+    logger.debug(`req.body status: ${status}`);
+
+    const { projectId, applicationId } = req.params;
+    if (!projectId) {
+      throw new AppError("Project id required", HttpStatusCode.BAD_REQUEST);
+    }
+    if (!applicationId) {
+      throw new AppError("application id required", HttpStatusCode.BAD_REQUEST);
+    }
+
+    try {
+      await this._updateApplicationStatusUseCase.execute({
+        applicationId,
+        projectId,
+        status,
+      });
+      res
+        .status(HttpStatusCode.OK)
+        .json(ApiResponse.success(ResponseMessages.ApplicationStatusUpdated));
     } catch (error) {
       next(error);
     }

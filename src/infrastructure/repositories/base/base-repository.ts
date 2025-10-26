@@ -1,4 +1,4 @@
-import type { Model } from "mongoose";
+import type { FilterQuery, Model } from "mongoose";
 import type { IBaseRepository } from "../../../application/interfaces/repository/base-repository.js";
 
 export class BaseRepository<T> implements IBaseRepository<T> {
@@ -13,7 +13,7 @@ export class BaseRepository<T> implements IBaseRepository<T> {
   }
 
   async findAll(query: {
-    filter?: Partial<T>;
+    filter?: FilterQuery<T>;
     skip?: number;
     limit?: number;
   }): Promise<T[]> {

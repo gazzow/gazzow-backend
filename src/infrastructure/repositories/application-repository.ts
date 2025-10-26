@@ -3,6 +3,7 @@ import type { IApplicationRepository } from "../../application/interfaces/reposi
 import type { IApplicationDocument } from "../db/models/application-model.js";
 import { BaseRepository } from "./base/base-repository.js";
 import type { IApplicationDocumentWithApplicant } from "../../domain/entities/application.js";
+import { ApplicationStatus } from "../../domain/enums/application.js";
 
 export class ApplicationRepository
   extends BaseRepository<IApplicationDocument>
@@ -19,6 +20,7 @@ export class ApplicationRepository
       {
         $match: {
           projectId: new Types.ObjectId(projectId),
+          status: ApplicationStatus.PENDING,
         },
       },
       {
@@ -63,5 +65,14 @@ export class ApplicationRepository
     projectId: string
   ): Promise<IApplicationDocument | null> {
     return this.model.findOne({ applicantId, projectId });
+  }
+
+  updateStatus(
+    applicationId: string,
+    status: ApplicationStatus
+  ): Promise<IApplicationDocument | null> {
+    return this.model
+      .findByIdAndUpdate(applicationId, { status }, { new: true })
+      .exec();
   }
 }

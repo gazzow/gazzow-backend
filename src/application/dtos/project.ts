@@ -26,6 +26,10 @@ export interface ICreateProjectResponseDTO {
   data: IProject;
 }
 
+export interface IListProjectRequestDTO {
+  userId: string;
+}
+
 export interface IListProjectResponseDTO {
   data: IProject[];
 }

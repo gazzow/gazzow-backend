@@ -25,6 +25,12 @@ export class ApplyProjectUseCase implements ICreateApplicationUseCase {
       );
     }
 
+    if (project.creatorId.equals(dto.applicantId)) {
+      throw new AppError(
+        ResponseMessages.SelfApplicationNotAllowed,
+        HttpStatusCode.BAD_REQUEST
+      );
+    }
     const existingApplication =
       await this._applicationRepository.findByApplicantAndProject(
         dto.applicantId,
