@@ -2,7 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 
 import type { ICreateProjectUseCase } from "../../application/interfaces/usecase/project/create-project.js";
 import type { IListProjectUseCase } from "../../application/interfaces/usecase/project/list-projects.js";
-import type { ICreateApplicationUseCase } from "../../application/interfaces/usecase/project/apply-project.js";
+import type { ICreateApplicationUseCase } from "../../application/interfaces/usecase/project/create-application.js";
 
 import { ApiResponse } from "../common/api-response.js";
 import { HttpStatusCode } from "../../domain/enums/constants/status-codes.js";

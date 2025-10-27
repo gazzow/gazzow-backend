@@ -13,7 +13,7 @@ import { CreateProjectUseCase } from "../../application/use-cases/project/create
 import type { IListProjectUseCase } from "../../application/interfaces/usecase/project/list-projects.js";
 import { ListProjectUseCase } from "../../application/use-cases/project/list-projects.js";
 
-import type { ICreateApplicationUseCase } from "../../application/interfaces/usecase/project/apply-project.js";
+import type { ICreateApplicationUseCase } from "../../application/interfaces/usecase/project/create-application.js";
 import { ApplyProjectUseCase } from "../../application/use-cases/project/create-application.js";
 
 import type { IListApplicationsUseCase } from "../../application/interfaces/usecase/project/list-applications.js";
