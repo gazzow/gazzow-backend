@@ -4,6 +4,7 @@ export enum ResponseMessages {
   LoginFailed = "Invalid email or password",
   LogoutSuccess = "Logged out successfully",
   Unauthorized = "Unauthorized: No token provided",
+  PasswordUpdatedSuccess = "Password updated successfully",
 
   // JWT Token
   NoRefreshToken = "Unauthorized: No refresh token provided",
@@ -21,10 +22,9 @@ export enum ResponseMessages {
   UserAlreadyExists = "User already in use",
   UserRetrieved = "User retrieved successfully",
   UserCreated = "User created successfully",
-  ProfileUpdated = "Profile updated successfully",
   UserBlocked = "User has been blocked",
+  ProfileUpdated = "Profile updated successfully",
   UserStatusUpdated = "User status updated",
-  PasswordUpdatedSuccess = "Password updated successfully",
   FetchedUsers = "Users fetched successfully",
 
   // System
@@ -40,6 +40,9 @@ export enum ResponseMessages {
   FetchedProjects = "Projects fetched successfully",
   ProjectRetrieved = "Project retrieved successfully",
   ProjectNotFound = "Project not found",
+  ProjectUpdateFailed = "Project update failed",
+  ProjectUpdateSuccess = "Project update successfully",
+  UnauthorizedProjectModification = "Unauthorized to modify this project",
 
   //Application
   ApplicationAlreadyExists = "Application already exists",

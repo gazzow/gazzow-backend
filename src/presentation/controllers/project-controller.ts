@@ -14,11 +14,13 @@ import { AppError } from "../../utils/app-error.js";
 import type { IListMyProjectsUsecase } from "../../application/interfaces/usecase/project/list-my-projects.js";
 import type { IGetProjectUseCase } from "../../application/interfaces/usecase/project/get-project.js";
 import type { IUpdateApplicationStatusUseCase } from "../../application/interfaces/usecase/project/update-application-status.js";
+import type { IUpdateProjectUseCase } from "../../application/interfaces/usecase/project/update-project.js";
 
 export class ProjectController {
   constructor(
     private _createProjectUseCase: ICreateProjectUseCase,
     private _getProjectUseCase: IGetProjectUseCase,
+    private _updateProjectUseCase: IUpdateProjectUseCase,
     private _listProjectUseCase: IListProjectUseCase,
     private _createApplicationUseCase: ICreateApplicationUseCase,
     private _listApplicationsUseCase: IListApplicationsUseCase,
@@ -52,6 +54,33 @@ export class ProjectController {
       res
         .status(HttpStatusCode.OK)
         .json(ApiResponse.success(ResponseMessages.ProjectRetrieved, data));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  updateProject = async (req: Request, res: Response, next: NextFunction) => {
+    logger.debug("Update Project API Hit 🚀");
+
+    try {
+      const userId = req.user!.id;
+      const projectId = req.params.projectId;
+      if (!projectId) {
+        throw new AppError(
+          "Project ID is required",
+          HttpStatusCode.BAD_REQUEST
+        );
+      }
+
+      const { data } = await this._updateProjectUseCase.execute({
+        projectId,
+        userId,
+        data: req.body,
+      });
+
+      res
+        .status(HttpStatusCode.OK)
+        .json(ApiResponse.success(ResponseMessages.ProjectUpdateSuccess, data));
     } catch (error) {
       next(error);
     }

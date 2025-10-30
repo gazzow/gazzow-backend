@@ -36,6 +36,8 @@ import type { IGetProjectUseCase } from "../../application/interfaces/usecase/pr
 import { GetProjectUseCase } from "../../application/use-cases/project/get-project.js";
 import type { IUpdateApplicationStatusUseCase } from "../../application/interfaces/usecase/project/update-application-status.js";
 import { UpdateApplicationStatusUseCase } from "../../application/use-cases/project/update-application-status.js";
+import type { IUpdateProjectUseCase } from "../../application/interfaces/usecase/project/update-project.js";
+import { UpdateProjectUseCase } from "../../application/use-cases/project/update-project.js";
 
 export class ProjectDependencyContainer {
   private readonly _userRepository: IUserRepository;
@@ -94,7 +96,14 @@ export class ProjectDependencyContainer {
   private createUpdateApplicationStatus(): IUpdateApplicationStatusUseCase {
     return new UpdateApplicationStatusUseCase(
       this._projectRepository,
-      this._applicationRepository,
+      this._applicationRepository
+    );
+  }
+
+  private createUpdateProjectUseCase(): IUpdateProjectUseCase {
+    return new UpdateProjectUseCase(
+      this._projectRepository,
+      this._projectMapper
     );
   }
 
@@ -102,6 +111,7 @@ export class ProjectDependencyContainer {
     return new ProjectController(
       this.createProjectUseCase(),
       this.createGetProjectUseCase(),
+      this.createUpdateProjectUseCase(),
       this.createListProjectUseCase(),
       this.createApplyProjectUseCase(),
       this.createListApplicationsUseCase(),

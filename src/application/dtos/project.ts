@@ -49,3 +49,13 @@ export interface IGetProjectRequestDTO {
 export interface IGetProjectResponseDTO {
   data: IProject;
 }
+
+export interface IUpdateProjectRequestDTO {
+  projectId: string;
+  userId: string;
+  data: Partial<IProject>;
+}
+
+export interface IUpdateProjectResponseDTO {
+  data: IProject
+}
