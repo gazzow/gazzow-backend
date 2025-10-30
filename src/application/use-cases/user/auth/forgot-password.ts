@@ -1,3 +1,6 @@
+import { ResponseMessages } from "../../../../domain/enums/constants/response-messages.js";
+import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.js";
+import { AppError } from "../../../../utils/app-error.js";
 import logger from "../../../../utils/logger.js";
 import type { IForgotPasswordUseCase } from "../../../interfaces/usecase/user/auth/forgot-password.js";
 import type { IAuthService } from "../../../providers/auth-service.js";
@@ -23,31 +26,31 @@ export class ForgotPasswordUseCase implements IForgotPasswordUseCase {
   async execute(email: string): Promise<void> {
     // Check if the user exists
     const userDoc = await this._authService.checkUserExists(email);
-
+    if (!userDoc) {
+      throw new AppError(ResponseMessages.UserNotFound, HttpStatusCode.NOT_FOUND)
+    }
+    
     const otp = this._authService.generateOtp();
     logger.info(`Otp for forgot password: [${otp}]`);
 
-    if (userDoc) {
-      // Generate Otp and store hashed otp in redis
-      const hashedOtp = await this._hashService.hash(otp);
+    // Generate Otp and store hashed otp in redis
+    const hashedOtp = await this._hashService.hash(otp);
 
-      const otpKey = `otp:reset:${email}`;
-      logger.info(`otpKey in forgot-password: ${otpKey}`);
+    const otpKey = `otp:reset:${email}`;
+    logger.info(`otpKey in forgot-password: ${otpKey}`);
 
-      await this._otpStore.set(otpKey, hashedOtp, this._otpConfig.ttlSeconds);
+    await this._otpStore.set(otpKey, hashedOtp, this._otpConfig.ttlSeconds);
 
-      // Send OTP via email
-      const emailContent = this._otpConfig.emailTemplate(
-        otp,
-        Math.floor(this._otpConfig.ttlSeconds / 60)
-      );
+    // Send OTP via email
+    const emailContent = this._otpConfig.emailTemplate(
+      otp,
+      Math.floor(this._otpConfig.ttlSeconds / 60)
+    );
 
-      await this._emailService.sendOtpNotification(
-        email,
-        this._otpConfig.emailSubject,
-        emailContent
-      );
-    }
-
+    await this._emailService.sendOtpNotification(
+      email,
+      this._otpConfig.emailSubject,
+      emailContent
+    );
   }
 }
