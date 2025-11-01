@@ -37,8 +37,8 @@ export class UserManagementController {
     logger.debug("User block api hit 🚀");
 
     try {
-      const { userId } = req.params;
-      if (!userId) {
+      const { id } = req.params;
+      if (!id) {
         throw new AppError(
           ResponseMessages.BadRequest,
           HttpStatusCode.BAD_REQUEST
@@ -46,9 +46,9 @@ export class UserManagementController {
       }
       const { status } = req.body;
 
-      logger.debug(`User id: ${userId} & update status ->:${status} `);
+      logger.debug(`User id: ${id} & update status ->:${status} `);
 
-      const { data } = await this._blockUserUseCase.execute(userId, status);
+      const { data } = await this._blockUserUseCase.execute(id, status);
 
       res
         .status(HttpStatusCode.OK)

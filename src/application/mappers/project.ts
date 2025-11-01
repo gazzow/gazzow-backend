@@ -6,6 +6,7 @@ import type { IProject } from "../../domain/entities/project.js";
 export interface IProjectMapper {
   toPersistenceEntity(dto: ICreateProjectRequestDTO): Partial<IProjectDocument>;
   toResponseDTO(projectDoc: IProjectDocument): IProject;
+  toUpdateProjectEntity(dto: Partial<IProject>): Partial<IProjectDocument>;
 }
 
 export class ProjectMapper implements IProjectMapper {
@@ -27,8 +28,6 @@ export class ProjectMapper implements IProjectMapper {
       durationUnit: dto.durationUnit,
       visibility: dto.visibility,
       status: dto.status,
-      createdAt: new Date(),
-      updatedAt: new Date(),
     };
   }
 
@@ -58,5 +57,19 @@ export class ProjectMapper implements IProjectMapper {
       createdAt: projectDoc.createdAt?.toISOString() ?? "",
       updatedAt: projectDoc.updatedAt?.toISOString() ?? "",
     };
+  }
+
+  toUpdateProjectEntity(dto: Partial<IProject>): Partial<IProjectDocument> {
+    const { id, creatorId, createdAt, contributors, ...fields } = dto;
+
+    const updateData: Partial<IProjectDocument> = {};
+
+    Object.entries(fields).forEach(([key, value]) => {
+      if (value !== undefined) {
+        (updateData as any)[key] = value;
+      }
+    });
+
+    return updateData;
   }
 }

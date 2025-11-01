@@ -1,7 +1,7 @@
 import type { Provider, UserRole, UserStatus } from "../enums/user-role.js";
-import type { IBaseUser } from "./base-entity.js";
 
-export interface IUser extends IBaseUser {
+export interface IUser {
+  id: string;
   name: string;
   email: string;
   role: UserRole;
@@ -14,6 +14,8 @@ export interface IUser extends IBaseUser {
   experience?: string;
   techStacks?: string[];
   learningGoals?: string[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface IUserPublic {

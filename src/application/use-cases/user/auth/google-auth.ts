@@ -1,4 +1,4 @@
-import type { IGoogleAuthResponseDTO, IUserPublicDTO } from "../../../dtos/user/user.js";
+import type { IGoogleAuthResponseDTO } from "../../../dtos/user/user.js";
 import type { IUserRepository } from "../../../interfaces/repository/user-repository.js";
 import type { IGoogleAuthUseCase } from "../../../interfaces/usecase/user/auth/google-auth.js";
 import type { IUserMapper } from "../../../mappers/user/user.js";

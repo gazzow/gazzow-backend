@@ -1,5 +1,5 @@
-import type { IListProjectResponseDTO } from "../../../dtos/project.js";
+import type { IListProjectRequestDTO, IListProjectResponseDTO } from "../../../dtos/project.js";
 
 export interface IListProjectUseCase {
-    execute(): Promise<IListProjectResponseDTO>
+  execute(dto: IListProjectRequestDTO): Promise<IListProjectResponseDTO>;
 }
