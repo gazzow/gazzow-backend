@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import logger from "../../../utils/logger.js";
 import { AppError } from "../../../utils/app-error.js";
-import type { IUpdateUserProfileUseCase } from "../../../application/interfaces/usecase/user/profile/setup-profile.js";
+import type { IUpdateUserProfileUseCase } from "../../../application/interfaces/usecase/user/profile/update-profile.js";
 import type { IGetUserProfileUseCase } from "../../../application/interfaces/usecase/user/profile/get-profile.js";
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";

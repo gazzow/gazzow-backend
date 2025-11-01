@@ -1,12 +1,18 @@
 import { Types } from "mongoose";
-import type { IApplication } from "../../domain/entities/application.js";
+import type {
+  IApplication,
+  IApplicationDocumentWithApplicant,
+  IApplicationWithApplicant,
+} from "../../domain/entities/application.js";
 import type { IApplicationDocument } from "../../infrastructure/db/models/application-model.js";
 import type { IApplicationRequestDTO } from "../dtos/application.js";
 
 export interface IApplicationMapper {
   toPersistence(dto: IApplicationRequestDTO): Partial<IApplicationDocument>;
   toResponseDTO(applicationDoc: IApplicationDocument): IApplication;
-  
+  toResponseWithApplicantDTO(
+    applicationDoc: IApplicationDocumentWithApplicant
+  ): IApplicationWithApplicant;
 }
 
 export class ApplicationMapper implements IApplicationMapper {
@@ -24,6 +30,24 @@ export class ApplicationMapper implements IApplicationMapper {
       id: applicationDoc._id.toString(),
       projectId: applicationDoc.projectId.toString(),
       applicantId: applicationDoc.applicantId.toString(),
+      expectedRate: applicationDoc.expectedRate,
+      status: applicationDoc.status,
+      proposal: applicationDoc?.proposal,
+      createdAt:
+        applicationDoc.createdAt?.toISOString() ?? new Date().toISOString(),
+      updatedAt:
+        applicationDoc.updatedAt?.toISOString() ?? new Date().toISOString(),
+    };
+  }
+
+  toResponseWithApplicantDTO(
+    applicationDoc: IApplicationDocumentWithApplicant
+  ): IApplicationWithApplicant {
+    return {
+      id: applicationDoc._id.toString(),
+      projectId: applicationDoc.projectId.toString(),
+      applicantId: applicationDoc.applicantId.toString(),
+      applicant: applicationDoc.applicant,
       expectedRate: applicationDoc.expectedRate,
       status: applicationDoc.status,
       proposal: applicationDoc?.proposal,

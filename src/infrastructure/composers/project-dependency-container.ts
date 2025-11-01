@@ -13,7 +13,7 @@ import { CreateProjectUseCase } from "../../application/use-cases/project/create
 import type { IListProjectUseCase } from "../../application/interfaces/usecase/project/list-projects.js";
 import { ListProjectUseCase } from "../../application/use-cases/project/list-projects.js";
 
-import type { ICreateApplicationUseCase } from "../../application/interfaces/usecase/project/apply-project.js";
+import type { ICreateApplicationUseCase } from "../../application/interfaces/usecase/project/create-application.js";
 import { ApplyProjectUseCase } from "../../application/use-cases/project/create-application.js";
 
 import type { IListApplicationsUseCase } from "../../application/interfaces/usecase/project/list-applications.js";
@@ -34,6 +34,10 @@ import type { IListMyProjectsUsecase } from "../../application/interfaces/usecas
 import { ListMyProjectsUseCase } from "../../application/use-cases/project/list-my-projects.js";
 import type { IGetProjectUseCase } from "../../application/interfaces/usecase/project/get-project.js";
 import { GetProjectUseCase } from "../../application/use-cases/project/get-project.js";
+import type { IUpdateApplicationStatusUseCase } from "../../application/interfaces/usecase/project/update-application-status.js";
+import { UpdateApplicationStatusUseCase } from "../../application/use-cases/project/update-application-status.js";
+import type { IUpdateProjectUseCase } from "../../application/interfaces/usecase/project/update-project.js";
+import { UpdateProjectUseCase } from "../../application/use-cases/project/update-project.js";
 
 export class ProjectDependencyContainer {
   private readonly _userRepository: IUserRepository;
@@ -89,14 +93,30 @@ export class ProjectDependencyContainer {
     );
   }
 
+  private createUpdateApplicationStatus(): IUpdateApplicationStatusUseCase {
+    return new UpdateApplicationStatusUseCase(
+      this._projectRepository,
+      this._applicationRepository
+    );
+  }
+
+  private createUpdateProjectUseCase(): IUpdateProjectUseCase {
+    return new UpdateProjectUseCase(
+      this._projectRepository,
+      this._projectMapper
+    );
+  }
+
   createProjectController(): ProjectController {
     return new ProjectController(
       this.createProjectUseCase(),
       this.createGetProjectUseCase(),
+      this.createUpdateProjectUseCase(),
       this.createListProjectUseCase(),
       this.createApplyProjectUseCase(),
       this.createListApplicationsUseCase(),
-      this.createListMyProjectUseCase()
+      this.createListMyProjectUseCase(),
+      this.createUpdateApplicationStatus()
     );
   }
 }

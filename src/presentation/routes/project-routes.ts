@@ -23,6 +23,11 @@ router.get(
   tokenMiddleware.verifyToken,
   projectController.getProject
 );
+router.patch(
+  "/:projectId",
+  tokenMiddleware.verifyToken,
+  projectController.updateProject
+);
 
 // Application routes
 router.post(
@@ -34,6 +39,11 @@ router.get(
   "/:projectId/applications",
   tokenMiddleware.verifyToken,
   projectController.listApplications
+);
+router.patch(
+  "/:projectId/applications/:applicationId",
+  tokenMiddleware.verifyToken,
+  projectController.updateApplicationStatus
 );
 
 export default router;

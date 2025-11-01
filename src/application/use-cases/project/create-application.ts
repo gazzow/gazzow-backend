@@ -7,7 +7,7 @@ import type {
 } from "../../dtos/application.js";
 import type { IApplicationRepository } from "../../interfaces/repository/application-repository.js";
 import type { IProjectRepository } from "../../interfaces/repository/project-repository.js";
-import type { ICreateApplicationUseCase } from "../../interfaces/usecase/project/apply-project.js";
+import type { ICreateApplicationUseCase } from "../../interfaces/usecase/project/create-application.js";
 import type { IApplicationMapper } from "../../mappers/application.js";
 
 export class ApplyProjectUseCase implements ICreateApplicationUseCase {
@@ -25,6 +25,12 @@ export class ApplyProjectUseCase implements ICreateApplicationUseCase {
       );
     }
 
+    if (project.creatorId.equals(dto.applicantId)) {
+      throw new AppError(
+        ResponseMessages.SelfApplicationNotAllowed,
+        HttpStatusCode.BAD_REQUEST
+      );
+    }
     const existingApplication =
       await this._applicationRepository.findByApplicantAndProject(
         dto.applicantId,

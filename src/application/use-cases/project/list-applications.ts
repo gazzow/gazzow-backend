@@ -33,7 +33,7 @@ export class ListApplicationsUseCase implements IListApplicationsUseCase {
 
     const data =
       applicationsDoc?.map((doc) => {
-        return this._applicationMapper.toResponseDTO(doc);
+        return this._applicationMapper.toResponseWithApplicantDTO(doc);
       }) ?? [];
 
     return { data };
