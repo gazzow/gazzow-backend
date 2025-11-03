@@ -1,3 +1,4 @@
+import type { IProjectFile } from "../../application/interfaces/s3-bucket/file-storage.js";
 import type {
   ContributorStatus,
   ProjectDurationUnit,
@@ -22,6 +23,7 @@ export interface IProject {
   visibility: ProjectVisibility;
   status: ProjectStatus;
   contributors: IContributor[];
+  documents: IProjectFile[];
   createdAt: string;
   updatedAt: string;
 }

@@ -1,5 +1,4 @@
 import type { NextFunction, Request, Response } from "express";
-
 import type { ICreateProjectUseCase } from "../../application/interfaces/usecase/project/create-project.js";
 import type { IListProjectUseCase } from "../../application/interfaces/usecase/project/list-projects.js";
 import type { ICreateApplicationUseCase } from "../../application/interfaces/usecase/project/create-application.js";
@@ -15,6 +14,7 @@ import type { IListMyProjectsUsecase } from "../../application/interfaces/usecas
 import type { IGetProjectUseCase } from "../../application/interfaces/usecase/project/get-project.js";
 import type { IUpdateApplicationStatusUseCase } from "../../application/interfaces/usecase/project/update-application-status.js";
 import type { IUpdateProjectUseCase } from "../../application/interfaces/usecase/project/update-project.js";
+import type { IGenerateSignedUrlUseCase } from "../../application/interfaces/usecase/project/generate-signedurl.js";
 
 export class ProjectController {
   constructor(
@@ -25,13 +25,16 @@ export class ProjectController {
     private _createApplicationUseCase: ICreateApplicationUseCase,
     private _listApplicationsUseCase: IListApplicationsUseCase,
     private _listMyProjectsUseCase: IListMyProjectsUsecase,
-    private _updateApplicationStatusUseCase: IUpdateApplicationStatusUseCase
+    private _updateApplicationStatusUseCase: IUpdateApplicationStatusUseCase,
+    private _generateSignedUrlUseCase: IGenerateSignedUrlUseCase
   ) {}
 
   createProject = async (req: Request, res: Response, next: NextFunction) => {
     logger.debug("create project API hit🚀");
     const userId = req.user!.id;
-    const dto = { ...req.body, creatorId: userId };
+
+    logger.debug(`files: ${req.files}`);
+    const dto = { ...req.body, creatorId: userId, files: req.files };
     try {
       const { data } = await this._createProjectUseCase.execute(dto);
       res
@@ -99,6 +102,27 @@ export class ProjectController {
     }
   };
 
+  generateSignedUrl = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    logger.debug("Generate Signed url API hit 🚀");
+    const fileKey = req.query.fileKey as string;
+
+    if (!fileKey) throw new AppError("File key is missing");
+
+    try {
+      const signedUrl = await this._generateSignedUrlUseCase.execute(fileKey);
+      res
+        .status(HttpStatusCode.OK)
+        .json(
+          ApiResponse.success(ResponseMessages.GeneratedSignedUrl, signedUrl)
+        );
+    } catch (error) {
+      next(error);
+    }
+  };
   createApplication = async (
     req: Request,
     res: Response,

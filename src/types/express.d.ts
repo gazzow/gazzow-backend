@@ -8,6 +8,17 @@ declare global {
 
     interface Request {
       user?: User;
+      file?: Multer.File;
+      files?: Multer.File[]; 
+    }
+
+     namespace Multer {
+      interface File {
+        buffer: Buffer;
+        originalname: string;
+        mimetype: string;
+        size: number;
+      }
     }
   }
 }
