@@ -43,6 +43,7 @@ export enum ResponseMessages {
   ProjectUpdateFailed = "Project update failed",
   ProjectUpdateSuccess = "Project update successfully",
   UnauthorizedProjectModification = "Unauthorized to modify this project",
+  GeneratedSignedUrl = "Generated signed url successfully",
 
   //Application
   ApplicationAlreadyExists = "Application already exists",
