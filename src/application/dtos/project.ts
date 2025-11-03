@@ -1,10 +1,12 @@
 import type { IProject } from "../../domain/entities/project.js";
+import type {Express} from 'express'
 import type {
   ProjectDurationUnit,
   ProjectExperience,
   ProjectStatus,
   ProjectVisibility,
 } from "../../domain/enums/project.js";
+import type { IProjectFile } from "../interfaces/s3-bucket/file-storage.js";
 
 export interface ICreateProjectRequestDTO {
   title: string;
@@ -20,6 +22,8 @@ export interface ICreateProjectRequestDTO {
   durationUnit: ProjectDurationUnit;
   visibility: ProjectVisibility;
   status: ProjectStatus;
+  files?: Express.Multer.File[];
+  documents: IProjectFile[];
 }
 
 export interface ICreateProjectResponseDTO {

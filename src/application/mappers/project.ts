@@ -22,7 +22,7 @@ export class ProjectMapper implements IProjectMapper {
       requiredSkills: dto.requiredSkills,
       experience: dto.experience,
       developersNeeded: dto.developersNeeded,
-      contributors: [],
+      documents: dto.documents,
       durationMin: dto.durationMin,
       durationMax: dto.durationMax,
       durationUnit: dto.durationUnit,
@@ -54,6 +54,7 @@ export class ProjectMapper implements IProjectMapper {
       durationUnit: projectDoc.durationUnit,
       visibility: projectDoc.visibility,
       status: projectDoc.status,
+      documents: projectDoc.documents,
       createdAt: projectDoc.createdAt?.toISOString() ?? "",
       updatedAt: projectDoc.updatedAt?.toISOString() ?? "",
     };

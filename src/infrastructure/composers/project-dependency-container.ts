@@ -38,6 +38,10 @@ import type { IUpdateApplicationStatusUseCase } from "../../application/interfac
 import { UpdateApplicationStatusUseCase } from "../../application/use-cases/project/update-application-status.js";
 import type { IUpdateProjectUseCase } from "../../application/interfaces/usecase/project/update-project.js";
 import { UpdateProjectUseCase } from "../../application/use-cases/project/update-project.js";
+import type { IS3FileStorageService } from "../../application/providers/storage-service.js";
+import { S3FileStorageService } from "../providers/s3-service.js";
+import type { IGenerateSignedUrlUseCase } from "../../application/interfaces/usecase/project/generate-signedurl.js";
+import { GenerateSignedUrlUseCase } from "../../application/use-cases/project/generate-signedurl.js";
 
 export class ProjectDependencyContainer {
   private readonly _userRepository: IUserRepository;
@@ -45,6 +49,7 @@ export class ProjectDependencyContainer {
   private readonly _applicationRepository: IApplicationRepository;
   private readonly _projectMapper: IProjectMapper;
   private readonly _applicationMapper: IApplicationMapper;
+  private readonly _s3Service: IS3FileStorageService;
 
   constructor() {
     this._userRepository = new UserRepository(UserModel);
@@ -52,12 +57,14 @@ export class ProjectDependencyContainer {
     this._applicationRepository = new ApplicationRepository(ApplicationModel);
     this._projectMapper = new ProjectMapper();
     this._applicationMapper = new ApplicationMapper();
+    this._s3Service = new S3FileStorageService();
   }
 
   private createProjectUseCase(): ICreateProjectUseCase {
     return new CreateProjectUseCase(
       this._projectRepository,
-      this._projectMapper
+      this._projectMapper,
+      this._s3Service
     );
   }
 
@@ -107,6 +114,10 @@ export class ProjectDependencyContainer {
     );
   }
 
+  private createGenerateSignedUrlUseCase(): IGenerateSignedUrlUseCase {
+    return new GenerateSignedUrlUseCase(this._s3Service);
+  }
+
   createProjectController(): ProjectController {
     return new ProjectController(
       this.createProjectUseCase(),
@@ -116,7 +127,8 @@ export class ProjectDependencyContainer {
       this.createApplyProjectUseCase(),
       this.createListApplicationsUseCase(),
       this.createListMyProjectUseCase(),
-      this.createUpdateApplicationStatus()
+      this.createUpdateApplicationStatus(),
+      this.createGenerateSignedUrlUseCase()
     );
   }
 }
