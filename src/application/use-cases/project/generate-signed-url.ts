@@ -1,4 +1,4 @@
-import type { IGenerateSignedUrlUseCase } from "../../interfaces/usecase/project/generate-signedurl.js";
+import type { IGenerateSignedUrlUseCase } from "../../interfaces/usecase/project/generate-signed-url.js";
 import type { IS3FileStorageService } from "../../providers/storage-service.js";
 
 export class GenerateSignedUrlUseCase implements IGenerateSignedUrlUseCase {

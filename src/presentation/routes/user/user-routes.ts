@@ -1,7 +1,7 @@
 import { Router } from "express";
 import passport from "../../../infrastructure/config/passport.js";
-import { AuthDependencyContainer } from "../../../infrastructure/composers/auth-dependency-container.js";
-import { UserDependencyContainer } from "../../../infrastructure/composers/user-dependency-container.js";
+import { AuthDependencyContainer } from "../../../infrastructure/dependency-injection/auth-dependency-container.js";
+import { UserDependencyContainer } from "../../../infrastructure/dependency-injection/user-dependency-container.js";
 
 const userRouter = Router();
 
