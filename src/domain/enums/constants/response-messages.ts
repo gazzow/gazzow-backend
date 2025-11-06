@@ -42,8 +42,12 @@ export enum ResponseMessages {
   ProjectNotFound = "Project not found",
   ProjectUpdateFailed = "Project update failed",
   ProjectUpdateSuccess = "Project update successfully",
+  ProjectIdIsRequired = "Project is required",
   UnauthorizedProjectModification = "Unauthorized to modify this project",
   GeneratedSignedUrl = "Generated signed url successfully",
+
+  // Contributor
+  FetchedContributors = "Contributors fetched successfully",
 
   //Application
   ApplicationAlreadyExists = "Application already exists",

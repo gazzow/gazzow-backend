@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { validateLogin } from "../../middleware/validators/admin/validate-login.js";
-import { AdminDependencyContainer } from "../../../infrastructure/composers/admin-dependency-container.js";
+import { AdminDependencyContainer } from "../../../infrastructure/dependency-injection/admin-dependency-container.js";
 
 const adminRouter = Router();
 

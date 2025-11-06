@@ -14,7 +14,7 @@ import type { IListProjectUseCase } from "../../application/interfaces/usecase/p
 import { ListProjectUseCase } from "../../application/use-cases/project/list-projects.js";
 
 import type { ICreateApplicationUseCase } from "../../application/interfaces/usecase/project/create-application.js";
-import { ApplyProjectUseCase } from "../../application/use-cases/project/create-application.js";
+import { CreateApplicationUseCase } from "../../application/use-cases/project/create-application.js";
 
 import type { IListApplicationsUseCase } from "../../application/interfaces/usecase/project/list-applications.js";
 import { ListApplicationsUseCase } from "../../application/use-cases/project/list-applications.js";
@@ -40,8 +40,10 @@ import type { IUpdateProjectUseCase } from "../../application/interfaces/usecase
 import { UpdateProjectUseCase } from "../../application/use-cases/project/update-project.js";
 import type { IS3FileStorageService } from "../../application/providers/storage-service.js";
 import { S3FileStorageService } from "../providers/s3-service.js";
-import type { IGenerateSignedUrlUseCase } from "../../application/interfaces/usecase/project/generate-signedurl.js";
-import { GenerateSignedUrlUseCase } from "../../application/use-cases/project/generate-signedurl.js";
+import type { IGenerateSignedUrlUseCase } from "../../application/interfaces/usecase/project/generate-signed-url.js";
+import { GenerateSignedUrlUseCase } from "../../application/use-cases/project/generate-signed-url.js";
+import type { IListContributorsUseCase } from "../../application/interfaces/usecase/project/list-contributors.js";
+import { ListContributorsUseCase } from "../../application/use-cases/project/list-contributors.js";
 
 export class ProjectDependencyContainer {
   private readonly _userRepository: IUserRepository;
@@ -77,7 +79,7 @@ export class ProjectDependencyContainer {
   }
 
   private createApplyProjectUseCase(): ICreateApplicationUseCase {
-    return new ApplyProjectUseCase(
+    return new CreateApplicationUseCase(
       this._projectRepository,
       this._applicationRepository,
       this._applicationMapper
@@ -118,6 +120,13 @@ export class ProjectDependencyContainer {
     return new GenerateSignedUrlUseCase(this._s3Service);
   }
 
+  private createListContributorsUseCase(): IListContributorsUseCase {
+    return new ListContributorsUseCase(
+      this._projectRepository,
+      this._projectMapper
+    );
+  }
+
   createProjectController(): ProjectController {
     return new ProjectController(
       this.createProjectUseCase(),
@@ -128,7 +137,8 @@ export class ProjectDependencyContainer {
       this.createListApplicationsUseCase(),
       this.createListMyProjectUseCase(),
       this.createUpdateApplicationStatus(),
-      this.createGenerateSignedUrlUseCase()
+      this.createGenerateSignedUrlUseCase(),
+      this.createListContributorsUseCase()
     );
   }
 }

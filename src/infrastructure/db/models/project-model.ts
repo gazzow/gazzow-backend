@@ -8,12 +8,24 @@ import {
 } from "../../../domain/enums/project.js";
 import type { IProjectFile } from "../../../application/interfaces/s3-bucket/file-storage.js";
 
-interface IContributor {
+export interface IContributor {
   userId: Types.ObjectId;
   status: ContributorStatus;
+  expectedRate: number;
   invitedAt?: Date;
   createdAt?: Date;
   updatedAt?: Date;
+}
+
+export interface IPopulatedContributor extends Omit<IContributor, "userId"> {
+  _id: Types.ObjectId;
+  userId: {
+    _id: Types.ObjectId;
+    name: string;
+    email: string;
+    imageUrl: string;
+    developerRole: string;
+  };
 }
 
 export type IProjectDocument = Document & {
@@ -37,6 +49,11 @@ export type IProjectDocument = Document & {
   updatedAt?: Date;
 };
 
+export interface IProjectDocumentPopulated
+  extends Omit<IProjectDocument, "contributors"> {
+  contributors: IPopulatedContributor[];
+}
+
 const contributorSchema = new Schema<IContributor>(
   {
     userId: {
@@ -49,6 +66,7 @@ const contributorSchema = new Schema<IContributor>(
       enum: Object.values(ContributorStatus),
     },
     invitedAt: { type: Date },
+    expectedRate: {type: Number}
   },
   { timestamps: true }
 );

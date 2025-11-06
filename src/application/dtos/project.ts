@@ -1,6 +1,7 @@
 import type { IProject } from "../../domain/entities/project.js";
-import type {Express} from 'express'
+import type { Express } from "express";
 import type {
+  ContributorStatus,
   ProjectDurationUnit,
   ProjectExperience,
   ProjectStatus,
@@ -61,5 +62,27 @@ export interface IUpdateProjectRequestDTO {
 }
 
 export interface IUpdateProjectResponseDTO {
-  data: IProject
+  data: IProject;
+}
+
+export interface IListContributorsRequestDTO {
+  projectId: string;
+}
+
+export interface IListContributorsResponseDTO {
+  projectId: string;
+  title: string;
+  contributors: {
+    id: string;
+    userId: string;
+    name: string;
+    email: string;
+    imageUrl: string;
+    developerRole: string;
+    status: ContributorStatus;
+    expectedRate: number;
+    invitedAt?: string;
+    createdAt: string;
+    updatedAt: string;
+  }[];
 }

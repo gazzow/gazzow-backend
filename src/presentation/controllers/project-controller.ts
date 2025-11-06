@@ -14,7 +14,8 @@ import type { IListMyProjectsUsecase } from "../../application/interfaces/usecas
 import type { IGetProjectUseCase } from "../../application/interfaces/usecase/project/get-project.js";
 import type { IUpdateApplicationStatusUseCase } from "../../application/interfaces/usecase/project/update-application-status.js";
 import type { IUpdateProjectUseCase } from "../../application/interfaces/usecase/project/update-project.js";
-import type { IGenerateSignedUrlUseCase } from "../../application/interfaces/usecase/project/generate-signedurl.js";
+import type { IGenerateSignedUrlUseCase } from "../../application/interfaces/usecase/project/generate-signed-url.js";
+import type { IListContributorsUseCase } from "../../application/interfaces/usecase/project/list-contributors.js";
 
 export class ProjectController {
   constructor(
@@ -26,7 +27,8 @@ export class ProjectController {
     private _listApplicationsUseCase: IListApplicationsUseCase,
     private _listMyProjectsUseCase: IListMyProjectsUsecase,
     private _updateApplicationStatusUseCase: IUpdateApplicationStatusUseCase,
-    private _generateSignedUrlUseCase: IGenerateSignedUrlUseCase
+    private _generateSignedUrlUseCase: IGenerateSignedUrlUseCase,
+    private _listContributorsUseCase: IListContributorsUseCase
   ) {}
 
   createProject = async (req: Request, res: Response, next: NextFunction) => {
@@ -39,7 +41,7 @@ export class ProjectController {
       const { data } = await this._createProjectUseCase.execute(dto);
       res
         .status(HttpStatusCode.CREATED)
-        .json(ApiResponse.success("project created", data));
+        .json(ApiResponse.success(ResponseMessages.ProjectCreated, data));
     } catch (error) {
       next(error);
     }
@@ -215,6 +217,30 @@ export class ProjectController {
       res
         .status(HttpStatusCode.OK)
         .json(ApiResponse.success(ResponseMessages.ApplicationStatusUpdated));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  listContributors = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    logger.debug("List contributors API hit 🚀");
+    const { projectId } = req.params;
+    logger.debug(projectId);
+    if (!projectId) {
+      throw new AppError(
+        ResponseMessages.ProjectIdIsRequired,
+        HttpStatusCode.BAD_REQUEST
+      );
+    }
+    try {
+      const data = await this._listContributorsUseCase.execute({ projectId });
+      res
+        .status(HttpStatusCode.OK)
+        .json(ApiResponse.success(ResponseMessages.FetchedContributors, data));
     } catch (error) {
       next(error);
     }

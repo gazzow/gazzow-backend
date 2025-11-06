@@ -10,7 +10,7 @@ import type { IProjectRepository } from "../../interfaces/repository/project-rep
 import type { ICreateApplicationUseCase } from "../../interfaces/usecase/project/create-application.js";
 import type { IApplicationMapper } from "../../mappers/application.js";
 
-export class ApplyProjectUseCase implements ICreateApplicationUseCase {
+export class CreateApplicationUseCase implements ICreateApplicationUseCase {
   constructor(
     private _projectRepository: IProjectRepository,
     private _applicationRepository: IApplicationRepository,
