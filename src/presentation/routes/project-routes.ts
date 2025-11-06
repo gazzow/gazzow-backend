@@ -1,6 +1,6 @@
 import express from "express";
-import { ProjectDependencyContainer } from "../../infrastructure/composers/project-dependency-container.js";
-import { AuthDependencyContainer } from "../../infrastructure/composers/auth-dependency-container.js";
+import { ProjectDependencyContainer } from "../../infrastructure/dependency-injection/project-dependency-container.js";
+import { AuthDependencyContainer } from "../../infrastructure/dependency-injection/auth-dependency-container.js";
 import { upload } from "../middleware/upload.js";
 
 const router = express.Router();
@@ -24,11 +24,6 @@ router.get(
   tokenMiddleware.verifyToken,
   projectController.listMyProjects
 );
-router.get(
-  "/generate-signed-url",
-  tokenMiddleware.verifyToken,
-  projectController.generateSignedUrl
-);
 
 router.get(
   "/:projectId",
@@ -40,8 +35,16 @@ router.patch(
   tokenMiddleware.verifyToken,
   projectController.updateProject
 );
+router.get(
+  "/generate-signed-url",
+  tokenMiddleware.verifyToken,
+  projectController.generateSignedUrl
+);
 
-// Application routes
+// ----------------------
+// 📁 Application Routes
+// ----------------------
+
 router.post(
   "/:projectId/applications",
   tokenMiddleware.verifyToken,
@@ -56,6 +59,16 @@ router.patch(
   "/:projectId/applications/:applicationId",
   tokenMiddleware.verifyToken,
   projectController.updateApplicationStatus
+);
+
+// ----------------------
+// 📁 Contributor Routes
+// ----------------------
+
+router.get(
+  "/:projectId/contributors",
+  // tokenMiddleware.verifyToken,
+  projectController.listContributors
 );
 
 export default router;

@@ -1,12 +1,21 @@
 import { Types } from "mongoose";
-import type { ICreateProjectRequestDTO } from "../dtos/project.js";
-import type { IProjectDocument } from "../../infrastructure/db/models/project-model.js";
+import type {
+  ICreateProjectRequestDTO,
+  IListContributorsResponseDTO,
+} from "../dtos/project.js";
+import type {
+  IProjectDocument,
+  IProjectDocumentPopulated,
+} from "../../infrastructure/db/models/project-model.js";
 import type { IProject } from "../../domain/entities/project.js";
 
 export interface IProjectMapper {
   toPersistenceEntity(dto: ICreateProjectRequestDTO): Partial<IProjectDocument>;
   toResponseDTO(projectDoc: IProjectDocument): IProject;
   toUpdateProjectEntity(dto: Partial<IProject>): Partial<IProjectDocument>;
+  toListContributorsResponseDTO(
+    doc: IProjectDocumentPopulated
+  ): IListContributorsResponseDTO;
 }
 
 export class ProjectMapper implements IProjectMapper {
@@ -72,5 +81,26 @@ export class ProjectMapper implements IProjectMapper {
     });
 
     return updateData;
+  }
+  toListContributorsResponseDTO(
+    doc: IProjectDocumentPopulated
+  ): IListContributorsResponseDTO {
+    return {
+      projectId: doc._id.toString(),
+      title: doc.title,
+      contributors: doc.contributors.map((contributor) => ({
+        id: contributor._id.toString(),
+        userId: contributor.userId._id.toString(),
+        name: contributor.userId.name,
+        email: contributor.userId.email,
+        imageUrl: contributor.userId.imageUrl,
+        developerRole: contributor.userId.developerRole,
+        status: contributor.status,
+        expectedRate: contributor.expectedRate,
+        invitedAt: contributor.invitedAt?.toISOString?.() ?? "",
+        createdAt: contributor.createdAt?.toISOString?.() ?? "",
+        updatedAt: contributor.updatedAt?.toISOString?.() ?? "",
+      })),
+    };
   }
 }

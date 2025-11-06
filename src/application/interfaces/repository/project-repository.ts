@@ -1,5 +1,5 @@
 import type { ContributorStatus } from "../../../domain/enums/project.js";
-import type { IProjectDocument } from "../../../infrastructure/db/models/project-model.js";
+import type { IProjectDocument, IProjectDocumentPopulated } from "../../../infrastructure/db/models/project-model.js";
 import type { IBaseRepository } from "./base-repository.js";
 
 export interface IProjectRepository extends IBaseRepository<IProjectDocument> {
@@ -7,6 +7,8 @@ export interface IProjectRepository extends IBaseRepository<IProjectDocument> {
   addContributor(
     projectId: string,
     userId: string,
-    status: ContributorStatus,
+    expectedRate: number,
+    status: ContributorStatus
   ): Promise<IProjectDocument | null>;
+  findContributors(projectId: string): Promise<IProjectDocumentPopulated | null>;
 }
