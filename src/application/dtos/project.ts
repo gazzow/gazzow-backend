@@ -73,7 +73,6 @@ export interface IListContributorsResponseDTO {
   projectId: string;
   title: string;
   contributors: {
-    id: string;
     userId: string;
     name: string;
     email: string;

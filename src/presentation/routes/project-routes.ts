@@ -2,6 +2,7 @@ import express from "express";
 import { ProjectDependencyContainer } from "../../infrastructure/dependency-injection/project-dependency-container.js";
 import { AuthDependencyContainer } from "../../infrastructure/dependency-injection/auth-dependency-container.js";
 import { upload } from "../middleware/upload.js";
+import taskRouter from "./task-routes.js";
 
 const router = express.Router();
 
@@ -70,5 +71,10 @@ router.get(
   // tokenMiddleware.verifyToken,
   projectController.listContributors
 );
+
+// ----------------------
+// 📁 Task Routes
+// ----------------------
+router.use("/:projectId/tasks", tokenMiddleware.verifyToken, taskRouter);
 
 export default router;

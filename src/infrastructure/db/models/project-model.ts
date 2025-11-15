@@ -66,12 +66,12 @@ const contributorSchema = new Schema<IContributor>(
       enum: Object.values(ContributorStatus),
     },
     invitedAt: { type: Date },
-    expectedRate: {type: Number}
+    expectedRate: { type: Number },
   },
-  { timestamps: true }
+  { timestamps: true, _id: false }
 );
 
-const ProfileFileSchema = new Schema<IProjectFile>({
+const ProjectFileSchema = new Schema<IProjectFile>({
   key: {
     type: String,
     trim: true,
@@ -169,7 +169,7 @@ const projectSchema = new Schema<IProjectDocument>(
       default: ProjectStatus.OPEN,
     },
     documents: {
-      type: [ProfileFileSchema],
+      type: [ProjectFileSchema],
       default: [],
     },
   },
