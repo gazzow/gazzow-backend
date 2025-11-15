@@ -1,0 +1,94 @@
+import { Types } from "mongoose";
+import type {
+  IPopulatedTaskDocument,
+  ITaskDocument,
+} from "../../infrastructure/db/models/task-model.js";
+import type {
+  ICreateTaskRequestDTO,
+  IPopulatedResponseDTO,
+  ITaskResponseDTO,
+} from "../dtos/task.js";
+
+export interface ITaskMapper {
+  toPersistent(dto: ICreateTaskRequestDTO): Partial<ITaskDocument>;
+  toResponseDTO(taskDoc: ITaskDocument): ITaskResponseDTO;
+  toPopulatedResponseDTO(
+    taskDoc: IPopulatedTaskDocument
+  ): IPopulatedResponseDTO;
+}
+
+export class TaskMapper implements ITaskMapper {
+  toPersistent(dto: ICreateTaskRequestDTO): Partial<ITaskDocument> {
+    return {
+      title: dto.title,
+      projectId: new Types.ObjectId(dto.projectId),
+      assigneeId: new Types.ObjectId(dto.assigneeId),
+      creatorId: new Types.ObjectId(dto.creatorId),
+      description: dto.description,
+      estimatedHours: dto.estimatedHours,
+      expectedRate: dto.expectedRate,
+      proposedAmount: dto.estimatedHours * dto.expectedRate,
+      priority: dto.priority,
+      dueDate: dto.dueDate,
+    };
+  }
+
+  toResponseDTO(taskDoc: ITaskDocument): ITaskResponseDTO {
+    return {
+      id: taskDoc._id.toString(),
+      title: taskDoc.title,
+      projectId: taskDoc.projectId.toString(),
+      assigneeId: taskDoc.assigneeId.toString(),
+      creatorId: taskDoc.creatorId.toString(),
+      description: taskDoc.description,
+      expectedRate: taskDoc.expectedRate,
+      estimatedHours: taskDoc.estimatedHours,
+      proposedAmount: taskDoc.proposedAmount,
+      status: taskDoc.status,
+      priority: taskDoc.priority,
+      documents: taskDoc.documents,
+      submissionLinks: taskDoc.submissionLinks,
+      dueDate: taskDoc.dueDate.toISOString(),
+      isDeleted: taskDoc.isDeleted,
+      createdAt: taskDoc.createdAt.toISOString(),
+      updatedAt: taskDoc.updatedAt.toISOString(),
+    };
+  }
+
+  toPopulatedResponseDTO(
+    taskDoc: IPopulatedTaskDocument
+  ): IPopulatedResponseDTO {
+    return {
+      id: taskDoc._id.toString(),
+      title: taskDoc.title,
+      projectId: {
+        id: taskDoc.projectId._id.toString(),
+        title: taskDoc.projectId.title,
+      },
+      assigneeId: {
+        id: taskDoc.assigneeId._id.toString(),
+        name: taskDoc.assigneeId.name,
+        email: taskDoc.assigneeId.email,
+        developerRole: taskDoc.assigneeId.developerRole ?? "",
+      },
+      creatorId: {
+        id: taskDoc.creatorId._id.toString(),
+        name: taskDoc.creatorId.name,
+        email: taskDoc.creatorId.email,
+      },
+      description: taskDoc.description,
+      expectedRate: taskDoc.expectedRate,
+      estimatedHours: taskDoc.estimatedHours,
+      proposedAmount: taskDoc.proposedAmount,
+      status: taskDoc.status,
+      priority: taskDoc.priority,
+      documents: taskDoc.documents,
+      submissionLinks: taskDoc.submissionLinks,
+      dueDate: taskDoc.dueDate.toISOString(),
+      paymentStatus: taskDoc.paymentStatus,
+      isDeleted: taskDoc.isDeleted,
+      createdAt: taskDoc.createdAt.toISOString(),
+      updatedAt: taskDoc.updatedAt.toISOString(),
+    };
+  }
+}

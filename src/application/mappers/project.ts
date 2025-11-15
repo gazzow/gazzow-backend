@@ -89,7 +89,6 @@ export class ProjectMapper implements IProjectMapper {
       projectId: doc._id.toString(),
       title: doc.title,
       contributors: doc.contributors.map((contributor) => ({
-        id: contributor._id.toString(),
         userId: contributor.userId._id.toString(),
         name: contributor.userId.name,
         email: contributor.userId.email,

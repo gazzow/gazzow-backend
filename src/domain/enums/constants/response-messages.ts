@@ -56,4 +56,8 @@ export enum ResponseMessages {
   FetchedApplications = "Applications fetched successfully",
   ApplicationStatusUpdated = "Application status updated",
   SelfApplicationNotAllowed = "You cannot apply to your own project",
+
+  // Task
+  FetchedTasks = "Tasks fetched successfully",
+  UnauthorizedTaskCreation = "You don't have permission to create tasks for this project",
 }
