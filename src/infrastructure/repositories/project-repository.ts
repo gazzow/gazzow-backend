@@ -30,7 +30,11 @@ export class ProjectRepository
         projectId,
         {
           $addToSet: {
-            contributors: { userId: new Types.ObjectId(userId), status, expectedRate },
+            contributors: {
+              userId: new Types.ObjectId(userId),
+              status,
+              expectedRate,
+            },
           },
         },
         { new: true }

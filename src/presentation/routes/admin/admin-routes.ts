@@ -7,11 +7,19 @@ const adminRouter = Router();
 const adminContainer = new AdminDependencyContainer();
 
 const adminAuthController = adminContainer.createAuthController();
-const userManagementController = adminContainer.createUserManagementController();
+
+const userManagementController =
+  adminContainer.createUserManagementController();
+
+const projectController = adminContainer.createProjectController();
 
 const verifyMiddleware = adminContainer.createVerifyAdminMiddleware();
 
-adminRouter.post("/auth/login",validateLogin, adminAuthController.login);
+adminRouter.post("/auth/login", validateLogin, adminAuthController.login);
+
+//------------------
+// User Routes
+//------------------
 
 adminRouter.get(
   "/users",
@@ -27,6 +35,22 @@ adminRouter.patch(
   "/users/:id/status",
   verifyMiddleware.isAdmin,
   userManagementController.blockUser
+);
+
+//------------------
+// Project Routes
+//------------------
+
+adminRouter.get(
+  "/projects",
+  verifyMiddleware.isAdmin,
+  projectController.listProjects
+);
+
+adminRouter.get(
+  "/projects/:projectId",
+  verifyMiddleware.isAdmin,
+  projectController.getProject
 );
 
 export default adminRouter;

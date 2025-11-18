@@ -16,10 +16,16 @@ export class BaseRepository<T> implements IBaseRepository<T> {
     filter?: FilterQuery<T>;
     skip?: number;
     limit?: number;
+    sort?: Record<string, 1 | -1>;
   }): Promise<T[]> {
-    const { filter = {}, skip = 0, limit = 10 } = query;
+    const { filter = {}, skip = 0, limit = 10, sort = {} } = query;
 
-    return await this.model.find(filter).skip(skip).limit(limit).exec();
+    return await this.model
+      .find(filter)
+      .sort(sort)
+      .skip(skip)
+      .limit(limit)
+      .exec();
   }
 
   async update(id: string, data: Partial<T>): Promise<T | null> {
@@ -29,5 +35,9 @@ export class BaseRepository<T> implements IBaseRepository<T> {
   async delete(id: string): Promise<boolean> {
     const result = await this.model.findByIdAndDelete(id).exec();
     return !result;
+  }
+
+  count(filter: FilterQuery<T> = {}): Promise<number> {
+    return this.model.countDocuments(filter).lean().exec();
   }
 }
