@@ -54,6 +54,8 @@ import {
   ProjectMapper,
   type IProjectMapper,
 } from "../../application/mappers/project.js";
+import type { IAdminGetProjectUseCase } from "../../application/interfaces/usecase/admin/project/get-project.js";
+import { AdminGetProjectUseCase } from "../../application/use-cases/admin/project/get-project.js";
 
 export class AdminDependencyContainer {
   private readonly _userRepository: IUserRepository;
@@ -104,6 +106,13 @@ export class AdminDependencyContainer {
     );
   }
 
+  private createGetProjectUseCase(): IAdminGetProjectUseCase {
+    return new AdminGetProjectUseCase(
+      this._projectRepository,
+      this._projectMapper
+    );
+  }
+
   // Admin auth Controller
   createAuthController() {
     return new AdminAuthController(this.createLoginUseCase());
@@ -120,7 +129,10 @@ export class AdminDependencyContainer {
 
   // Project Controller
   createProjectController() {
-    return new AdminProjectController(this.createListProjectsUseCase());
+    return new AdminProjectController(
+      this.createListProjectsUseCase(),
+      this.createGetProjectUseCase(),
+    );
   }
 
   // Verify Middleware

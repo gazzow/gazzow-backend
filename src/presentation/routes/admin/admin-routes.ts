@@ -47,4 +47,10 @@ adminRouter.get(
   projectController.listProjects
 );
 
+adminRouter.get(
+  "/projects/:projectId",
+  verifyMiddleware.isAdmin,
+  projectController.getProject
+);
+
 export default adminRouter;
