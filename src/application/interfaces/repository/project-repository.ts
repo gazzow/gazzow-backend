@@ -1,8 +1,20 @@
 import type { ContributorStatus } from "../../../domain/enums/project.js";
-import type { IProjectDocument, IProjectDocumentPopulated } from "../../../infrastructure/db/models/project-model.js";
+import type {
+  IProjectDocument,
+  IProjectDocumentPopulated,
+} from "../../../infrastructure/db/models/project-model.js";
 import type { IBaseRepository } from "./base-repository.js";
 
 export interface IProjectRepository extends IBaseRepository<IProjectDocument> {
+  findWithFilter(query: {
+    userId: string;
+    search?: string;
+    experience?: string;
+    budgetOrder?: "asc" | "desc";
+    skip?: number;
+    limit?: number;
+  }): Promise<{ projects: IProjectDocument[]; total: number }>;
+
   findByCreator(creatorId: string): Promise<IProjectDocument[] | null>;
   addContributor(
     projectId: string,
@@ -10,5 +22,7 @@ export interface IProjectRepository extends IBaseRepository<IProjectDocument> {
     expectedRate: number,
     status: ContributorStatus
   ): Promise<IProjectDocument | null>;
-  findContributors(projectId: string): Promise<IProjectDocumentPopulated | null>;
+  findContributors(
+    projectId: string
+  ): Promise<IProjectDocumentPopulated | null>;
 }

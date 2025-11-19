@@ -33,10 +33,20 @@ export interface ICreateProjectResponseDTO {
 
 export interface IListProjectRequestDTO {
   userId: string;
+  search?: string;
+  experience?: string;
+  budgetOrder?: "asc" | "desc";
+  skip?: number;
+  limit?: number;
 }
 
 export interface IListProjectResponseDTO {
   data: IProject[];
+  pagination: {
+    skip: number;
+    limit: number;
+    total: number;
+  };
 }
 
 export interface IListMyProjectRequestDTO {
