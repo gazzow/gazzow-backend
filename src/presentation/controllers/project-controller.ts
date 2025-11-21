@@ -94,12 +94,18 @@ export class ProjectController {
   listProjects = async (req: Request, res: Response, next: NextFunction) => {
     logger.debug("List Project API hit 🚀");
     const userId = req.user!.id;
-    logger.debug(`list project query: ${JSON.stringify(req.query)}`);
+    const skip = parseInt(req.query.skip as string);
+    const limit = parseInt(req.query.limit as string);
+
+    const payload = {
+      ...req.query,
+      skip,
+      limit,
+      userId,
+    };
     try {
-      const { data, pagination } = await this._listProjectUseCase.execute({
-        userId,
-        ...req.query,
-      });
+      const { data, pagination } =
+        await this._listProjectUseCase.execute(payload);
       res
         .status(HttpStatusCode.OK)
         .json(
@@ -192,10 +198,27 @@ export class ProjectController {
 
     logger.debug(`My project api creatorId: ${creatorId}`);
     try {
-      const { data } = await this._listMyProjectsUseCase.execute({ creatorId });
+      const skip = parseInt(req.query.skip as string);
+      const limit = parseInt(req.query.limit as string);
+
+      const payload = {
+        ...req.query,
+        skip,
+        limit,
+        creatorId,
+      };
+
+      const { data, pagination } =
+        await this._listMyProjectsUseCase.execute(payload);
       res
         .status(HttpStatusCode.OK)
-        .json(ApiResponse.success(ResponseMessages.FetchedProjects, data));
+        .json(
+          ApiResponse.paginated(
+            ResponseMessages.FetchedProjects,
+            data,
+            pagination
+          )
+        );
     } catch (error) {
       next(error);
     }

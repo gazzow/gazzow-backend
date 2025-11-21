@@ -5,6 +5,11 @@ import type {
 } from "../../../infrastructure/db/models/project-model.js";
 import type { IBaseRepository } from "./base-repository.js";
 
+export type FindWithFilter = {
+  projects: IProjectDocument[];
+  total: number;
+};
+
 export interface IProjectRepository extends IBaseRepository<IProjectDocument> {
   findWithFilter(query: {
     userId: string;
@@ -13,9 +18,16 @@ export interface IProjectRepository extends IBaseRepository<IProjectDocument> {
     budgetOrder?: "asc" | "desc";
     skip?: number;
     limit?: number;
-  }): Promise<{ projects: IProjectDocument[]; total: number }>;
+  }): Promise<FindWithFilter>;
 
-  findByCreator(creatorId: string): Promise<IProjectDocument[] | null>;
+  findByCreatorWithFilter(query: {
+    creatorId: string;
+    search?: string;
+    status?: string;
+    budgetOrder?: "asc" | "desc";
+    skip?: number;
+    limit?: number;
+  }): Promise<FindWithFilter>;
   addContributor(
     projectId: string,
     userId: string,

@@ -51,10 +51,20 @@ export interface IListProjectResponseDTO {
 
 export interface IListMyProjectRequestDTO {
   creatorId: string;
+  search?: string;
+  status?: string;
+  budgetOrder?: "asc" | "desc";
+  skip?: number;
+  limit?: number;
 }
 
 export interface IListMyProjectsResponseDTO {
   data: IProject[];
+  pagination: {
+    skip: number;
+    limit: number;
+    total: number;
+  };
 }
 
 export interface IGetProjectRequestDTO {
