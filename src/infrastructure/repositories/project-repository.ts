@@ -1,11 +1,15 @@
 import { Types, type Model } from "mongoose";
-import type { IProjectRepository } from "../../application/interfaces/repository/project-repository.js";
+import type {
+  FindWithFilter,
+  IProjectRepository,
+} from "../../application/interfaces/repository/project-repository.js";
 import type {
   IProjectDocument,
   IProjectDocumentPopulated,
 } from "../db/models/project-model.js";
 import { BaseRepository } from "./base/base-repository.js";
 import type { ContributorStatus } from "../../domain/enums/project.js";
+import logger from "../../utils/logger.js";
 
 export class ProjectRepository
   extends BaseRepository<IProjectDocument>
@@ -14,9 +18,180 @@ export class ProjectRepository
   constructor(projectModel: Model<IProjectDocument>) {
     super(projectModel);
   }
+  async findWithFilter(query: {
+    userId: string;
+    search?: string;
+    experience?: string;
+    budgetOrder?: "asc" | "desc";
+    skip?: number;
+    limit?: number;
+  }): Promise<FindWithFilter> {
+    const {
+      userId,
+      search,
+      experience,
+      budgetOrder,
+      skip = 0,
+      limit = 6,
+    } = query;
 
-  findByCreator(creatorId: string): Promise<IProjectDocument[] | null> {
-    return this.model.find({ creatorId: new Types.ObjectId(creatorId) });
+    const userObjectId: Types.ObjectId = new Types.ObjectId(userId);
+
+    const pipeline: any[] = [];
+
+    //  Exclude user created projects
+    pipeline.push({ $match: { creatorId: { $ne: userObjectId } } });
+
+    // Exclude user as contributor
+    pipeline.push({
+      $match: {
+        "contributors.userId": { $ne: userObjectId },
+      },
+    });
+
+    if (search) {
+      pipeline.push({
+        $match: {
+          $or: [
+            {
+              title: {
+                $regex: search,
+                $options: "i",
+              },
+            },
+            {
+              description: {
+                $regex: search,
+                $options: "i",
+              },
+            },
+          ],
+        },
+      });
+    }
+
+    if (experience) {
+      pipeline.push({ $match: { experience: experience } });
+    }
+
+    pipeline.push({
+      $addFields: {
+        avgBudget: { $avg: ["$budgetMin", "$budgetMax"] },
+      },
+    });
+
+    pipeline.push({
+      $sort: {
+        avgBudget: budgetOrder === "asc" ? 1 : -1,
+      },
+    });
+
+    // Lookup applications to exclude applied projects
+    pipeline.push({
+      $lookup: {
+        from: "applications",
+        localField: "_id",
+        foreignField: "projectId",
+        as: "applications",
+      },
+    });
+
+    pipeline.push({
+      $match: {
+        "applications.applicantId": { $ne: userObjectId },
+      },
+    });
+
+    const projects = await this.model.aggregate([
+      ...pipeline,
+      {
+        $skip: skip,
+      },
+      { $limit: limit },
+    ]);
+
+    const countResult = await this.model.aggregate([
+      ...pipeline,
+      { $count: "total" },
+    ]);
+
+    const total: number = countResult.length > 0 ? countResult[0].total : 0;
+
+    return {
+      total,
+      projects,
+    };
+  }
+
+  async findByCreatorWithFilter(query: {
+    creatorId: string;
+    search?: string;
+    status?: string;
+    budgetOrder?: "asc" | "desc";
+    skip?: number;
+    limit?: number;
+  }): Promise<FindWithFilter> {
+    const {
+      search,
+      creatorId,
+      status,
+      budgetOrder,
+      skip = 0,
+      limit = 2,
+    } = query;
+    const creatorObjId = new Types.ObjectId(creatorId);
+
+    const pipeline: any[] = [{ $match: { creatorId: creatorObjId } }];
+
+    pipeline.push({
+      $sort: { createdAt: -1 },
+    });
+
+    if (search) {
+      pipeline.push({
+        $or: [
+          { $match: { title: { $regex: search, $options: "i" } } },
+          { $match: { description: { $regex: search, $options: "i" } } },
+        ],
+      });
+    }
+
+    if (status) {
+      pipeline.push({
+        $match: { status: status },
+      });
+    }
+
+    if (budgetOrder) {
+      pipeline.push({
+        $addFields: {
+          avgBudget: { $avg: ["$budgetMin", "$budgetMax"] },
+        },
+      });
+
+      pipeline.push({
+        $sort: { avgBudget: budgetOrder === "asc" ? 1 : -1 },
+      });
+    }
+
+    const totalProjects = await this.model.aggregate([
+      ...pipeline,
+      {
+        $count: "total",
+      },
+    ]);
+    const total: number = totalProjects.length > 0 ? totalProjects[0].total : 0;
+
+    const projects = await this.model.aggregate([
+      ...pipeline,
+      { $skip: skip },
+      { $limit: limit },
+    ]);
+
+    return {
+      projects,
+      total,
+    };
   }
 
   addContributor(

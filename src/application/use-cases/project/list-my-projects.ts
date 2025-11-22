@@ -1,6 +1,7 @@
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
 import { AppError } from "../../../utils/app-error.js";
+import logger from "../../../utils/logger.js";
 import type {
   IListMyProjectRequestDTO,
   IListMyProjectsResponseDTO,
@@ -19,7 +20,9 @@ export class ListMyProjectsUseCase implements IListMyProjectsUsecase {
   async execute(
     dto: IListMyProjectRequestDTO
   ): Promise<IListMyProjectsResponseDTO> {
-    const userExists = await this._userRepository.findById(dto.creatorId);
+    const { creatorId, skip = 0, limit = 6 } = dto;
+
+    const userExists = await this._userRepository.findById(creatorId);
     if (!userExists) {
       throw new AppError(
         ResponseMessages.UserNotFound,
@@ -27,15 +30,13 @@ export class ListMyProjectsUseCase implements IListMyProjectsUsecase {
       );
     }
 
-    const projectsDoc = await this._projectRepository.findByCreator(
-      dto.creatorId
-    );
+    const { projects, total } =
+      await this._projectRepository.findByCreatorWithFilter(dto);
 
-    const data =
-      projectsDoc?.map((doc) => {
-        return this._projectMapper.toResponseDTO(doc);
-      }) ?? [];
+    const data = projects?.map((doc) => {
+      return this._projectMapper.toResponseDTO(doc);
+    });
 
-    return { data };
+    return { data, pagination: { total, skip, limit } };
   }
 }
