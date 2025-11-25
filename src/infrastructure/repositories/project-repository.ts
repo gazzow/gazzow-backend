@@ -9,7 +9,7 @@ import type {
 } from "../db/models/project-model.js";
 import { BaseRepository } from "./base/base-repository.js";
 import type { ContributorStatus } from "../../domain/enums/project.js";
-import logger from "../../utils/logger.js";
+import { ApplicationStatus } from "../../domain/enums/application.js";
 
 export class ProjectRepository
   extends BaseRepository<IProjectDocument>
@@ -228,5 +228,87 @@ export class ProjectRepository
       .exec();
 
     return project;
+  }
+
+  async findActiveProjects(query: {
+    userId: string;
+    search?: string;
+    budgetOrder?: "asc" | "desc";
+    skip?: number;
+    limit?: number;
+  }): Promise<FindWithFilter> {
+    const { userId, search, budgetOrder, skip = 0, limit = 6 } = query;
+
+    const userObjId = new Types.ObjectId(userId);
+
+    const pipeline: any[] = [];
+
+    if (search) {
+      pipeline.push({
+        $match: {
+          $or: [
+            { title: { $regex: search, $options: "i" } },
+            { description: { $regex: search, $options: "i" } },
+          ],
+        },
+      });
+    }
+
+    if (budgetOrder) {
+      pipeline.push({
+        $addFields: {
+          avgBudget: { $avg: ["$budgetMin", "$budgetMax"] },
+        },
+      });
+
+      pipeline.push({
+        $sort: { avgBudget: budgetOrder === "asc" ? 1 : -1 },
+      });
+    }
+
+    pipeline.push(
+      {
+        $lookup: {
+          from: "applications",
+          let: { projectId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ["$projectId", "$$projectId"] },
+                applicantId: userObjId,
+                status: ApplicationStatus.ACCEPTED,
+              },
+            },
+          ],
+          as: "application",
+        },
+      },
+      {
+        // Only show projects where the contributor has an application
+        $match: { "application.0": { $exists: true } },
+      }
+    );
+
+    const projects = await this.model.aggregate([
+      ...pipeline,
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limit,
+      },
+    ]);
+
+    const totalProjects = await this.model.aggregate([
+      ...pipeline,
+      { $count: "total" },
+    ]);
+
+    const total = totalProjects.length > 0 ? totalProjects[0].total : 0;
+
+    return {
+      projects,
+      total,
+    };
   }
 }

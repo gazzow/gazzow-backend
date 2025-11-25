@@ -28,13 +28,23 @@ export interface IProjectRepository extends IBaseRepository<IProjectDocument> {
     skip?: number;
     limit?: number;
   }): Promise<FindWithFilter>;
+
   addContributor(
     projectId: string,
     userId: string,
     expectedRate: number,
     status: ContributorStatus
   ): Promise<IProjectDocument | null>;
+
   findContributors(
     projectId: string
   ): Promise<IProjectDocumentPopulated | null>;
+
+  findActiveProjects(query: {
+    userId: string;
+    search?: string;
+    budgetOrder?: "asc" | "desc";
+    skip?: number;
+    limit?: number;
+  }): Promise<FindWithFilter>;
 }
