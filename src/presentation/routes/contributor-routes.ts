@@ -17,4 +17,10 @@ router.get(
   contributionController.getContributorProjects
 );
 
+router.get(
+  "/applications",
+  tokenMiddleware.verifyToken,
+  contributionController.getContributorProposals
+);
+
 export default router;

@@ -1,7 +1,6 @@
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
 import { AppError } from "../../../utils/app-error.js";
-import logger from "../../../utils/logger.js";
 import type {
   IListMyProjectRequestDTO,
   IListMyProjectsResponseDTO,
