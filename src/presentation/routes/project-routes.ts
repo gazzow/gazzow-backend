@@ -25,11 +25,16 @@ router.get(
   tokenMiddleware.verifyToken,
   projectController.listMyProjects
 );
+
+// ----------------------
+// 📁  Generate Signed Url Route
+// ----------------------
 router.get(
   "/generate-signed-url",
   tokenMiddleware.verifyToken,
   projectController.generateSignedUrl
 );
+
 
 router.get(
   "/:projectId",
@@ -61,10 +66,6 @@ router.patch(
   tokenMiddleware.verifyToken,
   projectController.updateApplicationStatus
 );
-
-// ----------------------
-// 📁 Contributor Routes
-// ----------------------
 
 router.get(
   "/:projectId/contributors",

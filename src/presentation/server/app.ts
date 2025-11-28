@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import userRoutes from "../routes/user/user-routes.js";
 import adminRoutes from "../routes/admin/admin-routes.js";
 import projectRoutes from "../routes/project-routes.js";
+import contributorRoutes from "../routes/contributor-routes.js";
 import { env } from "../../infrastructure/config/env.js";
 import { errorHandler } from "../middleware/error-handler.js";
 
@@ -20,6 +21,7 @@ app.use(express.json());
 
 app.use("/api", userRoutes);
 app.use("/api/projects", projectRoutes);
+app.use("/api/contributor", contributorRoutes);
 app.use("/api/admin", adminRoutes);
 
 app.use(errorHandler);

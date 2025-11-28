@@ -15,10 +15,16 @@ export class AdminProjectController {
 
   listProjects = async (req: Request, res: Response, next: NextFunction) => {
     logger.debug("List project API hit🚀");
+
+    const skip = Number(req.query.skip) || 0;
+    const limit = Number(req.query.limit) || 6;
+
     try {
-      const { data, pagination } = await this._adminListProjectUseCase.execute(
-        req.query
-      );
+      const { data, pagination } = await this._adminListProjectUseCase.execute({
+        ...req.query,
+        skip,
+        limit,
+      });
       res
         .status(HttpStatusCode.OK)
         .json(

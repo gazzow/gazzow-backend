@@ -18,7 +18,7 @@ export class BaseRepository<T> implements IBaseRepository<T> {
     limit?: number;
     sort?: Record<string, 1 | -1>;
   }): Promise<T[]> {
-    const { filter = {}, skip = 0, limit = 10, sort = {} } = query;
+    const { filter = {}, skip = 0, limit = 6, sort = {} } = query;
 
     return await this.model
       .find(filter)
