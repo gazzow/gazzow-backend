@@ -1,53 +1,52 @@
-import type { Express } from "express";
 import type { IProjectFile } from "../interfaces/s3-bucket/file-storage.js";
 import type { ITask } from "../../domain/entities/task.js";
 import type { TaskPriority } from "../../domain/enums/task.js";
 import type { IProject } from "../../domain/entities/project.js";
 import type { IUser } from "../../domain/entities/user.js";
+import type { TaskDateFields } from "../../domain/types/task.js";
 
-export interface ICreateTaskRequestDTO {
+export interface BaseTaskDTO {
   title: string;
   projectId: string;
-  assigneeId: string;
   creatorId: string;
   description: string;
   estimatedHours: number;
   expectedRate: number;
   priority: TaskPriority;
-  files?: Express.Multer.File[];
-  documents?: IProjectFile[];
   dueDate: Date;
+  documents?: IProjectFile[];
 }
 
+export interface AssignedTaskDTO extends BaseTaskDTO {
+  assigneeId: string;
+}
+export interface UnassignedTaskDTO extends BaseTaskDTO {
+  assigneeId?: undefined;
+}
+
+export type ICreateTaskRequestDTO = AssignedTaskDTO | UnassignedTaskDTO;
+
 export interface ITaskResponseDTO
-  extends Omit<
-    ITask,
-    | "dueDate"
-    | "createdAt"
-    | "updatedAt"
-    | "expiredAt"
-    | "completedAt"
-    | "submittedAt"
-    | "cancelledAt"
-    | "closedAt"
-    | "paidAt"
-  > {
+  extends Omit<ITask, TaskDateFields | "assigneeId"> {
+  assigneeId: string | null;
+
   dueDate: string;
   createdAt: string;
   updatedAt: string;
-  expiredAt?: string;
-  cancelledAt?: string;
-  submittedA?: string;
-  completedAt?: string;
-  closedAt?: string;
-  paidAt?: string;
+
+  expiredAt?: string | null;
+  cancelledAt?: string | null;
+  submittedAT?: string | null;
+  completedAt?: string | null;
+  closedAt?: string | null;
+  paidAt?: string | null;
 }
 
 export interface IPopulatedResponseDTO
   extends Omit<ITaskResponseDTO, "projectId" | "assigneeId" | "creatorId"> {
-  projectId: Partial<IProject>;
-  assigneeId: Partial<IUser>;
-  creatorId: Partial<IUser>;
+  project: Partial<IProject>;
+  assignee: Partial<IUser> | null;
+  creator: Partial<IUser>;
 }
 
 export interface IListTasksByContributorRequestDTO {

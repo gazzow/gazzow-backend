@@ -8,6 +8,7 @@ import type {
   IPopulatedResponseDTO,
   ITaskResponseDTO,
 } from "../dtos/task.js";
+import { TaskStatus } from "../../domain/enums/task.js";
 
 export interface ITaskMapper {
   toPersistent(dto: ICreateTaskRequestDTO): Partial<ITaskDocument>;
@@ -19,10 +20,9 @@ export interface ITaskMapper {
 
 export class TaskMapper implements ITaskMapper {
   toPersistent(dto: ICreateTaskRequestDTO): Partial<ITaskDocument> {
-    return {
+    const base: Partial<ITaskDocument> = {
       title: dto.title,
       projectId: new Types.ObjectId(dto.projectId),
-      assigneeId: new Types.ObjectId(dto.assigneeId),
       creatorId: new Types.ObjectId(dto.creatorId),
       description: dto.description,
       estimatedHours: dto.estimatedHours,
@@ -31,6 +31,19 @@ export class TaskMapper implements ITaskMapper {
       priority: dto.priority,
       dueDate: dto.dueDate,
     };
+
+    if ("assigneeId" in dto && dto.assigneeId) {
+      return {
+        ...base,
+        assigneeId: new Types.ObjectId(dto.assigneeId),
+        status: TaskStatus.ASSIGNED,
+      };
+    }
+
+    return {
+      ...base,
+      status: TaskStatus.UNASSIGNED,
+    };
   }
 
   toResponseDTO(taskDoc: ITaskDocument): ITaskResponseDTO {
@@ -38,7 +51,7 @@ export class TaskMapper implements ITaskMapper {
       id: taskDoc._id.toString(),
       title: taskDoc.title,
       projectId: taskDoc.projectId.toString(),
-      assigneeId: taskDoc.assigneeId.toString(),
+      assigneeId: taskDoc.assigneeId?.toString() ?? null,
       creatorId: taskDoc.creatorId.toString(),
       description: taskDoc.description,
       expectedRate: taskDoc.expectedRate,
@@ -61,21 +74,28 @@ export class TaskMapper implements ITaskMapper {
     return {
       id: taskDoc._id.toString(),
       title: taskDoc.title,
-      projectId: {
+
+      project: {
         id: taskDoc.projectId._id.toString(),
         title: taskDoc.projectId.title,
       },
-      assigneeId: {
-        id: taskDoc.assigneeId._id.toString(),
-        name: taskDoc.assigneeId.name,
-        email: taskDoc.assigneeId.email,
-        developerRole: taskDoc.assigneeId.developerRole ?? "",
-      },
-      creatorId: {
+
+      assignee:
+        typeof taskDoc.assigneeId === "object" && taskDoc.assigneeId
+          ? {
+              id: taskDoc.assigneeId._id.toString(),
+              name: taskDoc.assigneeId.name,
+              email: taskDoc.assigneeId.email,
+              developerRole: taskDoc.assigneeId.developerRole ?? "",
+            }
+          : null,
+
+      creator: {
         id: taskDoc.creatorId._id.toString(),
         name: taskDoc.creatorId.name,
         email: taskDoc.creatorId.email,
       },
+
       description: taskDoc.description,
       expectedRate: taskDoc.expectedRate,
       estimatedHours: taskDoc.estimatedHours,
@@ -84,6 +104,7 @@ export class TaskMapper implements ITaskMapper {
       priority: taskDoc.priority,
       documents: taskDoc.documents,
       submissionLinks: taskDoc.submissionLinks,
+      
       dueDate: taskDoc.dueDate.toISOString(),
       paymentStatus: taskDoc.paymentStatus,
       isDeleted: taskDoc.isDeleted,

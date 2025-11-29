@@ -18,7 +18,7 @@ export type ITaskDocument = Document & {
   title: string;
   projectId: Types.ObjectId;
   creatorId: Types.ObjectId;
-  assigneeId: Types.ObjectId;
+  assigneeId?: Types.ObjectId;
   description: string;
   expectedRate: number;
   estimatedHours: number;
@@ -53,7 +53,7 @@ export type ITaskDocument = Document & {
 export interface IPopulatedTaskDocument
   extends Omit<ITaskDocument, "projectId" | "assigneeId" | "creatorId"> {
   projectId: IProjectDocument;
-  assigneeId: IUserDocument;
+  assigneeId?: IUserDocument | null;
   creatorId: IUserDocument;
 }
 
@@ -100,7 +100,6 @@ const taskSchema = new Schema<ITaskDocument>(
     assigneeId: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true,
     },
     creatorId: {
       type: Schema.Types.ObjectId,
@@ -124,7 +123,7 @@ const taskSchema = new Schema<ITaskDocument>(
     status: {
       type: String,
       enum: Object.values(TaskStatus),
-      default: TaskStatus.ASSIGNED,
+      default: TaskStatus.UNASSIGNED,
     },
     priority: {
       type: String,

@@ -25,7 +25,7 @@ export class CreateTaskUseCase implements ICreateTaskUseCase {
       );
     }
 
-    if (projectDoc.creatorId.toString() !== dto.creatorId) {
+    if (dto.assigneeId && projectDoc.creatorId.toString() !== dto.creatorId) {
       throw new AppError(
         ResponseMessages.UnauthorizedTaskCreation,
         HttpStatusCode.FORBIDDEN

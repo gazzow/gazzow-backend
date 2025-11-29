@@ -11,7 +11,7 @@ export interface ITask {
   id: string;
   title: string;
   projectId: string;
-  assigneeId: string;
+  assigneeId?: string;
   creatorId: string;
   description: string;
   expectedRate: number;
