@@ -66,3 +66,13 @@ export interface IListTasksByCreatorRequestDTO {
 export interface IListTasksByCreatorResponseDTO {
   data: ITaskResponseDTO[];
 }
+
+export interface IUpdateTaskRequestDTO {
+  userId: string;
+  taskId: string;
+  data: Partial<ITask>;
+}
+
+export interface IUpdateTaskResponseDTO {
+  data: ITaskResponseDTO;
+}

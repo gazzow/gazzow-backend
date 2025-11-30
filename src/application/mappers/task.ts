@@ -9,6 +9,7 @@ import type {
   ITaskResponseDTO,
 } from "../dtos/task.js";
 import { TaskStatus } from "../../domain/enums/task.js";
+import type { ITask } from "../../domain/entities/task.js";
 
 export interface ITaskMapper {
   toPersistent(dto: ICreateTaskRequestDTO): Partial<ITaskDocument>;
@@ -16,6 +17,7 @@ export interface ITaskMapper {
   toPopulatedResponseDTO(
     taskDoc: IPopulatedTaskDocument
   ): IPopulatedResponseDTO;
+  toUpdatePersistent(dto: Partial<ITask>): Partial<ITaskDocument>;
 }
 
 export class TaskMapper implements ITaskMapper {
@@ -104,12 +106,31 @@ export class TaskMapper implements ITaskMapper {
       priority: taskDoc.priority,
       documents: taskDoc.documents,
       submissionLinks: taskDoc.submissionLinks,
-      
+
       dueDate: taskDoc.dueDate.toISOString(),
       paymentStatus: taskDoc.paymentStatus,
       isDeleted: taskDoc.isDeleted,
       createdAt: taskDoc.createdAt.toISOString(),
       updatedAt: taskDoc.updatedAt.toISOString(),
     };
+  }
+
+  toUpdatePersistent(dto: Partial<ITask>): Partial<ITaskDocument> {
+    const update: Partial<ITaskDocument> = {};
+
+    if (dto.title) update.title = dto.title;
+    if (dto.description) update.description = dto.description;
+    if (dto.estimatedHours) update.estimatedHours = dto.estimatedHours;
+    if (dto.expectedRate) update.expectedRate = dto.expectedRate;
+
+    if (dto.estimatedHours && dto.expectedRate)
+      update.proposedAmount = dto.estimatedHours * dto.expectedRate;
+
+    if (dto.priority) update.priority = dto.priority;
+    if (dto.assigneeId) new Types.ObjectId(dto.assigneeId);
+
+    if (dto.dueDate) update.dueDate = dto.dueDate;
+
+    return update;
   }
 }

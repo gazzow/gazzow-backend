@@ -3,6 +3,7 @@ import type { ITaskRepository } from "../../application/interfaces/repository/ta
 import type { ICreateTaskUseCase } from "../../application/interfaces/usecase/task/create-task.js";
 import type { IListTasksByContributorUseCase } from "../../application/interfaces/usecase/task/list-tasks-by-contributor.js";
 import type { IListTasksByCreatorUseCase } from "../../application/interfaces/usecase/task/list-tasks-by-creator.js";
+import type { IUpdateTaskUseCase } from "../../application/interfaces/usecase/task/update-task.js";
 import {
   TaskMapper,
   type ITaskMapper,
@@ -10,6 +11,7 @@ import {
 import { CreateTaskUseCase } from "../../application/use-cases/task/create-task.js";
 import { ListTasksByContributorUseCase } from "../../application/use-cases/task/list-tasks-by-contributor.js";
 import { ListTasksByCreatorUseCase } from "../../application/use-cases/task/list-tasks-by-creator.js";
+import { UpdateTaskUseCase } from "../../application/use-cases/task/update-task.js";
 import { TaskController } from "../../presentation/controllers/task-controller.js";
 import { ProjectModel } from "../db/models/project-model.js";
 import { TaskModel } from "../db/models/task-model.js";
@@ -41,11 +43,16 @@ export class TaskDependencyContainer {
       this._taskMapper
     );
   }
+
   createListTaskByCreator(): IListTasksByCreatorUseCase {
     return new ListTasksByCreatorUseCase(
       this._taskRepository,
       this._taskMapper
     );
+  }
+
+  createUpdateTaskUseCase(): IUpdateTaskUseCase {
+    return new UpdateTaskUseCase(this._taskRepository, this._taskMapper);
   }
 
   // ----------------
@@ -55,7 +62,8 @@ export class TaskDependencyContainer {
     return new TaskController(
       this.createTaskUseCase(),
       this.createListTaskByContributor(),
-      this.createListTaskByCreator()
+      this.createListTaskByCreator(),
+      this.createUpdateTaskUseCase()
     );
   }
 }

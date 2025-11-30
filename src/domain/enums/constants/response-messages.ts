@@ -58,6 +58,11 @@ export enum ResponseMessages {
   SelfApplicationNotAllowed = "You cannot apply to your own project",
 
   // Task
+  TaskIdIsRequired = "Task is required",
   FetchedTasks = "Tasks fetched successfully",
+  TaskNotFound = "Task not found",
+  TaskUpdateFailed = "Task update failed",
+  TaskUpdateSuccess = "Task update successfully",
+  UnauthorizedTaskModification = "Unauthorized to modify this task",
   UnauthorizedTaskCreation = "You don't have permission to create tasks for this project",
 }
