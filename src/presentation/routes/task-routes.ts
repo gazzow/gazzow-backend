@@ -7,9 +7,9 @@ const taskContainer = new TaskDependencyContainer();
 const taskController = taskContainer.createTaskController();
 
 router.post("/", taskController.createTask);
-router.get("/:taskId", taskController.getTask)
-router.patch("/:taskId", taskController.updateTask);
 router.get("/contributor", taskController.listTasksByContributor);
 router.get("/creator", taskController.listTasksByCreator);
+router.get("/:taskId", taskController.getTask);
+router.patch("/:taskId", taskController.updateTask);
 
 export default router;

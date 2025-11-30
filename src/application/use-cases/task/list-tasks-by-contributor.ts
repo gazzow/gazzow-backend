@@ -22,7 +22,6 @@ export class ListTasksByContributorUseCase
     const taskDocs = await this._taskRepository.findByProjectAndUser({
       filter: { projectId: dto.projectId, assigneeId: dto.userId },
     });
-    // logger.debug(`taskDocs check: ${JSON.stringify(taskDocs[0])}`)
     const data = taskDocs.map((task) => this._taskMapper.toPopulatedResponseDTO(task));
     logger.debug(`contributor tasks: ${data[0]}`);
     return data ;

@@ -23,7 +23,6 @@ export class ListTasksByCreatorUseCase implements IListTasksByCreatorUseCase {
     const data = taskDocs.map((task) =>
       this._taskMapper.toPopulatedResponseDTO(task)
     );
-    logger.debug(`creator tasks: ${data[0]}`);
     return data;
   }
 }
