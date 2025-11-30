@@ -121,7 +121,6 @@ export class TaskMapper implements ITaskMapper {
     if (dto.title) update.title = dto.title;
     if (dto.description) update.description = dto.description;
     if (dto.estimatedHours) update.estimatedHours = dto.estimatedHours;
-    if (dto.expectedRate) update.expectedRate = dto.expectedRate;
 
     if (dto.estimatedHours && dto.expectedRate)
       update.proposedAmount = dto.estimatedHours * dto.expectedRate;
