@@ -8,13 +8,15 @@ import type { IListTasksByCreatorUseCase } from "../../application/interfaces/us
 import { AppError } from "../../utils/app-error.js";
 import { ResponseMessages } from "../../domain/enums/constants/response-messages.js";
 import type { IUpdateTaskUseCase } from "../../application/interfaces/usecase/task/update-task.js";
+import type { IGetTaskUseCase } from "../../application/interfaces/usecase/task/get-task.js";
 
 export class TaskController {
   constructor(
     private _createTaskUseCase: ICreateTaskUseCase,
     private _listTasksByContributorUseCase: IListTasksByContributorUseCase,
     private _listTasksByCreatorUseCase: IListTasksByCreatorUseCase,
-    private _updateTaskUseCase: IUpdateTaskUseCase
+    private _updateTaskUseCase: IUpdateTaskUseCase,
+    private _getTaskUseCase: IGetTaskUseCase
   ) {}
 
   createTask = async (req: Request, res: Response, next: NextFunction) => {
@@ -111,6 +113,29 @@ export class TaskController {
       const dto = { userId, taskId, data: req.body };
       logger.debug(`dto: ${JSON.stringify(dto)}`);
       const { data } = await this._updateTaskUseCase.execute(dto);
+      res
+        .status(HttpStatusCode.OK)
+        .json(ApiResponse.success(ResponseMessages.TaskUpdateSuccess, data));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getTask = async (req: Request, res: Response, next: NextFunction) => {
+    logger.debug("Get task API hit 🚀");
+    const userId = req.user!.id;
+    const taskId = req.params.taskId;
+
+    if (!taskId) {
+      throw new AppError(
+        ResponseMessages.TaskIdIsRequired,
+        HttpStatusCode.BAD_REQUEST
+      );
+    }
+    try {
+      const dto = { userId, taskId };
+      logger.debug(`dto: ${JSON.stringify(dto)}`);
+      const { data } = await this._getTaskUseCase.execute(dto);
       res
         .status(HttpStatusCode.OK)
         .json(ApiResponse.success(ResponseMessages.TaskUpdateSuccess, data));

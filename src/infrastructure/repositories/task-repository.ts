@@ -25,13 +25,22 @@ export class TaskRepository
   }): Promise<IPopulatedTaskDocument[]> {
     const { filter = {}, skip = 0, limit = 10 } = query;
 
-    return await this.model
+    return this.model
       .find(filter)
       .populate<{ projectId: IProjectDocument }>("projectId")
       .populate<{ assigneeId: IUserDocument }>("assigneeId")
       .populate<{ creatorId: IUserDocument }>("creatorId")
       .skip(skip)
       .limit(limit)
+      .exec();
+  }
+
+  findByIdAndPopulate(taskId: string): Promise<IPopulatedTaskDocument | null> {
+    return this.model
+      .findById(taskId)
+      .populate<{ projectId: IProjectDocument }>("projectId")
+      .populate<{ assigneeId: IUserDocument }>("assigneeId")
+      .populate<{ creatorId: IUserDocument }>("creatorId")
       .exec();
   }
 }

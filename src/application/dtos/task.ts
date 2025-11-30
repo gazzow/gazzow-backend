@@ -76,3 +76,12 @@ export interface IUpdateTaskRequestDTO {
 export interface IUpdateTaskResponseDTO {
   data: ITaskResponseDTO;
 }
+
+export interface IGetTaskRequestDTO {
+  taskId: string;
+  userId: string;
+}
+
+export interface IGetTaskResponseDTO {
+  data: IPopulatedResponseDTO;
+}
