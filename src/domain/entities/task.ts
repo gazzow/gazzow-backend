@@ -22,7 +22,6 @@ export interface ITask {
   documents: IProjectFile[];
   submissionLinks: SubmissionLink[];
   paymentStatus?: PaymentStatus;
-  rejectionReason?: string; // reason provided by assignee when declined
   cancellationReason?: string; // for creator/admin cancellation
   revisionCount?: number; // track how many revisions were requested
   expiredAt?: Date; // record when task expired
