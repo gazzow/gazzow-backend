@@ -1,5 +1,6 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
 import {
+  AssigneeStatus,
   PaymentStatus,
   TaskPriority,
   TaskStatus,
@@ -24,6 +25,7 @@ export type ITaskDocument = Document & {
   estimatedHours: number;
   proposedAmount: number;
   status: TaskStatus;
+  assigneeStatus: AssigneeStatus;
   priority: TaskPriority;
 
   documents: IProjectFile[];
@@ -37,7 +39,7 @@ export type ITaskDocument = Document & {
   ExpiredAt?: Date;
   cancelledAt?: Date;
   acceptedAt?: Date;
-  // submittedAt?: Date;
+  submittedAt?: Date;
   completedAt?: Date;
   dueDate: Date;
   closedAt?: Date;
@@ -100,6 +102,7 @@ const taskSchema = new Schema<ITaskDocument>(
     assigneeId: {
       type: Schema.Types.ObjectId,
       ref: "User",
+      default: null
     },
     creatorId: {
       type: Schema.Types.ObjectId,
@@ -120,10 +123,16 @@ const taskSchema = new Schema<ITaskDocument>(
 
     dueDate: { type: Date, required: true },
 
+    assigneeStatus: {
+      type: String,
+      enum: Object.values(AssigneeStatus),
+      default: AssigneeStatus.UNASSIGNED,
+    },
+
     status: {
       type: String,
       enum: Object.values(TaskStatus),
-      default: TaskStatus.UNASSIGNED,
+      default: TaskStatus.TODO,
     },
     priority: {
       type: String,

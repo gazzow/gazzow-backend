@@ -4,6 +4,7 @@ export type TaskDateFields =
   | "updatedAt"
   | "expiredAt"
   | "completedAt"
+  | "acceptedAt"
   | "submittedAt"
   | "cancelledAt"
   | "closedAt"

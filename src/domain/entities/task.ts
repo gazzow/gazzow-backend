@@ -1,5 +1,6 @@
 import type { IProjectFile } from "../../application/interfaces/s3-bucket/file-storage.js";
 import type {
+  AssigneeStatus,
   PaymentStatus,
   Revision,
   SubmissionLink,
@@ -18,6 +19,7 @@ export interface ITask {
   estimatedHours: number; // estimated time
   proposedAmount: number; // expectedRate * estimatedHours
   status: TaskStatus;
+  assigneeStatus: AssigneeStatus;
   priority: TaskPriority;
   documents: IProjectFile[];
   submissionLinks: SubmissionLink[];

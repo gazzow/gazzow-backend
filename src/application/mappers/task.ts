@@ -8,7 +8,7 @@ import type {
   IPopulatedResponseDTO,
   ITaskResponseDTO,
 } from "../dtos/task.js";
-import { TaskStatus } from "../../domain/enums/task.js";
+import { AssigneeStatus } from "../../domain/enums/task.js";
 import type { ITask } from "../../domain/entities/task.js";
 
 export interface ITaskMapper {
@@ -38,13 +38,13 @@ export class TaskMapper implements ITaskMapper {
       return {
         ...base,
         assigneeId: new Types.ObjectId(dto.assigneeId),
-        status: TaskStatus.ASSIGNED,
+        assigneeStatus: AssigneeStatus.ASSIGNED,
       };
     }
 
     return {
       ...base,
-      status: TaskStatus.UNASSIGNED,
+      assigneeStatus: AssigneeStatus.UNASSIGNED,
     };
   }
 
@@ -60,6 +60,7 @@ export class TaskMapper implements ITaskMapper {
       estimatedHours: taskDoc.estimatedHours,
       proposedAmount: taskDoc.proposedAmount,
       status: taskDoc.status,
+      assigneeStatus: taskDoc.assigneeStatus,
       priority: taskDoc.priority,
       documents: taskDoc.documents,
       submissionLinks: taskDoc.submissionLinks,
@@ -103,7 +104,9 @@ export class TaskMapper implements ITaskMapper {
       estimatedHours: taskDoc.estimatedHours,
       proposedAmount: taskDoc.proposedAmount,
       status: taskDoc.status,
+      assigneeStatus: taskDoc.assigneeStatus,
       priority: taskDoc.priority,
+      acceptedAt: taskDoc.acceptedAt?.toISOString() ?? null,
       documents: taskDoc.documents,
       submissionLinks: taskDoc.submissionLinks,
 

@@ -9,6 +9,7 @@ import { AppError } from "../../utils/app-error.js";
 import { ResponseMessages } from "../../domain/enums/constants/response-messages.js";
 import type { IUpdateTaskUseCase } from "../../application/interfaces/usecase/task/update-task.js";
 import type { IGetTaskUseCase } from "../../application/interfaces/usecase/task/get-task.js";
+import type { IStartWorkUseCase } from "../../application/interfaces/usecase/task/start-task.js";
 
 export class TaskController {
   constructor(
@@ -16,7 +17,8 @@ export class TaskController {
     private _listTasksByContributorUseCase: IListTasksByContributorUseCase,
     private _listTasksByCreatorUseCase: IListTasksByCreatorUseCase,
     private _updateTaskUseCase: IUpdateTaskUseCase,
-    private _getTaskUseCase: IGetTaskUseCase
+    private _getTaskUseCase: IGetTaskUseCase,
+    private _startWorkUseCase: IStartWorkUseCase
   ) {}
 
   createTask = async (req: Request, res: Response, next: NextFunction) => {
@@ -139,6 +141,32 @@ export class TaskController {
       res
         .status(HttpStatusCode.OK)
         .json(ApiResponse.success(ResponseMessages.TaskUpdateSuccess, data));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  startWork = async (req: Request, res: Response, next: NextFunction) => {
+    logger.debug("Start work on task API hit 🚀");
+
+    const taskId = req.params.taskId;
+    const time = req.body.time || new Date();
+
+    logger.debug(`Received time: ${time}`);
+
+    if (!taskId) {
+      throw new AppError(
+        ResponseMessages.TaskIdIsRequired,
+        HttpStatusCode.BAD_REQUEST
+      );
+    }
+    try {
+      const dto = { taskId, time};
+      logger.debug(`dto: ${JSON.stringify(dto)}`);
+      await this._startWorkUseCase.execute(dto);
+      res
+        .status(HttpStatusCode.OK)
+        .json(ApiResponse.success(ResponseMessages.TaskUpdateSuccess));
     } catch (error) {
       next(error);
     }

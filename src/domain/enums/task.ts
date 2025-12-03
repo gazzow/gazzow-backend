@@ -1,13 +1,18 @@
 export enum TaskStatus {
-  UNASSIGNED = "unassigned",
-  ASSIGNED = "assigned",
+  TODO = "todo",
   IN_PROGRESS = "in_progress",
   SUBMITTED = "submitted",
-  REVISIONS_REQUESTED = "revisions_requested",
   COMPLETED = "completed",
   CANCELLED = "cancelled",
   CLOSED = "closed",
+  REVISIONS_REQUESTED = "revisions_requested",
 }
+
+export enum AssigneeStatus {
+  UNASSIGNED = "unassigned",
+  ASSIGNED = "assigned",
+}
+
 
 export enum TaskPriority {
   LOW = "low",
