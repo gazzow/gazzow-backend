@@ -104,3 +104,12 @@ export interface ISubmitTaskRequestDTO {
 export interface ISubmitTaskResponseDTO {
   data: IPopulatedResponseDTO;
 }
+
+export interface ICompleteTaskRequestDTO {
+  taskId: string;
+  time: Date;
+}
+
+export interface ICompleteTaskResponseDTO {
+  data: IPopulatedResponseDTO;
+}

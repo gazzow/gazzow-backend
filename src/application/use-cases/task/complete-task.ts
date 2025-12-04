@@ -2,20 +2,17 @@ import { ResponseMessages } from "../../../domain/enums/constants/response-messa
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
 import { TaskStatus } from "../../../domain/enums/task.js";
 import { AppError } from "../../../utils/app-error.js";
-import logger from "../../../utils/logger.js";
-import type { ISubmitTaskRequestDTO } from "../../dtos/task.js";
+import type { ICompleteTaskRequestDTO } from "../../dtos/task.js";
 import type { ITaskRepository } from "../../interfaces/repository/task-repository.js";
-import type { ISubmitTaskUseCase } from "../../interfaces/usecase/task/submit-task.js";
+import type { ICompleteTaskUseCase } from "../../interfaces/usecase/task/complete-task.js";
 import type { ITaskMapper } from "../../mappers/task.js";
 
-export class SubmitTaskUseCase implements ISubmitTaskUseCase {
+export class CompleteTaskUseCase implements ICompleteTaskUseCase {
   constructor(
     private _taskRepository: ITaskRepository,
-
     private _taskMapper: ITaskMapper
   ) {}
-
-  async execute(dto: ISubmitTaskRequestDTO): Promise<void> {
+  async execute(dto: ICompleteTaskRequestDTO): Promise<void> {
     const task = await this._taskRepository.findById(dto.taskId);
     if (!task) {
       throw new AppError(
@@ -24,16 +21,16 @@ export class SubmitTaskUseCase implements ISubmitTaskUseCase {
       );
     }
 
-    if (task.status !== TaskStatus.IN_PROGRESS) {
+    if (task.status !== TaskStatus.SUBMITTED) {
       throw new AppError(
-        ResponseMessages.UnableToSubmitTask,
+        ResponseMessages.UnableToMarkAsCompleted,
         HttpStatusCode.CONFLICT
       );
     }
 
     await this._taskRepository.update(dto.taskId, {
-      status: TaskStatus.SUBMITTED,
-      submittedAt: new Date(dto.time),
+      status: TaskStatus.COMPLETED,
+      completedAt: new Date(dto.time),
     });
   }
 }

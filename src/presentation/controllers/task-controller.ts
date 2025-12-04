@@ -11,7 +11,7 @@ import type { IUpdateTaskUseCase } from "../../application/interfaces/usecase/ta
 import type { IGetTaskUseCase } from "../../application/interfaces/usecase/task/get-task.js";
 import type { IStartWorkUseCase } from "../../application/interfaces/usecase/task/start-task.js";
 import type { ISubmitTaskUseCase } from "../../application/interfaces/usecase/task/submit-task.js";
-import { ca } from "zod/locales";
+import type { ICompleteTaskUseCase } from "../../application/interfaces/usecase/task/complete-task.js";
 
 export class TaskController {
   constructor(
@@ -21,7 +21,8 @@ export class TaskController {
     private _updateTaskUseCase: IUpdateTaskUseCase,
     private _getTaskUseCase: IGetTaskUseCase,
     private _startWorkUseCase: IStartWorkUseCase,
-    private _submitTaskUseCase: ISubmitTaskUseCase
+    private _submitTaskUseCase: ISubmitTaskUseCase,
+    private _completeTaskUseCase: ICompleteTaskUseCase
   ) {}
 
   createTask = async (req: Request, res: Response, next: NextFunction) => {
@@ -189,6 +190,28 @@ export class TaskController {
       const dto = { taskId, time };
       logger.debug(`dto: ${JSON.stringify(dto)}`);
       await this._submitTaskUseCase.execute(dto);
+      res
+        .status(HttpStatusCode.OK)
+        .json(ApiResponse.success(ResponseMessages.TaskUpdateSuccess));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  completeTask = async (req: Request, res: Response, next: NextFunction) => {
+    logger.debug("Complete task API hit 🚀");
+    const taskId = req.params.taskId;
+    const time = req.body.time || new Date();
+    if (!taskId) {
+      throw new AppError(
+        ResponseMessages.TaskIdIsRequired,
+        HttpStatusCode.BAD_REQUEST
+      );
+    }
+    try {
+      const dto = { taskId, time };
+      logger.debug(`dto: ${JSON.stringify(dto)}`);
+      await this._completeTaskUseCase.execute(dto);
       res
         .status(HttpStatusCode.OK)
         .json(ApiResponse.success(ResponseMessages.TaskUpdateSuccess));

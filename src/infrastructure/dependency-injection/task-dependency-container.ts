@@ -1,5 +1,6 @@
 import type { IProjectRepository } from "../../application/interfaces/repository/project-repository.js";
 import type { ITaskRepository } from "../../application/interfaces/repository/task-repository.js";
+import type { ICompleteTaskUseCase } from "../../application/interfaces/usecase/task/complete-task.js";
 import type { ICreateTaskUseCase } from "../../application/interfaces/usecase/task/create-task.js";
 import type { IGetTaskUseCase } from "../../application/interfaces/usecase/task/get-task.js";
 import type { IListTasksByContributorUseCase } from "../../application/interfaces/usecase/task/list-tasks-by-contributor.js";
@@ -11,6 +12,7 @@ import {
   TaskMapper,
   type ITaskMapper,
 } from "../../application/mappers/task.js";
+import { CompleteTaskUseCase } from "../../application/use-cases/task/complete-task.js";
 import { CreateTaskUseCase } from "../../application/use-cases/task/create-task.js";
 import { GetTaskUseCase } from "../../application/use-cases/task/get-task.js";
 import { ListTasksByContributorUseCase } from "../../application/use-cases/task/list-tasks-by-contributor.js";
@@ -73,6 +75,10 @@ export class TaskDependencyContainer {
     return new SubmitTaskUseCase(this._taskRepository, this._taskMapper);
   }
 
+  createCompleteTaskUseCase(): ICompleteTaskUseCase {
+    return new CompleteTaskUseCase(this._taskRepository, this._taskMapper);
+  }
+
   // ----------------
   // Task Controller
   // ----------------
@@ -84,7 +90,8 @@ export class TaskDependencyContainer {
       this.createUpdateTaskUseCase(),
       this.createGetTaskUseCase(),
       this.createStartWorkUseCase(),
-      this.createSubmitTaskUseCase()
+      this.createSubmitTaskUseCase(),
+      this.createCompleteTaskUseCase()
     );
   }
 }

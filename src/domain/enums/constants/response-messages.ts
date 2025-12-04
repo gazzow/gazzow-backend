@@ -65,6 +65,7 @@ export enum ResponseMessages {
   TaskUpdateSuccess = "Task update successfully",
   UnableToStartTask = "Unable to start work this task",
   UnableToSubmitTask = "Unable to submit this task",
+  UnableToMarkAsCompleted = "Unable to mark this task as completed",
   UnauthorizedTaskModification = "Unauthorized to modify this task",
   UnauthorizedTaskCreation = "You don't have permission to create tasks for this project",
 }
