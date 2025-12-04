@@ -165,6 +165,7 @@ const taskSchema = new Schema<ITaskDocument>(
     ExpiredAt: { type: Date, default: null },
     cancelledAt: { type: Date, default: null },
     acceptedAt: { type: Date, default: null },
+    submittedAt: { type: Date, default: null },
     completedAt: { type: Date, default: null },
     closedAt: { type: Date, default: null },
     paidAt: { type: Date, default: null },

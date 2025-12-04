@@ -37,7 +37,7 @@ export interface ITaskResponseDTO
   expiredAt?: string | null;
   cancelledAt?: string | null;
   acceptedAt?: string | null;
-  submittedAT?: string | null;
+  submittedAt?: string | null;
   completedAt?: string | null;
   closedAt?: string | null;
   paidAt?: string | null;
@@ -93,5 +93,14 @@ export interface IStartWorkRequestDTO {
 }
 
 export interface IStartWorkResponseDTO {
+  data: IPopulatedResponseDTO;
+}
+
+export interface ISubmitTaskRequestDTO {
+  taskId: string;
+  time: Date;
+}
+
+export interface ISubmitTaskResponseDTO {
   data: IPopulatedResponseDTO;
 }

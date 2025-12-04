@@ -10,6 +10,8 @@ import { ResponseMessages } from "../../domain/enums/constants/response-messages
 import type { IUpdateTaskUseCase } from "../../application/interfaces/usecase/task/update-task.js";
 import type { IGetTaskUseCase } from "../../application/interfaces/usecase/task/get-task.js";
 import type { IStartWorkUseCase } from "../../application/interfaces/usecase/task/start-task.js";
+import type { ISubmitTaskUseCase } from "../../application/interfaces/usecase/task/submit-task.js";
+import { ca } from "zod/locales";
 
 export class TaskController {
   constructor(
@@ -18,7 +20,8 @@ export class TaskController {
     private _listTasksByCreatorUseCase: IListTasksByCreatorUseCase,
     private _updateTaskUseCase: IUpdateTaskUseCase,
     private _getTaskUseCase: IGetTaskUseCase,
-    private _startWorkUseCase: IStartWorkUseCase
+    private _startWorkUseCase: IStartWorkUseCase,
+    private _submitTaskUseCase: ISubmitTaskUseCase
   ) {}
 
   createTask = async (req: Request, res: Response, next: NextFunction) => {
@@ -161,9 +164,31 @@ export class TaskController {
       );
     }
     try {
-      const dto = { taskId, time};
-      logger.debug(`dto: ${JSON.stringify(dto)}`);
+      const dto = { taskId, time };
+      logger.debug(`Received time: ${time}`);
       await this._startWorkUseCase.execute(dto);
+      res
+        .status(HttpStatusCode.OK)
+        .json(ApiResponse.success(ResponseMessages.TaskUpdateSuccess));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  submitTask = async (req: Request, res: Response, next: NextFunction) => {
+    logger.debug("Submit task API hit 🚀");
+    const taskId = req.params.taskId;
+    const time = req.body.time || new Date();
+    if (!taskId) {
+      throw new AppError(
+        ResponseMessages.TaskIdIsRequired,
+        HttpStatusCode.BAD_REQUEST
+      );
+    }
+    try {
+      const dto = { taskId, time };
+      logger.debug(`dto: ${JSON.stringify(dto)}`);
+      await this._submitTaskUseCase.execute(dto);
       res
         .status(HttpStatusCode.OK)
         .json(ApiResponse.success(ResponseMessages.TaskUpdateSuccess));

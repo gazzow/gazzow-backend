@@ -5,6 +5,7 @@ import type { IGetTaskUseCase } from "../../application/interfaces/usecase/task/
 import type { IListTasksByContributorUseCase } from "../../application/interfaces/usecase/task/list-tasks-by-contributor.js";
 import type { IListTasksByCreatorUseCase } from "../../application/interfaces/usecase/task/list-tasks-by-creator.js";
 import type { IStartWorkUseCase } from "../../application/interfaces/usecase/task/start-task.js";
+import type { ISubmitTaskUseCase } from "../../application/interfaces/usecase/task/submit-task.js";
 import type { IUpdateTaskUseCase } from "../../application/interfaces/usecase/task/update-task.js";
 import {
   TaskMapper,
@@ -15,6 +16,7 @@ import { GetTaskUseCase } from "../../application/use-cases/task/get-task.js";
 import { ListTasksByContributorUseCase } from "../../application/use-cases/task/list-tasks-by-contributor.js";
 import { ListTasksByCreatorUseCase } from "../../application/use-cases/task/list-tasks-by-creator.js";
 import { StartWorkUseCase } from "../../application/use-cases/task/start-task.js";
+import { SubmitTaskUseCase } from "../../application/use-cases/task/submit-task.js";
 import { UpdateTaskUseCase } from "../../application/use-cases/task/update-task.js";
 import { TaskController } from "../../presentation/controllers/task-controller.js";
 import { ProjectModel } from "../db/models/project-model.js";
@@ -67,6 +69,10 @@ export class TaskDependencyContainer {
     return new StartWorkUseCase(this._taskRepository);
   }
 
+  createSubmitTaskUseCase(): ISubmitTaskUseCase {
+    return new SubmitTaskUseCase(this._taskRepository, this._taskMapper);
+  }
+
   // ----------------
   // Task Controller
   // ----------------
@@ -77,7 +83,8 @@ export class TaskDependencyContainer {
       this.createListTaskByCreator(),
       this.createUpdateTaskUseCase(),
       this.createGetTaskUseCase(),
-      this.createStartWorkUseCase()
+      this.createStartWorkUseCase(),
+      this.createSubmitTaskUseCase()
     );
   }
 }

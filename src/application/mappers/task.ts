@@ -107,6 +107,7 @@ export class TaskMapper implements ITaskMapper {
       assigneeStatus: taskDoc.assigneeStatus,
       priority: taskDoc.priority,
       acceptedAt: taskDoc.acceptedAt?.toISOString() ?? null,
+      submittedAt: taskDoc.submittedAt?.toISOString() ?? null,
       documents: taskDoc.documents,
       submissionLinks: taskDoc.submissionLinks,
 
