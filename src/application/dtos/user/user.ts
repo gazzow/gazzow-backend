@@ -1,4 +1,8 @@
-import type { Provider, UserRole, UserStatus } from "../../../domain/enums/user-role.js";
+import type {
+  Provider,
+  UserRole,
+  UserStatus,
+} from "../../../domain/enums/user-role.js";
 import type { OtpPurpose } from "../../../domain/types/auth.js";
 
 export interface IUserPublicDTO {
@@ -16,6 +20,7 @@ export interface IUserPublicDTO {
   experience?: string;
   developerRole?: string;
   imageUrl?: string;
+  stripeAccountId: string | null;
   createdAt: Date;
 }
 
@@ -34,13 +39,12 @@ export interface IForgotPasswordRequestDTO {
   email: string;
 }
 
-
 export interface IVerifyOtpRequestDTO {
   email: string;
   otp: string;
 }
 
-export interface IResendOtpRequestDTO{
+export interface IResendOtpRequestDTO {
   email: string;
   purpose: OtpPurpose;
 }
@@ -49,7 +53,6 @@ export interface IResetPasswordRequestDTO {
   email: string;
   password: string;
 }
-
 
 export interface IUpdateProfileRequestDTO {
   name?: string;
@@ -73,7 +76,7 @@ export interface IGetUserProfileResponseDTO {
   data: IUserPublicDTO;
 }
 
-export interface IGoogleAuthResponseDTO{
-  data: IUserPublicDTO,
-  isNewUser: boolean,
+export interface IGoogleAuthResponseDTO {
+  data: IUserPublicDTO;
+  isNewUser: boolean;
 }

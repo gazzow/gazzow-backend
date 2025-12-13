@@ -26,6 +26,10 @@ export interface UnassignedTaskDTO extends BaseTaskDTO {
 
 export type ICreateTaskRequestDTO = AssignedTaskDTO | UnassignedTaskDTO;
 
+export interface ICreateTaskResponseDTO {
+  data: ITaskResponseDTO;
+}
+
 export interface ITaskResponseDTO
   extends Omit<ITask, TaskDateFields | "assigneeId"> {
   assigneeId: string | null;

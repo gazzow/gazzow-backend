@@ -1,16 +1,17 @@
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
-import { TaskStatus } from "../../../domain/enums/task.js";
+import { PaymentStatus } from "../../../domain/enums/task.js";
 import { AppError } from "../../../utils/app-error.js";
-import type { IStartWorkRequestDTO } from "../../dtos/task.js";
+import logger from "../../../utils/logger.js";
+import type { IReleaseFundsRequestDTO } from "../../dtos/payment.js";
 import type { ITaskRepository } from "../../interfaces/repository/task-repository.js";
 import type { IUserRepository } from "../../interfaces/repository/user-repository.js";
-import type { IStartWorkUseCase } from "../../interfaces/usecase/task/start-task.js";
+import type { IReleaseFundsUseCase } from "../../interfaces/usecase/payment/release-fund.js";
 import type { ITaskMapper } from "../../mappers/task.js";
 import type { IUserMapper } from "../../mappers/user/user.js";
 import type { IStripeService } from "../../providers/stripe-service.js";
 
-export class StartWorkUseCase implements IStartWorkUseCase {
+export class ReleaseFundsUseCase implements IReleaseFundsUseCase {
   constructor(
     private _taskRepository: ITaskRepository,
     private _userRepository: IUserRepository,
@@ -19,14 +20,13 @@ export class StartWorkUseCase implements IStartWorkUseCase {
     private _stripeService: IStripeService
   ) {}
 
-  async execute(dto: IStartWorkRequestDTO): Promise<void> {
+  async execute(dto: IReleaseFundsRequestDTO) {
     const taskDoc = await this._taskRepository.findById(dto.taskId);
     if (!taskDoc)
       throw new AppError(
         ResponseMessages.TaskNotFound,
         HttpStatusCode.NOT_FOUND
       );
-
     const task = this._taskMapper.toResponseDTO(taskDoc);
 
     if (!task.assigneeId)
@@ -34,6 +34,14 @@ export class StartWorkUseCase implements IStartWorkUseCase {
         ResponseMessages.AssigneeIdIsRequired,
         HttpStatusCode.BAD_REQUEST
       );
+
+    if (task.paymentStatus === PaymentStatus.PAID)
+      throw new AppError(
+        ResponseMessages.TaskFundAlreadyReleased,
+        HttpStatusCode.CONFLICT
+      );
+
+    logger.warn(`Task payment status: ${task.paymentStatus}`);
 
     const userDoc = await this._userRepository.findById(task.assigneeId);
     if (!userDoc)
@@ -50,6 +58,20 @@ export class StartWorkUseCase implements IStartWorkUseCase {
       );
     }
 
+    const PLATFORM_FEE_PERCENTAGE = 12;
+
+    const platformFee = Math.floor(
+      task.proposedAmount * (PLATFORM_FEE_PERCENTAGE / 100)
+    );
+
+    logger.debug(`Platform fee: ${platformFee}`);
+
+    const totalAmount = task.proposedAmount - platformFee;
+
+    logger.debug(
+      `Transferring amount: ${totalAmount} to accountId: ${user.stripeAccountId}`
+    );
+
     // Check account onboarding status
     const isOnboarded = await this._stripeService.checkOnboardingStatus(
       user.stripeAccountId
@@ -60,16 +82,11 @@ export class StartWorkUseCase implements IStartWorkUseCase {
         HttpStatusCode.BAD_REQUEST
       );
 
-    if (task.status !== TaskStatus.TODO) {
-      throw new AppError(
-        ResponseMessages.UnableToStartTask,
-        HttpStatusCode.CONFLICT
-      );
-    }
+    await this._stripeService.transferFunds(user.stripeAccountId, totalAmount);
 
-    await this._taskRepository.update(dto.taskId, {
-      status: TaskStatus.IN_PROGRESS,
-      acceptedAt: new Date(dto.time),
+    await this._taskRepository.update(task.id, {
+      paymentStatus: PaymentStatus.PAID,
+      paidAt: new Date(),
     });
   }
 }

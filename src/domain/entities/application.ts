@@ -1,7 +1,6 @@
 import type { IApplicationDocument } from "../../infrastructure/db/models/application-model.js";
 import type { ApplicationStatus } from "../enums/application.js";
 import type { ProjectDurationUnit } from "../enums/project.js";
-import type { IProject } from "./project.js";
 
 export interface IApplication {
   id: string;

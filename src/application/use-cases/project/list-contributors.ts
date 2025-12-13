@@ -23,7 +23,6 @@ export class ListContributorsUseCase implements IListContributorsUseCase {
       );
     }
 
-    logger.debug(`Project doc: ${JSON.stringify(projectDoc)}`)
     const data = this._projectMapper.toListContributorsResponseDTO(projectDoc);
 
     return data;

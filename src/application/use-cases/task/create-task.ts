@@ -2,7 +2,10 @@ import { ResponseMessages } from "../../../domain/enums/constants/response-messa
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
 import { AppError } from "../../../utils/app-error.js";
 import logger from "../../../utils/logger.js";
-import type { ICreateTaskRequestDTO } from "../../dtos/task.js";
+import type {
+  ICreateTaskRequestDTO,
+  ICreateTaskResponseDTO,
+} from "../../dtos/task.js";
 import type { IProjectRepository } from "../../interfaces/repository/project-repository.js";
 import type { ITaskRepository } from "../../interfaces/repository/task-repository.js";
 import type { ICreateTaskUseCase } from "../../interfaces/usecase/task/create-task.js";
@@ -14,7 +17,7 @@ export class CreateTaskUseCase implements ICreateTaskUseCase {
     private _projectRepository: IProjectRepository,
     private _taskMapper: ITaskMapper
   ) {}
-  async execute(dto: ICreateTaskRequestDTO): Promise<void> {
+  async execute(dto: ICreateTaskRequestDTO): Promise<ICreateTaskResponseDTO> {
     logger.debug(`create task dto: ${JSON.stringify(dto)}`);
 
     const projectDoc = await this._projectRepository.findById(dto.projectId);
@@ -34,7 +37,10 @@ export class CreateTaskUseCase implements ICreateTaskUseCase {
 
     const persistentEntity = this._taskMapper.toPersistent(dto);
     const taskDoc = await this._taskRepository.create(persistentEntity);
+    const data = this._taskMapper.toResponseDTO(taskDoc);
 
     logger.debug(`new task :${JSON.stringify(taskDoc)}`);
+
+    return { data };
   }
 }

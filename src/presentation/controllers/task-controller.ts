@@ -37,14 +37,14 @@ export class TaskController {
     }
 
     try {
-      await this._createTaskUseCase.execute({
+      const { data } = await this._createTaskUseCase.execute({
         ...req.body,
         creatorId: userId,
         projectId,
       });
       res
         .status(HttpStatusCode.CREATED)
-        .json(ApiResponse.success("Task created successfully"));
+        .json(ApiResponse.success(ResponseMessages.TaskCreated, data));
     } catch (error) {
       next(error);
     }

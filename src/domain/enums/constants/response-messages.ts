@@ -59,13 +59,28 @@ export enum ResponseMessages {
 
   // Task
   TaskIdIsRequired = "Task is required",
+  TaskCreated = "Task created successfully",
   FetchedTasks = "Tasks fetched successfully",
   TaskNotFound = "Task not found",
   TaskUpdateFailed = "Task update failed",
   TaskUpdateSuccess = "Task update successfully",
+  TaskAlreadyPaid = "Task has already been paid",
+  AssigneeIdIsRequired = "AssigneeId is required",
+  TaskFundAlreadyReleased = "Fund have already been released for this task",
   UnableToStartTask = "Unable to start work this task",
   UnableToSubmitTask = "Unable to submit this task",
   UnableToMarkAsCompleted = "Unable to mark this task as completed",
   UnauthorizedTaskModification = "Unauthorized to modify this task",
   UnauthorizedTaskCreation = "You don't have permission to create tasks for this project",
+
+  // Stripe
+  StripeAccountCreated = "Stripe account created successfully",
+  StripeAccountLinkGenerated = "Stripe account link generated successfully",
+  StripeAccountIdNotFound = "Stripe accountId not found",
+  StripeAccountOnboardingIncomplete = "Your Stripe account is not completely onboarded",
+  ContributorStripeAccountOnboardingInComplete = "Contributor's Stripe account is not fully onboarded",
+  CheckoutSessionCreated = "Checkout session created successfully",
+  FailedToCreateCheckoutSession = "Failed to create checkout session",
+  OnboardingStatusFetched = "Onboarding status fetched successfully",
+  OnboardingUrlGenerated = "Onboarding URL generated successfully",
 }

@@ -1,5 +1,5 @@
-import type { ICreateTaskRequestDTO } from "../../../dtos/task.js";
+import type { ICreateTaskRequestDTO, ICreateTaskResponseDTO } from "../../../dtos/task.js";
 
 export interface ICreateTaskUseCase {
-  execute(dto: ICreateTaskRequestDTO): Promise<void>;
+  execute(dto: ICreateTaskRequestDTO): Promise<ICreateTaskResponseDTO>;
 }

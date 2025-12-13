@@ -13,6 +13,7 @@ import type { ITask } from "../../domain/entities/task.js";
 
 export interface ITaskMapper {
   toPersistent(dto: ICreateTaskRequestDTO): Partial<ITaskDocument>;
+
   toResponseDTO(taskDoc: ITaskDocument): ITaskResponseDTO;
   toPopulatedResponseDTO(
     taskDoc: IPopulatedTaskDocument
@@ -61,6 +62,7 @@ export class TaskMapper implements ITaskMapper {
       proposedAmount: taskDoc.proposedAmount,
       status: taskDoc.status,
       assigneeStatus: taskDoc.assigneeStatus,
+      paymentStatus: taskDoc.paymentStatus,
       priority: taskDoc.priority,
       documents: taskDoc.documents,
       submissionLinks: taskDoc.submissionLinks,
@@ -108,9 +110,9 @@ export class TaskMapper implements ITaskMapper {
       priority: taskDoc.priority,
       acceptedAt: taskDoc.acceptedAt?.toISOString() ?? null,
       submittedAt: taskDoc.submittedAt?.toISOString() ?? null,
-      documents: taskDoc.documents,
+      paidAt: taskDoc.paidAt?.toISOString() ?? null,
       submissionLinks: taskDoc.submissionLinks,
-
+      documents: taskDoc.documents,
       dueDate: taskDoc.dueDate.toISOString(),
       paymentStatus: taskDoc.paymentStatus,
       isDeleted: taskDoc.isDeleted,

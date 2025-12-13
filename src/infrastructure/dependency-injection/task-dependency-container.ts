@@ -1,5 +1,7 @@
 import type { IProjectRepository } from "../../application/interfaces/repository/project-repository.js";
 import type { ITaskRepository } from "../../application/interfaces/repository/task-repository.js";
+import type { IUserRepository } from "../../application/interfaces/repository/user-repository.js";
+import type { IReleaseFundsUseCase } from "../../application/interfaces/usecase/payment/release-fund.js";
 import type { ICompleteTaskUseCase } from "../../application/interfaces/usecase/task/complete-task.js";
 import type { ICreateTaskUseCase } from "../../application/interfaces/usecase/task/create-task.js";
 import type { IGetTaskUseCase } from "../../application/interfaces/usecase/task/get-task.js";
@@ -12,6 +14,12 @@ import {
   TaskMapper,
   type ITaskMapper,
 } from "../../application/mappers/task.js";
+import {
+  UserMapper,
+  type IUserMapper,
+} from "../../application/mappers/user/user.js";
+import type { IStripeService } from "../../application/providers/stripe-service.js";
+import { ReleaseFundsUseCase } from "../../application/use-cases/payment/release-fund.js";
 import { CompleteTaskUseCase } from "../../application/use-cases/task/complete-task.js";
 import { CreateTaskUseCase } from "../../application/use-cases/task/create-task.js";
 import { GetTaskUseCase } from "../../application/use-cases/task/get-task.js";
@@ -23,18 +31,27 @@ import { UpdateTaskUseCase } from "../../application/use-cases/task/update-task.
 import { TaskController } from "../../presentation/controllers/task-controller.js";
 import { ProjectModel } from "../db/models/project-model.js";
 import { TaskModel } from "../db/models/task-model.js";
+import { UserModel } from "../db/models/user-model.js";
+import { StripeService } from "../providers/stripe-service.js";
 import { ProjectRepository } from "../repositories/project-repository.js";
 import { TaskRepository } from "../repositories/task-repository.js";
+import { UserRepository } from "../repositories/user-repository.js";
 
 export class TaskDependencyContainer {
   private readonly _taskRepository: ITaskRepository;
   private readonly _taskMapper: ITaskMapper;
   private readonly _projectRepository: IProjectRepository;
+  private readonly _userRepository: IUserRepository;
+  private readonly _userMapper: IUserMapper;
+  private readonly _stripeService: IStripeService;
 
   constructor() {
     this._taskRepository = new TaskRepository(TaskModel);
     this._taskMapper = new TaskMapper();
     this._projectRepository = new ProjectRepository(ProjectModel);
+    this._userRepository = new UserRepository(UserModel);
+    this._userMapper = new UserMapper();
+    this._stripeService = new StripeService();
   }
 
   createTaskUseCase(): ICreateTaskUseCase {
@@ -68,15 +85,35 @@ export class TaskDependencyContainer {
   }
 
   createStartWorkUseCase(): IStartWorkUseCase {
-    return new StartWorkUseCase(this._taskRepository);
+    return new StartWorkUseCase(
+      this._taskRepository,
+      this._userRepository,
+      this._taskMapper,
+      this._userMapper,
+      this._stripeService
+    );
   }
 
   createSubmitTaskUseCase(): ISubmitTaskUseCase {
     return new SubmitTaskUseCase(this._taskRepository, this._taskMapper);
   }
 
+  createReleaseFundsUseCase(): IReleaseFundsUseCase {
+    return new ReleaseFundsUseCase(
+      this._taskRepository,
+      this._userRepository,
+      this._taskMapper,
+      this._userMapper,
+      this._stripeService
+    );
+  }
+
   createCompleteTaskUseCase(): ICompleteTaskUseCase {
-    return new CompleteTaskUseCase(this._taskRepository, this._taskMapper);
+    return new CompleteTaskUseCase(
+      this._taskRepository,
+      this._taskMapper,
+      this.createReleaseFundsUseCase()
+    );
   }
 
   // ----------------

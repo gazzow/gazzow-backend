@@ -2,7 +2,6 @@ import { ResponseMessages } from "../../../domain/enums/constants/response-messa
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
 import { TaskStatus } from "../../../domain/enums/task.js";
 import { AppError } from "../../../utils/app-error.js";
-import logger from "../../../utils/logger.js";
 import type { ISubmitTaskRequestDTO } from "../../dtos/task.js";
 import type { ITaskRepository } from "../../interfaces/repository/task-repository.js";
 import type { ISubmitTaskUseCase } from "../../interfaces/usecase/task/submit-task.js";

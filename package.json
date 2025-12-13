@@ -19,6 +19,7 @@
     "@types/nodemailer": "^7.0.1",
     "@types/passport": "^1.0.17",
     "@types/passport-google-oauth20": "^2.0.16",
+    "@types/stripe": "^8.0.416",
     "@types/supertest": "^6.0.3",
     "@types/winston": "^2.4.4",
     "@typescript-eslint/eslint-plugin": "^8.41.0",
@@ -54,6 +55,7 @@
     "nodemailer": "^7.0.5",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
+    "stripe": "^20.0.0",
     "winston": "^3.17.0",
     "zod": "^4.1.8"
   }
