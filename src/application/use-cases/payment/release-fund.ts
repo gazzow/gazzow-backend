@@ -27,7 +27,8 @@ export class ReleaseFundsUseCase implements IReleaseFundsUseCase {
         ResponseMessages.TaskNotFound,
         HttpStatusCode.NOT_FOUND
       );
-    const task = this._taskMapper.toResponseDTO(taskDoc);
+
+    const task = this._taskMapper.toDomain(taskDoc);
 
     if (!task.assigneeId)
       throw new AppError(
@@ -61,15 +62,20 @@ export class ReleaseFundsUseCase implements IReleaseFundsUseCase {
     const PLATFORM_FEE_PERCENTAGE = 12;
 
     const platformFee = Math.floor(
-      task.proposedAmount * (PLATFORM_FEE_PERCENTAGE / 100)
+      task.totalAmount * (PLATFORM_FEE_PERCENTAGE / 100)
     );
 
     logger.debug(`Platform fee: ${platformFee}`);
 
-    const totalAmount = task.proposedAmount - platformFee;
+    const totalAmount = task.totalAmount - platformFee;
+    const refundAmount = task.refundAmount || 0;
 
     logger.debug(
-      `Transferring amount: ${totalAmount} to accountId: ${user.stripeAccountId}`
+      `Total amount:- ${task.totalAmount} + refund:- ${task.refundAmount} to accountId: ${user.stripeAccountId}`
+    );
+
+    logger.debug(
+      `Transferring amount:${totalAmount + refundAmount} to accountId: ${user.stripeAccountId}`
     );
 
     // Check account onboarding status
@@ -82,7 +88,9 @@ export class ReleaseFundsUseCase implements IReleaseFundsUseCase {
         HttpStatusCode.BAD_REQUEST
       );
 
-    await this._stripeService.transferFunds(user.stripeAccountId, totalAmount);
+    const grandTotal = totalAmount + refundAmount;
+
+    await this._stripeService.transferFunds(user.stripeAccountId, grandTotal);
 
     await this._taskRepository.update(task.id, {
       paymentStatus: PaymentStatus.PAID,

@@ -12,8 +12,8 @@ import { AssigneeStatus } from "../../domain/enums/task.js";
 import type { ITask } from "../../domain/entities/task.js";
 
 export interface ITaskMapper {
+  toDomain(doc: ITaskDocument): ITask;
   toPersistent(dto: ICreateTaskRequestDTO): Partial<ITaskDocument>;
-
   toResponseDTO(taskDoc: ITaskDocument): ITaskResponseDTO;
   toPopulatedResponseDTO(
     taskDoc: IPopulatedTaskDocument
@@ -22,6 +22,34 @@ export interface ITaskMapper {
 }
 
 export class TaskMapper implements ITaskMapper {
+  toDomain(taskDoc: ITaskDocument): ITask {
+    return {
+      id: taskDoc._id.toString(),
+      title: taskDoc.title,
+      projectId: taskDoc.projectId.toString(),
+      assigneeId: taskDoc.assigneeId?.toString() ?? null,
+      creatorId: taskDoc.creatorId.toString(),
+      description: taskDoc.description,
+      expectedRate: taskDoc.expectedRate,
+      estimatedHours: taskDoc.estimatedHours,
+      totalAmount: taskDoc.totalAmount,
+      amountInEscrow: taskDoc.amountInEscrow,
+      balance: taskDoc.balance,
+      refundAmount: taskDoc.refundAmount,
+      refundStatus: taskDoc.refundStatus,
+      status: taskDoc.status,
+      assigneeStatus: taskDoc.assigneeStatus,
+      paymentStatus: taskDoc.paymentStatus,
+      priority: taskDoc.priority,
+      documents: taskDoc.documents,
+      submissionLinks: taskDoc.submissionLinks,
+      dueDate: taskDoc.dueDate,
+      isDeleted: taskDoc.isDeleted,
+      createdAt: taskDoc.createdAt,
+      updatedAt: taskDoc.updatedAt,
+    };
+  }
+
   toPersistent(dto: ICreateTaskRequestDTO): Partial<ITaskDocument> {
     const base: Partial<ITaskDocument> = {
       title: dto.title,
@@ -30,7 +58,7 @@ export class TaskMapper implements ITaskMapper {
       description: dto.description,
       estimatedHours: dto.estimatedHours,
       expectedRate: dto.expectedRate,
-      proposedAmount: dto.estimatedHours * dto.expectedRate,
+      totalAmount: dto.estimatedHours * dto.expectedRate,
       priority: dto.priority,
       dueDate: dto.dueDate,
     };
@@ -59,7 +87,11 @@ export class TaskMapper implements ITaskMapper {
       description: taskDoc.description,
       expectedRate: taskDoc.expectedRate,
       estimatedHours: taskDoc.estimatedHours,
-      proposedAmount: taskDoc.proposedAmount,
+      totalAmount: taskDoc.totalAmount,
+      amountInEscrow: taskDoc.amountInEscrow,
+      balance: taskDoc.balance,
+      refundAmount: taskDoc.refundAmount,
+      refundStatus: taskDoc.refundStatus,
       status: taskDoc.status,
       assigneeStatus: taskDoc.assigneeStatus,
       paymentStatus: taskDoc.paymentStatus,
@@ -104,7 +136,11 @@ export class TaskMapper implements ITaskMapper {
       description: taskDoc.description,
       expectedRate: taskDoc.expectedRate,
       estimatedHours: taskDoc.estimatedHours,
-      proposedAmount: taskDoc.proposedAmount,
+      totalAmount: taskDoc.totalAmount,
+      amountInEscrow: taskDoc.amountInEscrow,
+      balance: taskDoc.balance,
+      refundAmount: taskDoc.refundAmount,
+      refundStatus: taskDoc.refundStatus,
       status: taskDoc.status,
       assigneeStatus: taskDoc.assigneeStatus,
       priority: taskDoc.priority,
@@ -124,17 +160,19 @@ export class TaskMapper implements ITaskMapper {
   toUpdatePersistent(dto: Partial<ITask>): Partial<ITaskDocument> {
     const update: Partial<ITaskDocument> = {};
 
-    if (dto.title) update.title = dto.title;
-    if (dto.description) update.description = dto.description;
-    if (dto.estimatedHours) update.estimatedHours = dto.estimatedHours;
+    if (dto.title != undefined) update.title = dto.title;
+    if (dto.description != undefined) update.description = dto.description;
+    if (dto.estimatedHours != undefined && dto.expectedRate != undefined) {
+      update.estimatedHours = dto.estimatedHours;
+    }
 
-    if (dto.estimatedHours && dto.expectedRate)
-      update.proposedAmount = dto.estimatedHours * dto.expectedRate;
+    if (dto.priority != undefined) update.priority = dto.priority;
+    if (dto.assigneeId != undefined) {
+      update.assigneeId = new Types.ObjectId(dto.assigneeId);
+      update.assigneeStatus = AssigneeStatus.ASSIGNED;
+    }
 
-    if (dto.priority) update.priority = dto.priority;
-    if (dto.assigneeId) new Types.ObjectId(dto.assigneeId);
-
-    if (dto.dueDate) update.dueDate = dto.dueDate;
+    if (dto.dueDate != undefined) update.dueDate = dto.dueDate;
 
     return update;
   }

@@ -2,6 +2,7 @@ import type { IProjectFile } from "../../application/interfaces/s3-bucket/file-s
 import type {
   AssigneeStatus,
   PaymentStatus,
+  RefundStatus,
   Revision,
   SubmissionLink,
   TaskPriority,
@@ -12,12 +13,16 @@ export interface ITask {
   id: string;
   title: string;
   projectId: string;
-  assigneeId?: string;
+  assigneeId?: string | null;
   creatorId: string;
   description: string;
   expectedRate: number;
   estimatedHours: number; // estimated time
-  proposedAmount: number; // expectedRate * estimatedHours
+  totalAmount: number; // estimatedAmount * expectedRate
+  amountInEscrow: number; // Amount in escrow
+  balance: number; // Balance amount to pay
+  refundAmount: number;
+  refundStatus: RefundStatus;
   status: TaskStatus;
   assigneeStatus: AssigneeStatus;
   priority: TaskPriority;
@@ -31,6 +36,7 @@ export interface ITask {
   acceptedAt?: Date;
   submittedAt?: Date;
   completedAt?: Date;
+  reassignedAt?: Date;
   dueDate: Date;
   closedAt?: Date; // when admin marks as done (after payment)
   paidAt?: Date;

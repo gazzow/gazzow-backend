@@ -2,6 +2,7 @@ import mongoose, { Document, Schema, Types } from "mongoose";
 import {
   AssigneeStatus,
   PaymentStatus,
+  RefundStatus,
   TaskPriority,
   TaskStatus,
   type Revision,
@@ -23,7 +24,11 @@ export type ITaskDocument = Document & {
   description: string;
   expectedRate: number;
   estimatedHours: number;
-  proposedAmount: number;
+  totalAmount: number;
+  amountInEscrow: number;
+  balance: number;
+  refundAmount: number;
+  refundStatus: RefundStatus;
   status: TaskStatus;
   assigneeStatus: AssigneeStatus;
   priority: TaskPriority;
@@ -102,7 +107,7 @@ const taskSchema = new Schema<ITaskDocument>(
     assigneeId: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      default: null
+      default: null,
     },
     creatorId: {
       type: Schema.Types.ObjectId,
@@ -116,10 +121,17 @@ const taskSchema = new Schema<ITaskDocument>(
       trim: true,
       maxLength: 1000,
     },
-
     estimatedHours: { type: Number, required: true, min: 0 },
     expectedRate: { type: Number, required: true, min: 0 },
-    proposedAmount: { type: Number, required: true, min: 0 },
+    totalAmount: { type: Number, required: true, min: 0 },
+    balance: { type: Number, default: 0, min: 0 },
+    amountInEscrow: { type: Number, default: 0, min: 0 },
+    refundAmount: { type: Number, default: 0, min: 0 },
+    refundStatus: {
+      type: String,
+      enum: Object.values(RefundStatus),
+      default: RefundStatus.NONE,
+    },
 
     dueDate: { type: Date, required: true },
 

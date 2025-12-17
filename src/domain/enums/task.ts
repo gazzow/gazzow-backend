@@ -13,7 +13,6 @@ export enum AssigneeStatus {
   ASSIGNED = "assigned",
 }
 
-
 export enum TaskPriority {
   LOW = "low",
   MEDIUM = "medium",
@@ -25,7 +24,14 @@ export enum PaymentStatus {
   PAID = "paid",
   ESCROW_HELD = "escrow_held",
   RELEASED = "released",
-  REFUNDED = "refunded",
+  FAILED = "failed",
+}
+
+export enum RefundStatus {
+  NONE = "none",
+  PENDING = "pending",
+  RELEASED = "released",
+  SUCCESS = "success",
   FAILED = "failed",
 }
 

@@ -36,9 +36,15 @@ export class TaskCheckoutSessionUseCase implements ITaskCheckoutSessionUseCase {
         HttpStatusCode.CONFLICT
       );
 
+    if (task.paymentStatus !== PaymentStatus.PENDING) {
+      throw new AppError(
+        ResponseMessages.UnableToPayForThisTask,
+        HttpStatusCode.BAD_REQUEST
+      );
+    }
     const CURRENCY_CODE = "usd";
-    const AMOUNT_IN_CENTS = task.proposedAmount * 100;
-    
+    const AMOUNT_IN_CENTS = (task.balance || task.totalAmount) * 100;
+
     const checkoutUrl = await this._paymentService.taskCheckoutSession({
       taskId: task.id,
       amountInCents: AMOUNT_IN_CENTS,
