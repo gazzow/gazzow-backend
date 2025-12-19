@@ -12,6 +12,7 @@ import type { IGetTaskUseCase } from "../../application/interfaces/usecase/task/
 import type { IStartWorkUseCase } from "../../application/interfaces/usecase/task/start-task.js";
 import type { ISubmitTaskUseCase } from "../../application/interfaces/usecase/task/submit-task.js";
 import type { ICompleteTaskUseCase } from "../../application/interfaces/usecase/task/complete-task.js";
+import type { IReassignTaskUseCase } from "../../application/interfaces/usecase/task/reassign-task.js";
 
 export class TaskController {
   constructor(
@@ -22,7 +23,8 @@ export class TaskController {
     private _getTaskUseCase: IGetTaskUseCase,
     private _startWorkUseCase: IStartWorkUseCase,
     private _submitTaskUseCase: ISubmitTaskUseCase,
-    private _completeTaskUseCase: ICompleteTaskUseCase
+    private _completeTaskUseCase: ICompleteTaskUseCase,
+    private _reassignTaskUseCase: IReassignTaskUseCase
   ) {}
 
   createTask = async (req: Request, res: Response, next: NextFunction) => {
@@ -215,6 +217,32 @@ export class TaskController {
       res
         .status(HttpStatusCode.OK)
         .json(ApiResponse.success(ResponseMessages.TaskUpdateSuccess));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  reassignTask = async (req: Request, res: Response, next: NextFunction) => {
+    logger.debug("Reassign task API hit 🚀");
+    const taskId = req.params.taskId;
+    const userId = req.user!.id;
+    if (!taskId) {
+      throw new AppError(
+        ResponseMessages.TaskIdIsRequired,
+        HttpStatusCode.BAD_REQUEST
+      );
+    }
+
+    const { assigneeId } = req.body;
+
+    try {
+      const dto = { taskId, assigneeId, userId };
+      logger.debug(`dto: ${JSON.stringify(dto)}`);
+
+      await this._reassignTaskUseCase.execute(dto);
+      res
+        .status(HttpStatusCode.OK)
+        .json(ApiResponse.success(ResponseMessages.TaskReassigned));
     } catch (error) {
       next(error);
     }

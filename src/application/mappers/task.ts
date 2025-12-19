@@ -19,6 +19,7 @@ export interface ITaskMapper {
     taskDoc: IPopulatedTaskDocument
   ): IPopulatedResponseDTO;
   toUpdatePersistent(dto: Partial<ITask>): Partial<ITaskDocument>;
+  toReassignPersistent(data: Partial<ITask>): Partial<ITaskDocument>;
 }
 
 export class TaskMapper implements ITaskMapper {
@@ -147,6 +148,7 @@ export class TaskMapper implements ITaskMapper {
       acceptedAt: taskDoc.acceptedAt?.toISOString() ?? null,
       submittedAt: taskDoc.submittedAt?.toISOString() ?? null,
       paidAt: taskDoc.paidAt?.toISOString() ?? null,
+      completedAt: taskDoc.completedAt?.toString() ?? null,
       submissionLinks: taskDoc.submissionLinks,
       documents: taskDoc.documents,
       dueDate: taskDoc.dueDate.toISOString(),
@@ -160,19 +162,75 @@ export class TaskMapper implements ITaskMapper {
   toUpdatePersistent(dto: Partial<ITask>): Partial<ITaskDocument> {
     const update: Partial<ITaskDocument> = {};
 
-    if (dto.title != undefined) update.title = dto.title;
-    if (dto.description != undefined) update.description = dto.description;
-    if (dto.estimatedHours != undefined && dto.expectedRate != undefined) {
+    if (dto.title !== undefined) update.title = dto.title;
+
+    if (dto.description !== undefined) update.description = dto.description;
+
+    if (dto.estimatedHours !== undefined) {
       update.estimatedHours = dto.estimatedHours;
     }
 
-    if (dto.priority != undefined) update.priority = dto.priority;
-    if (dto.assigneeId != undefined) {
+    if (dto.expectedRate !== undefined) {
+      update.expectedRate = dto.expectedRate;
+    }
+
+    if (dto.priority !== undefined) update.priority = dto.priority;
+
+    if (dto.assigneeId !== undefined && dto.assigneeId !== null) {
       update.assigneeId = new Types.ObjectId(dto.assigneeId);
       update.assigneeStatus = AssigneeStatus.ASSIGNED;
     }
 
-    if (dto.dueDate != undefined) update.dueDate = dto.dueDate;
+    if (dto.dueDate !== undefined) update.dueDate = dto.dueDate;
+
+    if (dto.totalAmount !== undefined) {
+      update.totalAmount = dto.totalAmount;
+    }
+
+    if (dto.balance !== undefined) update.balance = dto.balance;
+
+    if (dto.amountInEscrow !== undefined)
+      update.amountInEscrow = dto.amountInEscrow;
+
+    if (dto.paymentStatus !== undefined)
+      update.paymentStatus = dto.paymentStatus;
+
+    if (dto.refundAmount !== undefined) update.refundAmount = dto.refundAmount;
+
+    if (dto.refundStatus !== undefined) update.refundStatus = dto.refundStatus;
+
+    return update;
+  }
+
+  toReassignPersistent(data: Partial<ITask>): Partial<ITaskDocument> {
+    const update: Partial<ITaskDocument> = {};
+
+    if (data.assigneeId) {
+      update.assigneeId = new Types.ObjectId(data.assigneeId);
+      update.assigneeStatus = AssigneeStatus.ASSIGNED
+    }
+
+    if (data.expectedRate !== undefined) {
+      update.expectedRate = data.expectedRate;
+    } 
+
+    if (data.totalAmount !== undefined) {
+      update.totalAmount = data.totalAmount;
+    }
+
+    if (data.balance !== undefined) update.balance = data.balance;
+
+    if (data.amountInEscrow !== undefined)
+      update.amountInEscrow = data.amountInEscrow;
+
+    if (data.paymentStatus !== undefined)
+      update.paymentStatus = data.paymentStatus;
+
+    if (data.refundAmount !== undefined)
+      update.refundAmount = data.refundAmount;
+
+    if (data.refundStatus !== undefined)
+      update.refundStatus = data.refundStatus;
 
     return update;
   }

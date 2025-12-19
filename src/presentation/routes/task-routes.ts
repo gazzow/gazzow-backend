@@ -14,7 +14,8 @@ router.put("/:taskId/start", taskController.startWork);
 router.put("/:taskId/submit", taskController.submitTask);
 router.put("/:taskId/complete", taskController.completeTask);
 
-router.get("/:taskId", taskController.getTask);
+router.patch("/:taskId/reassign", taskController.reassignTask);
 router.patch("/:taskId", taskController.updateTask);
+router.get("/:taskId", taskController.getTask);
 
 export default router;

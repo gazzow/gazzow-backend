@@ -90,11 +90,12 @@ export class ReleaseFundsUseCase implements IReleaseFundsUseCase {
 
     const grandTotal = totalAmount + refundAmount;
 
-    await this._stripeService.transferFunds(user.stripeAccountId, grandTotal);
-
-    await this._taskRepository.update(task.id, {
-      paymentStatus: PaymentStatus.PAID,
-      paidAt: new Date(),
-    });
+    await Promise.all([
+      this._stripeService.transferFunds(user.stripeAccountId, grandTotal),
+      this._taskRepository.update(task.id, {
+        paymentStatus: PaymentStatus.PAID,
+        paidAt: new Date(),
+      }),
+    ]);
   }
 }

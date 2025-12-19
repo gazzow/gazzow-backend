@@ -32,13 +32,16 @@ export class CompleteTaskUseCase implements ICompleteTaskUseCase {
       );
     }
 
-    await this._taskRepository.update(dto.taskId, {
+    const update = {
       status: TaskStatus.COMPLETED,
       paymentStatus: PaymentStatus.RELEASED,
       completedAt: new Date(dto.time),
-    });
-
+    };
     const payload = { taskId: dto.taskId };
-    await this._releaseFundsUseCase.execute(payload);
+
+    await Promise.all([
+      this._taskRepository.update(dto.taskId, update),
+      this._releaseFundsUseCase.execute(payload),
+    ]);
   }
 }

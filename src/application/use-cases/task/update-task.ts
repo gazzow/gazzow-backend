@@ -1,24 +1,25 @@
+import type { Contributor } from "../../../domain/entities/project.js";
+import type { ITask } from "../../../domain/entities/task.js";
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
-import {
-  PaymentStatus,
-  RefundStatus,
-  TaskStatus,
-} from "../../../domain/enums/task.js";
-import type { ITaskDocument } from "../../../infrastructure/db/models/task-model.js";
+import { TaskRules } from "../../../domain/rules/task-rules.js";
 import { AppError } from "../../../utils/app-error.js";
 import logger from "../../../utils/logger.js";
 import type {
   IUpdateTaskRequestDTO,
   IUpdateTaskResponseDTO,
 } from "../../dtos/task.js";
+import type { IProjectRepository } from "../../interfaces/repository/project-repository.js";
 import type { ITaskRepository } from "../../interfaces/repository/task-repository.js";
 import type { IUpdateTaskUseCase } from "../../interfaces/usecase/task/update-task.js";
+import type { IProjectMapper } from "../../mappers/project.js";
 import type { ITaskMapper } from "../../mappers/task.js";
 
 export class UpdateTaskUseCase implements IUpdateTaskUseCase {
   constructor(
     private _taskRepository: ITaskRepository,
+    private _projectRepository: IProjectRepository,
+    private _projectMapper: IProjectMapper,
     private _taskMapper: ITaskMapper
   ) {}
   async execute(dto: IUpdateTaskRequestDTO): Promise<IUpdateTaskResponseDTO> {
@@ -29,70 +30,105 @@ export class UpdateTaskUseCase implements IUpdateTaskUseCase {
         HttpStatusCode.NOT_FOUND
       );
     }
+
+    logger.debug(`update dto: ${JSON.stringify(dto)}`);
     const task = this._taskMapper.toDomain(taskDoc);
 
-    if (task.status !== TaskStatus.TODO)
+    if (!TaskRules.isTaskCreator(task.creatorId, dto.userId))
       throw new AppError(
-        ResponseMessages.UnableToUpdateTaskWhileWorking,
+        ResponseMessages.UnauthorizedTaskModification,
+        HttpStatusCode.FORBIDDEN
+      );
+
+    if (TaskRules.hasWorkStarted(task.status))
+      throw new AppError(
+        ResponseMessages.UnableToUpdateTaskWhileInProgress,
         HttpStatusCode.CONFLICT
       );
 
-    if (task.creatorId !== dto.userId)
-      throw new AppError(
-        ResponseMessages.UnauthorizedTaskModification,
-        HttpStatusCode.UNAUTHORIZED
+    const { estimatedHours } = dto.data;
+
+    let reCalculatedFinancial: Partial<ITask> = {};
+    let contributor: Contributor | null = null;
+    let currentRate: number = task.expectedRate;
+
+    // check new assignee is a valid contributor of this project
+
+    if (dto.data.assigneeId && dto.data.assigneeId !== task.assigneeId) {
+      if (task.assigneeId) {
+        throw new AppError(
+          ResponseMessages.UseReassignOptionToChangeAssignee,
+          HttpStatusCode.BAD_REQUEST
+        );
+      }
+      logger.info("Adding assignee to this task");
+      const populatedProjectDoc =
+        await this._projectRepository.findContributors(task.projectId);
+
+      if (!populatedProjectDoc) {
+        throw new AppError(
+          ResponseMessages.ProjectNotFound,
+          HttpStatusCode.NOT_FOUND
+        );
+      }
+
+      const contributorDoc = populatedProjectDoc.contributors;
+
+      const contributors = contributorDoc.map((c) => {
+        return this._projectMapper.toListContributorsEntity(c);
+      });
+
+      contributor = TaskRules.getValidContributor(
+        dto.data.assigneeId,
+        contributors
       );
 
-    if (dto.data.assigneeId !== task.assigneeId) {
-      logger.info("Adding assignee to this task");
+      if (!contributor) {
+        throw new AppError(
+          ResponseMessages.UserIsNotAProjectContributor,
+          HttpStatusCode.BAD_REQUEST
+        );
+      }
+
+      logger.info("Amount changed due to new assignee, update payment status");
+      //  Recalculate if assignee changed
+      currentRate = contributor.expectedRate;
+      const newTotal = task.estimatedHours * currentRate;
+      reCalculatedFinancial = TaskRules.reCalculateFinancial(newTotal, task);
     }
-
-    const { estimatedHours, dueDate } = dto.data;
-
-    const update: Partial<ITaskDocument> = {};
 
     if (
       estimatedHours !== undefined &&
       estimatedHours !== task.estimatedHours
     ) {
-      logger.info("Amount changed, update payment status");
-      const newTotal = estimatedHours * task.expectedRate;
-      update.totalAmount = newTotal;
-
-      // Case 1: User paid upfront, then increase hours
-      if (task.amountInEscrow > 0 && newTotal > task.amountInEscrow) {
-        logger.info("Total amount greater than escrow amount");
-        update.balance = newTotal - task.amountInEscrow;
-        update.paymentStatus = PaymentStatus.PENDING;
+      logger.info("Amount changed due to updated hours, update payment status");
+      if (estimatedHours <= 0) {
+        throw new AppError(
+          "Invalid estimated hours",
+          HttpStatusCode.BAD_REQUEST
+        );
       }
-      // Case 2: User paid upfront, then decrease hours
-      else if (task.amountInEscrow > 0 && newTotal < task.amountInEscrow) {
-        logger.info("Total amount lesser than escrow amount");
-        update.refundAmount = task.amountInEscrow - newTotal;
-        update.refundStatus = RefundStatus.PENDING;
-      }
-      // Case 3: User paid upfront, now estimatedHours reset to Initial hours / totalAmount == amountInEscrow
-      else if (task.amountInEscrow > 0) {
-        logger.info("Total amount == escrow amount");
-        update.balance = 0;
-        update.refundAmount = 0;
-        update.refundStatus = RefundStatus.NONE;
-        update.paymentStatus = PaymentStatus.ESCROW_HELD;
-      }
-      // Case 4: User edited hours before any payment
-      else {
-        logger.info("Edited hours before any payment");
-        update.balance = newTotal;
-        update.paymentStatus = PaymentStatus.PENDING;
-      }
+      // Recalculate if hours changed
+      const newTotal = estimatedHours * currentRate;
+      reCalculatedFinancial = TaskRules.reCalculateFinancial(newTotal, task);
     }
 
-    const updatePersistent = this._taskMapper.toUpdatePersistent(dto.data);
+    const taskUpdates: Partial<ITask> = {
+      ...dto.data,
+      ...reCalculatedFinancial,
+      expectedRate: currentRate,
+    };
 
-    const updatedTaskDoc = await this._taskRepository.update(dto.taskId, {
-      ...updatePersistent,
-      ...update,
-    });
+    // Create log & notify user for rate changes
+    logger.debug(`task updates : ${JSON.stringify(taskUpdates)}`);
+
+    const persistenceModel = this._taskMapper.toUpdatePersistent(taskUpdates);
+    logger.debug(`task updates model : ${JSON.stringify(persistenceModel)}`);
+
+    const updatedTaskDoc = await this._taskRepository.update(
+      dto.taskId,
+      persistenceModel
+    );
 
     if (!updatedTaskDoc) {
       throw new AppError(

@@ -35,3 +35,16 @@ export interface IContributor {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface Contributor {
+  id: string;
+  name: string;
+  email: string;
+  imageUrl: string;
+  developerRole: string;
+  status: ContributorStatus;
+  expectedRate: number;
+  invitedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}

@@ -117,3 +117,13 @@ export interface ICompleteTaskRequestDTO {
 export interface ICompleteTaskResponseDTO {
   data: IPopulatedResponseDTO;
 }
+
+export interface IReassignTaskRequestDTO {
+  userId: string;
+  taskId: string;
+  assigneeId: string;
+}
+
+export interface IReassignTaskResponseDTO {
+  data: ITaskResponseDTO;
+}

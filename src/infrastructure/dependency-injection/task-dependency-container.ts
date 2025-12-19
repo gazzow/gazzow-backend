@@ -7,9 +7,14 @@ import type { ICreateTaskUseCase } from "../../application/interfaces/usecase/ta
 import type { IGetTaskUseCase } from "../../application/interfaces/usecase/task/get-task.js";
 import type { IListTasksByContributorUseCase } from "../../application/interfaces/usecase/task/list-tasks-by-contributor.js";
 import type { IListTasksByCreatorUseCase } from "../../application/interfaces/usecase/task/list-tasks-by-creator.js";
+import type { IReassignTaskUseCase } from "../../application/interfaces/usecase/task/reassign-task.js";
 import type { IStartWorkUseCase } from "../../application/interfaces/usecase/task/start-task.js";
 import type { ISubmitTaskUseCase } from "../../application/interfaces/usecase/task/submit-task.js";
 import type { IUpdateTaskUseCase } from "../../application/interfaces/usecase/task/update-task.js";
+import {
+  ProjectMapper,
+  type IProjectMapper,
+} from "../../application/mappers/project.js";
 import {
   TaskMapper,
   type ITaskMapper,
@@ -25,6 +30,7 @@ import { CreateTaskUseCase } from "../../application/use-cases/task/create-task.
 import { GetTaskUseCase } from "../../application/use-cases/task/get-task.js";
 import { ListTasksByContributorUseCase } from "../../application/use-cases/task/list-tasks-by-contributor.js";
 import { ListTasksByCreatorUseCase } from "../../application/use-cases/task/list-tasks-by-creator.js";
+import { ReassignTaskUseCase } from "../../application/use-cases/task/reassign-task.js";
 import { StartWorkUseCase } from "../../application/use-cases/task/start-task.js";
 import { SubmitTaskUseCase } from "../../application/use-cases/task/submit-task.js";
 import { UpdateTaskUseCase } from "../../application/use-cases/task/update-task.js";
@@ -41,6 +47,7 @@ export class TaskDependencyContainer {
   private readonly _taskRepository: ITaskRepository;
   private readonly _taskMapper: ITaskMapper;
   private readonly _projectRepository: IProjectRepository;
+  private readonly _projectMapper: IProjectMapper;
   private readonly _userRepository: IUserRepository;
   private readonly _userMapper: IUserMapper;
   private readonly _stripeService: IStripeService;
@@ -49,6 +56,7 @@ export class TaskDependencyContainer {
     this._taskRepository = new TaskRepository(TaskModel);
     this._taskMapper = new TaskMapper();
     this._projectRepository = new ProjectRepository(ProjectModel);
+    this._projectMapper = new ProjectMapper();
     this._userRepository = new UserRepository(UserModel);
     this._userMapper = new UserMapper();
     this._stripeService = new StripeService();
@@ -77,7 +85,12 @@ export class TaskDependencyContainer {
   }
 
   createUpdateTaskUseCase(): IUpdateTaskUseCase {
-    return new UpdateTaskUseCase(this._taskRepository, this._taskMapper);
+    return new UpdateTaskUseCase(
+      this._taskRepository,
+      this._projectRepository,
+      this._projectMapper,
+      this._taskMapper
+    );
   }
 
   createGetTaskUseCase(): IGetTaskUseCase {
@@ -116,6 +129,15 @@ export class TaskDependencyContainer {
     );
   }
 
+  createReassignTaskUseCase(): IReassignTaskUseCase {
+    return new ReassignTaskUseCase(
+      this._taskRepository,
+      this._projectRepository,
+      this._projectMapper,
+      this._taskMapper
+    );
+  }
+
   // ----------------
   // Task Controller
   // ----------------
@@ -128,7 +150,8 @@ export class TaskDependencyContainer {
       this.createGetTaskUseCase(),
       this.createStartWorkUseCase(),
       this.createSubmitTaskUseCase(),
-      this.createCompleteTaskUseCase()
+      this.createCompleteTaskUseCase(),
+      this.createReassignTaskUseCase()
     );
   }
 }
