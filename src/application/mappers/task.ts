@@ -60,6 +60,7 @@ export class TaskMapper implements ITaskMapper {
       estimatedHours: dto.estimatedHours,
       expectedRate: dto.expectedRate,
       totalAmount: dto.estimatedHours * dto.expectedRate,
+      documents: dto.documents || [],
       priority: dto.priority,
       dueDate: dto.dueDate,
     };

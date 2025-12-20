@@ -23,6 +23,7 @@ import {
   UserMapper,
   type IUserMapper,
 } from "../../application/mappers/user/user.js";
+import type { IS3FileStorageService } from "../../application/providers/storage-service.js";
 import type { IStripeService } from "../../application/providers/stripe-service.js";
 import { ReleaseFundsUseCase } from "../../application/use-cases/payment/release-fund.js";
 import { CompleteTaskUseCase } from "../../application/use-cases/task/complete-task.js";
@@ -38,6 +39,7 @@ import { TaskController } from "../../presentation/controllers/task-controller.j
 import { ProjectModel } from "../db/models/project-model.js";
 import { TaskModel } from "../db/models/task-model.js";
 import { UserModel } from "../db/models/user-model.js";
+import { S3FileStorageService } from "../providers/s3-service.js";
 import { StripeService } from "../providers/stripe-service.js";
 import { ProjectRepository } from "../repositories/project-repository.js";
 import { TaskRepository } from "../repositories/task-repository.js";
@@ -51,6 +53,7 @@ export class TaskDependencyContainer {
   private readonly _userRepository: IUserRepository;
   private readonly _userMapper: IUserMapper;
   private readonly _stripeService: IStripeService;
+  private readonly _s3Service: IS3FileStorageService;
 
   constructor() {
     this._taskRepository = new TaskRepository(TaskModel);
@@ -60,13 +63,15 @@ export class TaskDependencyContainer {
     this._userRepository = new UserRepository(UserModel);
     this._userMapper = new UserMapper();
     this._stripeService = new StripeService();
+    this._s3Service = new S3FileStorageService();
   }
 
   createTaskUseCase(): ICreateTaskUseCase {
     return new CreateTaskUseCase(
       this._taskRepository,
       this._projectRepository,
-      this._taskMapper
+      this._taskMapper,
+      this._s3Service
     );
   }
 

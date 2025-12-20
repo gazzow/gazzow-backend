@@ -13,6 +13,7 @@ import type { IStartWorkUseCase } from "../../application/interfaces/usecase/tas
 import type { ISubmitTaskUseCase } from "../../application/interfaces/usecase/task/submit-task.js";
 import type { ICompleteTaskUseCase } from "../../application/interfaces/usecase/task/complete-task.js";
 import type { IReassignTaskUseCase } from "../../application/interfaces/usecase/task/reassign-task.js";
+import type { ICreateTaskRequestDTO } from "../../application/dtos/task.js";
 
 export class TaskController {
   constructor(
@@ -37,13 +38,16 @@ export class TaskController {
         HttpStatusCode.BAD_REQUEST
       );
     }
+    logger.debug(`files: ${req.files}`);
 
     try {
-      const { data } = await this._createTaskUseCase.execute({
+      const dto: ICreateTaskRequestDTO = {
         ...req.body,
         creatorId: userId,
         projectId,
-      });
+        files: req.files,
+      };
+      const { data } = await this._createTaskUseCase.execute(dto);
       res
         .status(HttpStatusCode.CREATED)
         .json(ApiResponse.success(ResponseMessages.TaskCreated, data));

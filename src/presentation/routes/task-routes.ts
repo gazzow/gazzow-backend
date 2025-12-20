@@ -1,12 +1,13 @@
 import express from "express";
 import { TaskDependencyContainer } from "../../infrastructure/dependency-injection/task-dependency-container.js";
+import { upload } from "../middleware/upload.js";
 
 const router = express.Router({ mergeParams: true });
 
 const taskContainer = new TaskDependencyContainer();
 const taskController = taskContainer.createTaskController();
 
-router.post("/", taskController.createTask);
+router.post("/", upload.array("files"), taskController.createTask);
 router.get("/contributor", taskController.listTasksByContributor);
 router.get("/creator", taskController.listTasksByCreator);
 

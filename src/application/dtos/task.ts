@@ -1,9 +1,11 @@
+import type { Express } from "express";
 import type { IProjectFile } from "../interfaces/s3-bucket/file-storage.js";
 import type { ITask } from "../../domain/entities/task.js";
 import type { TaskPriority } from "../../domain/enums/task.js";
 import type { IProject } from "../../domain/entities/project.js";
 import type { IUser } from "../../domain/entities/user.js";
 import type { TaskDateFields } from "../../domain/types/task.js";
+
 
 export interface BaseTaskDTO {
   title: string;
@@ -14,7 +16,8 @@ export interface BaseTaskDTO {
   expectedRate: number;
   priority: TaskPriority;
   dueDate: Date;
-  documents?: IProjectFile[];
+  files?: Express.Multer.File[];
+  documents: IProjectFile[];
 }
 
 export interface AssignedTaskDTO extends BaseTaskDTO {
