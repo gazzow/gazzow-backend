@@ -7,6 +7,7 @@ import projectRoutes from "../routes/project-routes.js";
 import contributorRoutes from "../routes/contributor-routes.js";
 import paymentRoutes from "../routes/payment-routes.js";
 import webhookRoutes from "../routes/webhook-route.js";
+import taskCommentRoutes from "../routes/task-comment.routes.js";
 import { env } from "../../infrastructure/config/env.js";
 import { errorHandler } from "../middleware/error-handler.js";
 
@@ -20,13 +21,14 @@ app.use(
   })
 );
 
-app.use("/api/webhook", webhookRoutes)
+app.use("/api/webhook", webhookRoutes);
 
 app.use(express.json());
 
 app.use("/api", userRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/projects", projectRoutes);
+app.use("/api/comments", taskCommentRoutes);
 app.use("/api/contributor", contributorRoutes);
 app.use("/api/admin", adminRoutes);
 

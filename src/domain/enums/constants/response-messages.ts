@@ -81,6 +81,10 @@ export enum ResponseMessages {
   UnauthorizedTaskModification = "Unauthorized to modify this task",
   UnauthorizedTaskCreation = "You don't have permission to create tasks for this project",
 
+  // TaskComment
+  TaskCommentCreated = "Task Comment posted",
+  FetchedTaskComments = "Task Comments fetched successfully",
+
   // Stripe
   StripeAccountCreated = "Stripe account created successfully",
   StripeAccountLinkGenerated = "Stripe account link generated successfully",
