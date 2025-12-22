@@ -1,11 +1,16 @@
 export enum TaskStatus {
-  ASSIGNED = "assigned",
+  TODO = "todo",
   IN_PROGRESS = "in_progress",
   SUBMITTED = "submitted",
-  REVISIONS_REQUESTED = "revisions_requested",
   COMPLETED = "completed",
   CANCELLED = "cancelled",
   CLOSED = "closed",
+  REVISIONS_REQUESTED = "revisions_requested",
+}
+
+export enum AssigneeStatus {
+  UNASSIGNED = "unassigned",
+  ASSIGNED = "assigned",
 }
 
 export enum TaskPriority {
@@ -19,7 +24,14 @@ export enum PaymentStatus {
   PAID = "paid",
   ESCROW_HELD = "escrow_held",
   RELEASED = "released",
-  REFUNDED = "refunded",
+  FAILED = "failed",
+}
+
+export enum RefundStatus {
+  NONE = "none",
+  PENDING = "pending",
+  RELEASED = "released",
+  SUCCESS = "success",
   FAILED = "failed",
 }
 

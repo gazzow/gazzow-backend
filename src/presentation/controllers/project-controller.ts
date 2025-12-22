@@ -198,8 +198,8 @@ export class ProjectController {
 
     logger.debug(`My project api creatorId: ${creatorId}`);
     try {
-      const skip = parseInt(req.query.skip as string);
-      const limit = parseInt(req.query.limit as string);
+      const skip = parseInt(req.query.skip as string) || 0;
+      const limit = parseInt(req.query.limit as string) || 6;
 
       const payload = {
         ...req.query,

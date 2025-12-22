@@ -44,6 +44,12 @@ import type { IGenerateSignedUrlUseCase } from "../../application/interfaces/use
 import { GenerateSignedUrlUseCase } from "../../application/use-cases/project/generate-signed-url.js";
 import type { IListContributorsUseCase } from "../../application/interfaces/usecase/project/list-contributors.js";
 import { ListContributorsUseCase } from "../../application/use-cases/project/list-contributors.js";
+import {
+  UserMapper,
+  type IUserMapper,
+} from "../../application/mappers/user/user.js";
+import type { IStripeService } from "../../application/providers/stripe-service.js";
+import { StripeService } from "../providers/stripe-service.js";
 
 export class ProjectDependencyContainer {
   private readonly _userRepository: IUserRepository;
@@ -51,7 +57,9 @@ export class ProjectDependencyContainer {
   private readonly _applicationRepository: IApplicationRepository;
   private readonly _projectMapper: IProjectMapper;
   private readonly _applicationMapper: IApplicationMapper;
+  private readonly _userMapper: IUserMapper;
   private readonly _s3Service: IS3FileStorageService;
+  private readonly _stripeService: IStripeService;
 
   constructor() {
     this._userRepository = new UserRepository(UserModel);
@@ -59,7 +67,9 @@ export class ProjectDependencyContainer {
     this._applicationRepository = new ApplicationRepository(ApplicationModel);
     this._projectMapper = new ProjectMapper();
     this._applicationMapper = new ApplicationMapper();
+    this._userMapper = new UserMapper();
     this._s3Service = new S3FileStorageService();
+    this._stripeService = new StripeService();
   }
 
   private createProjectUseCase(): ICreateProjectUseCase {
@@ -82,9 +92,12 @@ export class ProjectDependencyContainer {
     return new CreateApplicationUseCase(
       this._projectRepository,
       this._applicationRepository,
-      this._applicationMapper
+      this._applicationMapper,
+      this._userRepository,
+      this._userMapper,
+      this._stripeService
     );
-  }
+  } 
 
   private createListApplicationsUseCase(): IListApplicationsUseCase {
     return new ListApplicationsUseCase(

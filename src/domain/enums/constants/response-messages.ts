@@ -58,6 +58,41 @@ export enum ResponseMessages {
   SelfApplicationNotAllowed = "You cannot apply to your own project",
 
   // Task
+  TaskIdIsRequired = "Task is required",
+  TaskCreated = "Task created successfully",
   FetchedTasks = "Tasks fetched successfully",
+  TaskNotFound = "Task not found",
+  TaskUpdateFailed = "Task update failed",
+  TaskUpdateSuccess = "Task update successfully",
+  AssigneeIdIsRequired = "AssigneeId is required",
+  TaskAlreadyPaid = "Task has already been paid",
+  TaskFundAlreadyReleased = "Fund have already been released for this task",
+  TaskReassigned = "Task reassigned successfully",
+  TaskAlreadyAssignedToUser = "Task is already assigned to this user",
+  UserIsNotAProjectContributor = "The selected user is not a contributor to this project.",
+  UseReassignOptionToChangeAssignee = "Task already has an assignee. Use the reassign endpoint to change assignee.",
+  UnableToPayForThisTask = "Unable to pay for this task",
+  UnableToUpdateTaskWhileInProgress = "This task cannot be updated once work has started",
+  UnableToReassignTaskWhileInProgress = "This task cannot be reassigned once work has started.",
+  CannotReassignWithoutAssignee = "This task cannot be reassigned because it has no current assignee.",
+  UnableToStartTask = "Unable to start work this task",
+  UnableToSubmitTask = "Unable to submit this task",
+  UnableToMarkAsCompleted = "Unable to mark this task as completed",
+  UnauthorizedTaskModification = "Unauthorized to modify this task",
   UnauthorizedTaskCreation = "You don't have permission to create tasks for this project",
+
+  // TaskComment
+  TaskCommentCreated = "Task Comment posted",
+  FetchedTaskComments = "Task Comments fetched successfully",
+
+  // Stripe
+  StripeAccountCreated = "Stripe account created successfully",
+  StripeAccountLinkGenerated = "Stripe account link generated successfully",
+  StripeAccountIdNotFound = "Stripe accountId not found",
+  StripeAccountOnboardingIncomplete = "Your Stripe account is not completely onboarded",
+  ContributorStripeAccountOnboardingInComplete = "Contributor's Stripe account is not fully onboarded",
+  CheckoutSessionCreated = "Checkout session created successfully",
+  FailedToCreateCheckoutSession = "Failed to create checkout session",
+  OnboardingStatusFetched = "Onboarding status fetched successfully",
+  OnboardingUrlGenerated = "Onboarding URL generated successfully",
 }

@@ -2,8 +2,9 @@ import type { IUpdateProfileRequestDTO } from "../../dtos/user/user.js";
 import type { ICreateUserInput } from "../../../domain/entities/user.js";
 import type { UserStatus } from "../../../domain/enums/user-role.js";
 import type { IUserDocument } from "../../../infrastructure/db/models/user-model.js";
+import type { IBaseRepository } from "./base-repository.js";
 
-export interface IUserRepository {
+export interface IUserRepository extends IBaseRepository<IUserDocument> {
   create(user: ICreateUserInput): Promise<IUserDocument>;
   findById(id: string): Promise<IUserDocument | null>;
   findByEmail(email: string): Promise<IUserDocument | null>;

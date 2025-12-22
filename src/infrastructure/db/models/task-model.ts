@@ -1,6 +1,8 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
 import {
+  AssigneeStatus,
   PaymentStatus,
+  RefundStatus,
   TaskPriority,
   TaskStatus,
   type Revision,
@@ -18,12 +20,17 @@ export type ITaskDocument = Document & {
   title: string;
   projectId: Types.ObjectId;
   creatorId: Types.ObjectId;
-  assigneeId: Types.ObjectId;
+  assigneeId?: Types.ObjectId;
   description: string;
   expectedRate: number;
   estimatedHours: number;
-  proposedAmount: number;
+  totalAmount: number;
+  amountInEscrow: number;
+  balance: number;
+  refundAmount: number;
+  refundStatus: RefundStatus;
   status: TaskStatus;
+  assigneeStatus: AssigneeStatus;
   priority: TaskPriority;
 
   documents: IProjectFile[];
@@ -37,7 +44,7 @@ export type ITaskDocument = Document & {
   ExpiredAt?: Date;
   cancelledAt?: Date;
   acceptedAt?: Date;
-  // submittedAt?: Date;
+  submittedAt?: Date;
   completedAt?: Date;
   dueDate: Date;
   closedAt?: Date;
@@ -53,7 +60,7 @@ export type ITaskDocument = Document & {
 export interface IPopulatedTaskDocument
   extends Omit<ITaskDocument, "projectId" | "assigneeId" | "creatorId"> {
   projectId: IProjectDocument;
-  assigneeId: IUserDocument;
+  assigneeId?: IUserDocument | null;
   creatorId: IUserDocument;
 }
 
@@ -100,7 +107,7 @@ const taskSchema = new Schema<ITaskDocument>(
     assigneeId: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      default: null,
     },
     creatorId: {
       type: Schema.Types.ObjectId,
@@ -114,17 +121,30 @@ const taskSchema = new Schema<ITaskDocument>(
       trim: true,
       maxLength: 1000,
     },
-
     estimatedHours: { type: Number, required: true, min: 0 },
     expectedRate: { type: Number, required: true, min: 0 },
-    proposedAmount: { type: Number, required: true, min: 0 },
+    totalAmount: { type: Number, required: true, min: 0 },
+    balance: { type: Number, default: 0, min: 0 },
+    amountInEscrow: { type: Number, default: 0, min: 0 },
+    refundAmount: { type: Number, default: 0, min: 0 },
+    refundStatus: {
+      type: String,
+      enum: Object.values(RefundStatus),
+      default: RefundStatus.NONE,
+    },
 
     dueDate: { type: Date, required: true },
+
+    assigneeStatus: {
+      type: String,
+      enum: Object.values(AssigneeStatus),
+      default: AssigneeStatus.UNASSIGNED,
+    },
 
     status: {
       type: String,
       enum: Object.values(TaskStatus),
-      default: TaskStatus.ASSIGNED,
+      default: TaskStatus.TODO,
     },
     priority: {
       type: String,
@@ -157,6 +177,7 @@ const taskSchema = new Schema<ITaskDocument>(
     ExpiredAt: { type: Date, default: null },
     cancelledAt: { type: Date, default: null },
     acceptedAt: { type: Date, default: null },
+    submittedAt: { type: Date, default: null },
     completedAt: { type: Date, default: null },
     closedAt: { type: Date, default: null },
     paidAt: { type: Date, default: null },

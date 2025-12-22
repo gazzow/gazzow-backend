@@ -20,6 +20,7 @@ export type IUserDocument = Document & {
   experience?: string;
   techStacks?: string[];
   learningGoals?: string[];
+  stripeAccountId: string | null;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -51,6 +52,7 @@ const userSchema = new Schema<IUserDocument>(
     experience: { type: String },
     developerRole: { type: String },
     imageUrl: { type: String },
+    stripeAccountId: { type: String, default: null},
   },
   { timestamps: true }
 );

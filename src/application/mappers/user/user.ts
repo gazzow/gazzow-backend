@@ -22,6 +22,7 @@ export class UserMapper implements IUserMapper {
       imageUrl: user.imageUrl ?? "",
       googleId: user.googleId ?? "",
       provider: user.provider ?? Provider.LOCAL,
+      stripeAccountId: user.stripeAccountId,
       createdAt: user.createdAt,
     };
   }

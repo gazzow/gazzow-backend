@@ -14,6 +14,7 @@ export interface IUser {
   experience?: string;
   techStacks?: string[];
   learningGoals?: string[];
+  stripeAccountId: string | null;
   createdAt: Date;
   updatedAt: Date;
 }

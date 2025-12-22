@@ -4,10 +4,11 @@ import type {
   IListContributorsResponseDTO,
 } from "../dtos/project.js";
 import type {
+  IPopulatedContributor,
   IProjectDocument,
   IProjectDocumentPopulated,
 } from "../../infrastructure/db/models/project-model.js";
-import type { IProject } from "../../domain/entities/project.js";
+import type { Contributor, IProject } from "../../domain/entities/project.js";
 
 export interface IProjectMapper {
   toPersistenceEntity(dto: ICreateProjectRequestDTO): Partial<IProjectDocument>;
@@ -16,6 +17,10 @@ export interface IProjectMapper {
   toListContributorsResponseDTO(
     doc: IProjectDocumentPopulated
   ): IListContributorsResponseDTO;
+
+  toListContributorsEntity(
+    populatedContributor: IPopulatedContributor
+  ): Contributor;
 }
 
 export class ProjectMapper implements IProjectMapper {
@@ -100,6 +105,23 @@ export class ProjectMapper implements IProjectMapper {
         createdAt: contributor.createdAt?.toISOString?.() ?? "",
         updatedAt: contributor.updatedAt?.toISOString?.() ?? "",
       })),
+    };
+  }
+
+  toListContributorsEntity(
+    populatedContributor: IPopulatedContributor
+  ): Contributor {
+    return {
+      id: populatedContributor.userId._id.toString(),
+      name: populatedContributor.userId.name,
+      email: populatedContributor.userId.name,
+      imageUrl: populatedContributor.userId.imageUrl,
+      developerRole: populatedContributor.userId.developerRole,
+      expectedRate: populatedContributor.expectedRate,
+      status: populatedContributor.status,
+      invitedAt: populatedContributor.invitedAt?.toISOString?.() ?? "",
+      createdAt: populatedContributor.createdAt?.toISOString?.() ?? "",
+      updatedAt: populatedContributor.updatedAt?.toISOString?.() ?? "",
     };
   }
 }

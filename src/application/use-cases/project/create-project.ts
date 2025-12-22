@@ -31,7 +31,7 @@ export class CreateProjectUseCase implements ICreateProjectUseCase {
     }
     logger.debug(`documents keys: ${JSON.stringify(dto.documents)}`);
 
-
+    
     const persistentEntity = this._projectMapper.toPersistenceEntity(dto);
     const projectDoc = await this._projectRepository.create(persistentEntity);
     logger.debug(`created Project: ${JSON.stringify(projectDoc)}`);
