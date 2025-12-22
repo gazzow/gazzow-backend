@@ -64,6 +64,7 @@ export enum ResponseMessages {
   TaskNotFound = "Task not found",
   TaskUpdateFailed = "Task update failed",
   TaskUpdateSuccess = "Task update successfully",
+  TaskRetrieved = "Task retrieved successfully",
   AssigneeIdIsRequired = "AssigneeId is required",
   TaskAlreadyPaid = "Task has already been paid",
   TaskFundAlreadyReleased = "Fund have already been released for this task",
@@ -95,4 +96,12 @@ export enum ResponseMessages {
   FailedToCreateCheckoutSession = "Failed to create checkout session",
   OnboardingStatusFetched = "Onboarding status fetched successfully",
   OnboardingUrlGenerated = "Onboarding URL generated successfully",
+
+  // Plan
+  PlanAlreadyExists = "Plan already exist.",
+  PlanCreated = "Plan created successfully",
+  FetchedPlans = "Plans fetched successfully ",
+  PlanRetrieved = "Plan retrieved successfully",
+  PlanNotFound = "Plan not found",
+  PlanIdIsRequired = "Plan is is required",
 }
