@@ -7,7 +7,7 @@ import type {
   ICreateTaskCheckoutSessionResponseDTO,
 } from "../../dtos/payment.js";
 import type { ITaskRepository } from "../../interfaces/repository/task-repository.js";
-import type { ITaskCheckoutSessionUseCase } from "../../interfaces/usecase/payment/checkout-session.js";
+import type { ITaskCheckoutSessionUseCase } from "../../interfaces/usecase/payment/task-checkout.js";
 import type { ITaskMapper } from "../../mappers/task.js";
 import type { IStripeService } from "../../providers/stripe-service.js";
 

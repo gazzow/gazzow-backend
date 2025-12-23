@@ -25,9 +25,17 @@ router.get(
   "/check-onboarding-status",
   tokenMiddleware.verifyToken,
   paymentController.checkOnboardingStatus
-)
+);
 
-
-router.post("/task-checkout-session", paymentController.taskCheckoutSession);
+router.post(
+  "/task-checkout-session",
+  tokenMiddleware.verifyToken,
+  paymentController.taskCheckoutSession
+);
+router.post(
+  "/subscription-checkout",
+  tokenMiddleware.verifyToken,
+  paymentController.subscriptionCheckout
+);
 
 export default router;

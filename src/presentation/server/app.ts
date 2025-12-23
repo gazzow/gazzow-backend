@@ -9,6 +9,7 @@ import paymentRoutes from "../routes/payment-routes.js";
 import webhookRoutes from "../routes/webhook-route.js";
 import taskCommentRoutes from "../routes/task-comment.routes.js";
 import planRoutes from "../routes/admin/plan.routes.js";
+import subscriptionRoutes from "../routes/subscription.routes.js";
 import { env } from "../../infrastructure/config/env.js";
 import { errorHandler } from "../middleware/error-handler.js";
 
@@ -31,9 +32,10 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/comments", taskCommentRoutes);
 app.use("/api/contributor", contributorRoutes);
+app.use("/api/subscriptions", subscriptionRoutes);
 
+app.use("/api/admin/plans", planRoutes);
 app.use("/api/admin", adminRoutes);
-app.use("/api/admin/plan", planRoutes);
 
 app.use(errorHandler);
 

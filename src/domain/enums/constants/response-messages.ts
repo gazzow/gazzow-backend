@@ -102,6 +102,10 @@ export enum ResponseMessages {
   PlanCreated = "Plan created successfully",
   FetchedPlans = "Plans fetched successfully ",
   PlanRetrieved = "Plan retrieved successfully",
-  PlanNotFound = "Plan not found",
   PlanIdIsRequired = "Plan is is required",
+  PlanNotFound = "Plan not found",
+
+  // Subscription
+  UserAlreadySubscribed = "You already has an active subscription",
+  FetchUserSubscription = "Retrieved user active subscription",
 }

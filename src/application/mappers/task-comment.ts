@@ -1,9 +1,8 @@
-import { Types } from "mongoose";
+  import { Types } from "mongoose";
 import type { ITaskComment } from "../../domain/entities/task-comment.js";
 import type { ITaskCommentDocument } from "../../infrastructure/db/models/task-comment.model.js";
 import type {
   CreateCommentDTOWithAuthor,
-  IGetTaskCommentsRequestDTO,
 } from "../dtos/task-comment.js";
 
 export interface ITaskCommentMapper {

@@ -4,7 +4,7 @@ import type { ICreatePlanRequestDTO } from "../../dtos/admin/plan.js";
 
 export interface IPlanMapper {
   toPersistentModel(dto: ICreatePlanRequestDTO): Partial<IPlanDocument>;
-  //   toDomain(doc: IPlanDocument): IPlan;
+  toDomain(doc: IPlanDocument): IPlan;
   toResponseDTO(doc: IPlanDocument): IPlan;
 }
 
@@ -21,6 +21,20 @@ export class PlanMapper implements IPlanMapper {
     };
   }
 
+  toDomain(doc: IPlanDocument): IPlan {
+    return {
+      id: doc._id.toString(),
+      name: doc.name,
+      type: doc.type,
+      price: doc.price,
+      duration: doc.duration,
+      features: doc.features,
+      isActive: doc.isActive,
+      isDeleted: doc.isDeleted,
+      createdAt: doc.createdAt,
+      updatedAt: doc.updatedAt,
+    };
+  }
   toResponseDTO(doc: IPlanDocument): IPlan {
     return {
       id: doc._id.toString(),

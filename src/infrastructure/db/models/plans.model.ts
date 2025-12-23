@@ -28,8 +28,6 @@ const PlanSchema = new Schema<IPlanDocument>(
       type: String,
       enum: Object.values(PlanType),
       required: true,
-      unique: true,
-      index: true,
     },
 
     price: {
@@ -70,3 +68,9 @@ const PlanSchema = new Schema<IPlanDocument>(
 );
 
 export const PlanModel = model<IPlanDocument>("Plan", PlanSchema);
+
+PlanSchema.index(
+  { type: 1, duration: 1 },
+  { unique: true }
+);
+
