@@ -32,7 +32,7 @@ export class SubscriptionMapper implements ISubscriptionMapper {
 
   toResponseDTO(doc: ISubscriptionDocument): ISubscription {
     return {
-      id: doc._id.toString.toString(),
+      id: doc._id.toString(),
       userId: doc.userId.toString(),
       planId: doc.planId.toString(),
       activePlan: {

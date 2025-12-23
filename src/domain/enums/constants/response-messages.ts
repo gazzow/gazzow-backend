@@ -108,4 +108,5 @@ export enum ResponseMessages {
   // Subscription
   UserAlreadySubscribed = "You already has an active subscription",
   FetchUserSubscription = "Retrieved user active subscription",
+  SubscriptionNotFound = "Subscription not found."
 }
