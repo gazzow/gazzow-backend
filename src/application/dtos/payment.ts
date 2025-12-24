@@ -31,3 +31,15 @@ export interface ICheckOnboardingStatusRequestDTO {
 export interface ITaskPaymentRequestDTO {
   taskId: string;
 }
+
+// Subscription
+export interface ISubscriptionCheckoutRequestDTO {
+  userId: string;
+  planId: string;
+  successUrl: string;
+  cancelUrl: string;
+}
+
+export interface ISubscriptionCheckoutResponseDTO {
+  checkoutUrl: string;
+}

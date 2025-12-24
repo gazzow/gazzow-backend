@@ -4,11 +4,14 @@ import logger from "../../utils/logger.js";
 import { PaymentType } from "../../domain/types/payment.js";
 import type { ITaskPaymentUseCase } from "../interfaces/usecase/payment/task-payment.js";
 import type { IHandleStripeWebhookUseCase } from "../interfaces/usecase/handle-stripe-webhook.js";
+import type { ISubscriptionPaymentUseCase } from "../interfaces/usecase/subscription/subscription-payment.js";
+import { ResponseMessages } from "../../domain/enums/constants/response-messages.js";
 
 export class HandleStripeWebhookUseCase implements IHandleStripeWebhookUseCase {
   constructor(
     private _stripeService: IStripeService,
-    private _taskPaymentUseCase: ITaskPaymentUseCase
+    private _taskPaymentUseCase: ITaskPaymentUseCase,
+    private _subscriptionPaymentUseCase: ISubscriptionPaymentUseCase
   ) {}
 
   async execute(payload: Buffer, signature: string): Promise<void> {
@@ -40,9 +43,19 @@ export class HandleStripeWebhookUseCase implements IHandleStripeWebhookUseCase {
     if (session.metadata?.paymentType === PaymentType.TASK_PAYMENT) {
       const taskId = session.metadata?.taskId;
       if (!taskId) {
-        throw new Error("Task ID not found in session metadata");
+        throw new Error("Task Id not found in session metadata");
       }
       await this._taskPaymentUseCase.execute({ taskId });
+    } else if (
+      session.metadata?.paymentType === PaymentType.SUBSCRIPTION_PAYMENT
+    ) {
+      const planId = session.metadata?.planId;
+      const userId = session.metadata?.userId;
+      if (!planId) {
+        throw new Error("Plan Id not found in session metadata");
+      }
+      if (!userId) throw new Error(ResponseMessages.UserNotFound);
+      await this._subscriptionPaymentUseCase.execute({ planId, userId });
     }
   }
 }

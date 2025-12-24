@@ -150,7 +150,7 @@ export class TaskController {
       const { data } = await this._getTaskUseCase.execute(dto);
       res
         .status(HttpStatusCode.OK)
-        .json(ApiResponse.success(ResponseMessages.TaskUpdateSuccess, data));
+        .json(ApiResponse.success(ResponseMessages.TaskRetrieved, data));
     } catch (error) {
       next(error);
     }

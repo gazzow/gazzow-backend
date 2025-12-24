@@ -3,6 +3,7 @@ import type { IStripeService } from "../../application/providers/stripe-service.
 import { AppError } from "../../utils/app-error.js";
 import { ResponseMessages } from "../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../domain/enums/constants/status-codes.js";
+import { PaymentType } from "../../domain/types/payment.js";
 
 export class StripeService implements IStripeService {
   private stripe: Stripe;
@@ -110,7 +111,53 @@ export class StripeService implements IStripeService {
       cancel_url: params.cancelUrl,
       metadata: {
         taskId: params.taskId,
-        paymentType: "task_payment",
+        paymentType: PaymentType.TASK_PAYMENT,
+      },
+    });
+
+    if (!session.url) {
+      throw new AppError(
+        ResponseMessages.FailedToCreateCheckoutSession,
+        HttpStatusCode.INTERNAL_SERVER_ERROR
+      );
+    }
+
+    return session.url;
+  }
+
+  public async subscriptionCheckout(params: {
+    userId: string;
+    planId: string;
+    amountInCents: number;
+    currency: string;
+    successUrl: string;
+    cancelUrl: string;
+  }): Promise<string> {
+    const MODE = "payment";
+    const PAYMENT_METHOD_TYPE = "card";
+
+    const session = await this.stripe.checkout.sessions.create({
+      mode: MODE,
+      payment_method_types: [PAYMENT_METHOD_TYPE],
+      line_items: [
+        {
+          price_data: {
+            currency: params.currency,
+            product_data: {
+              name: `Subscription Plan Id #${params.planId}`,
+              description: "Payment for subscription plan",
+            },
+            unit_amount: params.amountInCents,
+          },
+          quantity: 1,
+        },
+      ],
+      success_url: `${params.successUrl}?planId=${params.planId}&userId:${params.userId}&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: params.cancelUrl,
+      metadata: {
+        userId: params.userId,
+        planId: params.planId,
+        paymentType: PaymentType.SUBSCRIPTION_PAYMENT,
       },
     });
 

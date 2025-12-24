@@ -18,4 +18,12 @@ export interface IStripeService {
     successUrl: string;
     cancelUrl: string;
   }): Promise<string>;
+  subscriptionCheckout(params: {
+    userId: string;
+    planId: string;
+    amountInCents: number;
+    currency: string;
+    successUrl: string;
+    cancelUrl: string;
+  }): Promise<string>;
 }
