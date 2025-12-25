@@ -25,6 +25,7 @@ import {
 } from "../../application/mappers/user/user.js";
 import type { IS3FileStorageService } from "../../application/providers/storage-service.js";
 import type { IStripeService } from "../../application/providers/stripe-service.js";
+import type { ICreateNotificationUseCase } from "../../application/use-cases/notification/create-notification.js";
 import { ReleaseFundsUseCase } from "../../application/use-cases/payment/release-fund.js";
 import { CompleteTaskUseCase } from "../../application/use-cases/task/complete-task.js";
 import { CreateTaskUseCase } from "../../application/use-cases/task/create-task.js";
@@ -44,6 +45,7 @@ import { StripeService } from "../providers/stripe-service.js";
 import { ProjectRepository } from "../repositories/project-repository.js";
 import { TaskRepository } from "../repositories/task-repository.js";
 import { UserRepository } from "../repositories/user-repository.js";
+import { NotificationDependencyContainer } from "./notification.container.js";
 
 export class TaskDependencyContainer {
   private readonly _taskRepository: ITaskRepository;
@@ -54,6 +56,7 @@ export class TaskDependencyContainer {
   private readonly _userMapper: IUserMapper;
   private readonly _stripeService: IStripeService;
   private readonly _s3Service: IS3FileStorageService;
+  private readonly _createNotificationUseCase: ICreateNotificationUseCase;
 
   constructor() {
     this._taskRepository = new TaskRepository(TaskModel);
@@ -64,6 +67,8 @@ export class TaskDependencyContainer {
     this._userMapper = new UserMapper();
     this._stripeService = new StripeService();
     this._s3Service = new S3FileStorageService();
+    this._createNotificationUseCase =
+      new NotificationDependencyContainer().createNotificationUseCase();
   }
 
   createTaskUseCase(): ICreateTaskUseCase {
@@ -139,7 +144,8 @@ export class TaskDependencyContainer {
       this._taskRepository,
       this._projectRepository,
       this._projectMapper,
-      this._taskMapper
+      this._taskMapper,
+      this._createNotificationUseCase
     );
   }
 

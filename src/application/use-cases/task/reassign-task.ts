@@ -1,5 +1,7 @@
+import type { CreateNotificationDTO } from "../../../domain/entities/notification.js";
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
+import { NotificationType } from "../../../domain/enums/notification.js";
 import { TaskRules } from "../../../domain/rules/task-rules.js";
 import { AppError } from "../../../utils/app-error.js";
 import logger from "../../../utils/logger.js";
@@ -12,19 +14,20 @@ import type { ITaskRepository } from "../../interfaces/repository/task-repositor
 import type { IReassignTaskUseCase } from "../../interfaces/usecase/task/reassign-task.js";
 import type { IProjectMapper } from "../../mappers/project.js";
 import type { ITaskMapper } from "../../mappers/task.js";
+import type { ICreateNotificationUseCase } from "../notification/create-notification.js";
 
 export class ReassignTaskUseCase implements IReassignTaskUseCase {
   constructor(
     private _taskRepository: ITaskRepository,
     private _projectRepository: IProjectRepository,
     private _projectMapper: IProjectMapper,
-    private _taskMapper: ITaskMapper
+    private _taskMapper: ITaskMapper,
+    private _createNotificationUseCase: ICreateNotificationUseCase
   ) {}
 
   async execute(
     dto: IReassignTaskRequestDTO
   ): Promise<IReassignTaskResponseDTO> {
-
     const taskDoc = await this._taskRepository.findById(dto.taskId);
     if (!taskDoc) {
       throw new AppError(
@@ -96,7 +99,7 @@ export class ReassignTaskUseCase implements IReassignTaskUseCase {
     // Create activity history - pending
 
     // Handle Financial
-    const currentRate = contributor.expectedRate
+    const currentRate = contributor.expectedRate;
     const newTotal = task.estimatedHours * currentRate;
 
     const reCalculatedFinancial = TaskRules.reCalculateFinancial(
@@ -125,7 +128,23 @@ export class ReassignTaskUseCase implements IReassignTaskUseCase {
         HttpStatusCode.INTERNAL_SERVER_ERROR
       );
     }
+
     const data = this._taskMapper.toResponseDTO(updatedTaskDoc);
+
+    // Notification
+    const message: CreateNotificationDTO = {
+      userId: data.assigneeId!,
+      title: "Task Reassigned",
+      body: "You were reassigned to a task",
+      type: NotificationType.TASK,
+      data: {
+        type: "TASK",
+        taskId: data.id,
+        projectId: data.projectId,
+      },
+    };
+    await this._createNotificationUseCase.execute(message);
+
     return {
       data,
     };
