@@ -75,17 +75,27 @@ export class ProjectMapper implements IProjectMapper {
   }
 
   toUpdateProjectEntity(dto: Partial<IProject>): Partial<IProjectDocument> {
-    const { id, creatorId, createdAt, contributors, ...fields } = dto;
+    const update: Partial<IProjectDocument> = {};
 
-    const updateData: Partial<IProjectDocument> = {};
+    if (dto.title) update.title = dto.title;
 
-    Object.entries(fields).forEach(([key, value]) => {
-      if (value !== undefined) {
-        (updateData as any)[key] = value;
-      }
-    });
+    if (dto.description) update.description = dto.description;
 
-    return updateData;
+    if (dto.requiredSkills) update.requiredSkills = dto.requiredSkills;
+
+    if (dto.experience) update.experience = dto.experience;
+
+    if (dto.budgetMin) update.budgetMin = dto.budgetMin;
+
+    if (dto.budgetMax) update.budgetMax = dto.budgetMax;
+
+    if (dto.durationMin) update.durationMin = dto.durationMin;
+
+    if (dto.durationMax) update.durationMax = dto.durationMax;
+
+    if (dto.durationUnit) update.durationUnit = dto.durationUnit;
+
+    return update;
   }
   toListContributorsResponseDTO(
     doc: IProjectDocumentPopulated

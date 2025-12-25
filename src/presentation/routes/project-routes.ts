@@ -41,7 +41,7 @@ router.get(
   tokenMiddleware.verifyToken,
   projectController.getProject
 );
-router.patch(
+router.put(
   "/:projectId",
   tokenMiddleware.verifyToken,
   projectController.updateProject

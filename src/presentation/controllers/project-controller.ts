@@ -76,7 +76,8 @@ export class ProjectController {
           HttpStatusCode.BAD_REQUEST
         );
       }
-
+      logger.warn(`req body [update project]: ${JSON.stringify(req.body)}`);
+      
       const { data } = await this._updateProjectUseCase.execute({
         projectId,
         userId,
