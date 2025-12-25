@@ -1,30 +1,5 @@
 import type { NotificationType } from "../enums/notification.js";
 
-export interface NotificationToken {
-  id?: string;
-  userId: string;
-  fcmToken: string;
-  deviceType: "web" | "ios" | "android";
-  createdAt: Date;
-  updatedAt: Date;
-  isActive: boolean;
-}
-
-export interface SendNotificationRequest {
-  userId?: string;
-  fcmTokens?: string[];
-  notification: NotificationPayload;
-  priority?: "high" | "normal";
-}
-
-export interface NotificationPayload {
-  title: string;
-  body: string;
-  imageUrl?: string;
-  data?: NotificationData;
-  url?: string;
-}
-
 export interface INotification {
   id: string;
   userId: string;
