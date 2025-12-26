@@ -13,6 +13,12 @@ const tokenMiddleware = authContainer.createTokenMiddleware();
 
 router.post("/register-token", controller.registerToken);
 
+router.post(
+  "/delete-token",
+  tokenMiddleware.verifyToken,
+  controller.deleteToken
+);
+
 router.get("/", tokenMiddleware.verifyToken, controller.listNotifications);
 
 router.patch(

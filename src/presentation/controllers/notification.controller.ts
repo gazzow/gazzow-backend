@@ -8,12 +8,15 @@ import { HttpStatusCode } from "../../domain/enums/constants/status-codes.js";
 import type { IRegisterTokenUseCase } from "../../application/use-cases/notification/register-token.js";
 import type { IListNotificationUseCase } from "../../application/use-cases/notification/list-notifications.js";
 import type { IMarkNotificationAsReadUseCase } from "../../application/use-cases/notification/mark-notification-as-read.js";
+import type { IDeleteFirebaseTokenUseCase } from "../../application/use-cases/notification/delete-token.js";
+import { FCM_DEVICES } from "../../domain/enums/FCMToken.js";
 
 export class NotificationController {
   constructor(
     private _registerTokenUseCase: IRegisterTokenUseCase,
     private _listNotificationUseCase: IListNotificationUseCase,
-    private _markNotificationAsReadUseCase: IMarkNotificationAsReadUseCase
+    private _markNotificationAsReadUseCase: IMarkNotificationAsReadUseCase,
+    private _deleteTokenUseCase: IDeleteFirebaseTokenUseCase
   ) {}
 
   /**
@@ -85,6 +88,31 @@ export class NotificationController {
       res
         .status(HttpStatusCode.OK)
         .json(ApiResponse.success("Notification marked as read", data));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  deleteToken = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    logger.debug("Delete Token API hit🚀");
+    try {
+      const { deviceType } = req.body;
+      const userId = req.user!.id;
+
+      const dto = {
+        userId,
+        deviceType: deviceType ?? FCM_DEVICES.WEB,
+      };
+
+      await this._deleteTokenUseCase.execute(dto);
+
+      res
+        .status(HttpStatusCode.NO_CONTENT)
+        .json(ApiResponse.success("Firebase Token deleted successfully"));
     } catch (error) {
       next(error);
     }

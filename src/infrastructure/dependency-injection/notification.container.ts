@@ -7,6 +7,10 @@ import {
   type ICreateNotificationUseCase,
 } from "../../application/use-cases/notification/create-notification.js";
 import {
+  DeleteFirebaseTokenUseCase,
+  type IDeleteFirebaseTokenUseCase,
+} from "../../application/use-cases/notification/delete-token.js";
+import {
   ListNotificationUseCase,
   type IListNotificationUseCase,
 } from "../../application/use-cases/notification/list-notifications.js";
@@ -80,6 +84,10 @@ export class NotificationDependencyContainer {
     );
   }
 
+  createDeleteTokenUseCase(): IDeleteFirebaseTokenUseCase {
+    return new DeleteFirebaseTokenUseCase(this._tokenRepository);
+  }
+
   // Notification DI
   public createNotificationUseCase(): ICreateNotificationUseCase {
     return new CreateNotificationUseCase(this._notificationService);
@@ -90,7 +98,8 @@ export class NotificationDependencyContainer {
     return new NotificationController(
       this.createRegisterTokenUseCase(),
       this.createListNotificationsUseCase(),
-      this.createMarkAsReadUseCase()
+      this.createMarkAsReadUseCase(),
+      this.createDeleteTokenUseCase()
     );
   }
 }

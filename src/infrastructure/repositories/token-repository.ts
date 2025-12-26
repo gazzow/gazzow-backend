@@ -19,6 +19,7 @@ export interface ITokenRepository extends IBaseRepository<ITokenDocument> {
     userId: string,
     device: FCM_DEVICES
   ): Promise<ITokenDocument>;
+  deleteByUserAndDevice(userId: string, device: FCM_DEVICES): Promise<boolean>;
 
   // getTokensByUserId(userId: string): Promise<NotificationToken[]>;
   // getTokenById(id: string): Promise<NotificationToken | null>;
@@ -38,6 +39,12 @@ export class TokenRepository
     device: FCM_DEVICES
   ): Promise<ITokenDocument | null> {
     return this.model.findOne({ userId, device });
+  }
+
+  async deleteByUserAndDevice(userId: string, device: FCM_DEVICES): Promise<boolean> {
+    const result = await this.model.deleteOne({ userId, device });
+
+    return result.deletedCount === 1;
   }
 
   getTokensByUserId(userId: string): Promise<ITokenDocument[]> {
