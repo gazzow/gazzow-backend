@@ -16,6 +16,7 @@ import type { IUpdateApplicationStatusUseCase } from "../../application/interfac
 import type { IUpdateProjectUseCase } from "../../application/interfaces/usecase/project/update-project.js";
 import type { IGenerateSignedUrlUseCase } from "../../application/interfaces/usecase/project/generate-signed-url.js";
 import type { IListContributorsUseCase } from "../../application/interfaces/usecase/project/list-contributors.js";
+import type { IUpdateContributorStatusUseCase } from "../../application/use-cases/project/update-contributor-status.js";
 
 export class ProjectController {
   constructor(
@@ -28,7 +29,8 @@ export class ProjectController {
     private _listMyProjectsUseCase: IListMyProjectsUsecase,
     private _updateApplicationStatusUseCase: IUpdateApplicationStatusUseCase,
     private _generateSignedUrlUseCase: IGenerateSignedUrlUseCase,
-    private _listContributorsUseCase: IListContributorsUseCase
+    private _listContributorsUseCase: IListContributorsUseCase,
+    private _updateContributorStatusUseCase: IUpdateContributorStatusUseCase
   ) {}
 
   createProject = async (req: Request, res: Response, next: NextFunction) => {
@@ -77,7 +79,7 @@ export class ProjectController {
         );
       }
       logger.warn(`req body [update project]: ${JSON.stringify(req.body)}`);
-      
+
       const { data } = await this._updateProjectUseCase.execute({
         projectId,
         userId,
@@ -275,6 +277,39 @@ export class ProjectController {
       res
         .status(HttpStatusCode.OK)
         .json(ApiResponse.success(ResponseMessages.FetchedContributors, data));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  updateContributorStatus = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    logger.debug("Update Contributor Status API hit 🚀");
+
+    const { projectId } = req.params;
+    const { contributorId, status } = req.body;
+
+    if (!projectId) {
+      throw new AppError(
+        ResponseMessages.ProjectIdIsRequired,
+        HttpStatusCode.BAD_REQUEST
+      );
+    }
+
+    const dto = {
+      projectId,
+      contributorId,
+      status,
+    };
+
+    try {
+      const { data } = await this._updateContributorStatusUseCase.execute(dto);
+      res
+        .status(HttpStatusCode.OK)
+        .json(ApiResponse.success(ResponseMessages.ContributorStatusUpdated));
     } catch (error) {
       next(error);
     }

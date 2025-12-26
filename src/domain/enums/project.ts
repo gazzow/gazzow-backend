@@ -1,7 +1,7 @@
 export enum ContributorStatus {
-  INVITED = "invited",
   ACTIVE = "active",
   REMOVED = "removed",
+  IN_ACTIVE = "in_active",
 }
 
 export enum ProjectVisibility {

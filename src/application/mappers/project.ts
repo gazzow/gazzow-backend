@@ -18,6 +18,8 @@ export interface IProjectMapper {
     doc: IProjectDocumentPopulated
   ): IListContributorsResponseDTO;
 
+  toDomain(projectDoc: IProjectDocument): IProject;
+
   toListContributorsEntity(
     populatedContributor: IPopulatedContributor
   ): Contributor;
@@ -42,6 +44,38 @@ export class ProjectMapper implements IProjectMapper {
       durationUnit: dto.durationUnit,
       visibility: dto.visibility,
       status: dto.status,
+    };
+  }
+
+  toDomain(projectDoc: IProjectDocument): IProject {
+    return {
+      id: projectDoc._id.toString(),
+      creatorId: projectDoc.creatorId.toString(),
+      title: projectDoc.title,
+      description: projectDoc.description,
+      developersNeeded: projectDoc.developersNeeded,
+      experience: projectDoc.experience,
+      contributors:
+        projectDoc.contributors.length > 0
+          ? projectDoc.contributors.map((c) => ({
+              userId: c.userId.toString(),
+              status: c.status,
+              invitedAt: c.invitedAt?.toISOString() ?? "",
+              createdAt: c.createdAt?.toISOString() ?? "",
+              updatedAt: projectDoc.updatedAt?.toISOString() ?? "",
+            }))
+          : [],
+      budgetMin: projectDoc.budgetMin,
+      budgetMax: projectDoc.budgetMax,
+      requiredSkills: projectDoc.requiredSkills,
+      durationMin: projectDoc.durationMin,
+      durationMax: projectDoc.durationMax,
+      durationUnit: projectDoc.durationUnit,
+      visibility: projectDoc.visibility,
+      status: projectDoc.status,
+      documents: projectDoc.documents,
+      createdAt: projectDoc.createdAt?.toISOString() ?? "",
+      updatedAt: projectDoc.updatedAt?.toISOString() ?? "",
     };
   }
 
