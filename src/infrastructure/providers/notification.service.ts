@@ -12,7 +12,7 @@ export class NotificationService implements INotificationService {
   constructor(
     private notificationRepo: INotificationRepository,
     private _notificationMapper: INotificationMapper,
-    private pushService: IPushService,
+    private pushService: IPushService
   ) {}
 
   public async createAndSend(dto: CreateNotificationDTO): Promise<void> {
@@ -28,7 +28,6 @@ export class NotificationService implements INotificationService {
     });
 
     // Update notification record
-
     if (pushSent) {
       const notificationId = notificationDoc._id.toString();
       await this.notificationRepo.update(notificationId, {
@@ -36,31 +35,4 @@ export class NotificationService implements INotificationService {
       });
     }
   }
-
-  //   async createOnly(dto: CreateNotificationDTO): Promise<INotification> {
-  //     return await this.notificationRepo.create({
-  //       userId: new Types.ObjectId(dto.userId),
-  //       title: dto.title,
-  //       body: dto.body,
-  //       type: dto.type,
-  //       data: dto.data,
-  //       isRead: false,
-  //       isPushed: false,
-  //     });
-  //   }
-
-  //   async sendOnly(userId: string, payload: PushPayload): Promise<void> {
-  //     await this.pushService.sendToUser(userId, payload);
-  //   }
-
-  //   async markAsRead(notificationId: string): Promise<void> {
-  //     await this.notificationRepo.update(notificationId, {
-  //       isRead: true,
-  //       readAt: new Date(),
-  //     });
-  //   }
-
-  //   async getUserNotifications(userId: string): Promise<INotification[]> {
-  //     return await this.notificationRepo.findByUserId(userId);
-  //   }
 }
