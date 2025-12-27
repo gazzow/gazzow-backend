@@ -2,6 +2,7 @@ import type { CreateNotificationDTO } from "../../domain/entities/notification.j
 import type { INotificationRepository } from "../repositories/notification.repository.js";
 import type { IPushService } from "./push.service.js";
 import type { INotificationMapper } from "../../application/mappers/notification.js";
+import logger from "../../utils/logger.js";
 
 export interface INotificationService {
   createAndSend(dto: CreateNotificationDTO): Promise<void>;
@@ -27,12 +28,14 @@ export class NotificationService implements INotificationService {
       body,
     });
 
-    // Update notification record
-    if (pushSent) {
-      const notificationId = notificationDoc._id.toString();
-      await this.notificationRepo.update(notificationId, {
-        isPushed: true,
-      });
+    if (!pushSent) {
+      logger.warn("Notification push service unavailable for user");
     }
+
+    // Update notification record
+    const notificationId = notificationDoc._id.toString();
+    await this.notificationRepo.update(notificationId, {
+      isPushed: true,
+    });
   }
 }
