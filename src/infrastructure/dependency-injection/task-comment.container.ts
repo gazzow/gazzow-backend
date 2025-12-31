@@ -15,6 +15,7 @@ import {
   UserMapper,
   type IUserMapper,
 } from "../../application/mappers/user/user.js";
+import type { ICreateNotificationUseCase } from "../../application/use-cases/notification/create-notification.js";
 import { CreateTaskCommentUseCase } from "../../application/use-cases/task-comment/create-comment.js";
 import { GetTaskCommentsUseCase } from "../../application/use-cases/task-comment/get-comments.js";
 import { TaskCommentController } from "../../presentation/controllers/task-comment.controller.js";
@@ -24,6 +25,7 @@ import { UserModel } from "../db/models/user-model.js";
 import { TaskCommentRepository } from "../repositories/task-comment.repository.js";
 import { TaskRepository } from "../repositories/task-repository.js";
 import { UserRepository } from "../repositories/user-repository.js";
+import { NotificationDependencyContainer } from "./notification.container.js";
 
 export class TaskCommentDependencyContainer {
   private readonly _taskRepository: ITaskRepository;
@@ -32,6 +34,7 @@ export class TaskCommentDependencyContainer {
   private readonly _taskMapper: ITaskMapper;
   private readonly _userMapper: IUserMapper;
   private readonly _taskCommentMapper: ITaskCommentMapper;
+  private readonly _createNotificationUseCase: ICreateNotificationUseCase;
 
   constructor() {
     this._taskRepository = new TaskRepository(TaskModel);
@@ -40,6 +43,8 @@ export class TaskCommentDependencyContainer {
     this._taskMapper = new TaskMapper();
     this._userMapper = new UserMapper();
     this._taskCommentMapper = new TaskCommentMapper();
+    this._createNotificationUseCase =
+      new NotificationDependencyContainer().createNotificationUseCase();
   }
 
   createTaskCommentUseCase(): ICreateTaskCommentUseCase {
@@ -48,7 +53,8 @@ export class TaskCommentDependencyContainer {
       this._userRepository,
       this._taskCommentRepository,
       this._userMapper,
-      this._taskCommentMapper
+      this._taskCommentMapper,
+      this._createNotificationUseCase
     );
   }
 

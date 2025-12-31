@@ -48,6 +48,8 @@ export enum ResponseMessages {
 
   // Contributor
   FetchedContributors = "Contributors fetched successfully",
+  ContributorNotFoundInProject = "User is not a contributor of this project",
+  ContributorStatusUpdated = "Contributor status updated successfully",
 
   //Application
   ApplicationAlreadyExists = "Application already exists",

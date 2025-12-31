@@ -18,6 +18,8 @@ export interface IProjectMapper {
     doc: IProjectDocumentPopulated
   ): IListContributorsResponseDTO;
 
+  toDomain(projectDoc: IProjectDocument): IProject;
+
   toListContributorsEntity(
     populatedContributor: IPopulatedContributor
   ): Contributor;
@@ -42,6 +44,38 @@ export class ProjectMapper implements IProjectMapper {
       durationUnit: dto.durationUnit,
       visibility: dto.visibility,
       status: dto.status,
+    };
+  }
+
+  toDomain(projectDoc: IProjectDocument): IProject {
+    return {
+      id: projectDoc._id.toString(),
+      creatorId: projectDoc.creatorId.toString(),
+      title: projectDoc.title,
+      description: projectDoc.description,
+      developersNeeded: projectDoc.developersNeeded,
+      experience: projectDoc.experience,
+      contributors:
+        projectDoc.contributors.length > 0
+          ? projectDoc.contributors.map((c) => ({
+              userId: c.userId.toString(),
+              status: c.status,
+              invitedAt: c.invitedAt?.toISOString() ?? "",
+              createdAt: c.createdAt?.toISOString() ?? "",
+              updatedAt: projectDoc.updatedAt?.toISOString() ?? "",
+            }))
+          : [],
+      budgetMin: projectDoc.budgetMin,
+      budgetMax: projectDoc.budgetMax,
+      requiredSkills: projectDoc.requiredSkills,
+      durationMin: projectDoc.durationMin,
+      durationMax: projectDoc.durationMax,
+      durationUnit: projectDoc.durationUnit,
+      visibility: projectDoc.visibility,
+      status: projectDoc.status,
+      documents: projectDoc.documents,
+      createdAt: projectDoc.createdAt?.toISOString() ?? "",
+      updatedAt: projectDoc.updatedAt?.toISOString() ?? "",
     };
   }
 
@@ -75,17 +109,27 @@ export class ProjectMapper implements IProjectMapper {
   }
 
   toUpdateProjectEntity(dto: Partial<IProject>): Partial<IProjectDocument> {
-    const { id, creatorId, createdAt, contributors, ...fields } = dto;
+    const update: Partial<IProjectDocument> = {};
 
-    const updateData: Partial<IProjectDocument> = {};
+    if (dto.title) update.title = dto.title;
 
-    Object.entries(fields).forEach(([key, value]) => {
-      if (value !== undefined) {
-        (updateData as any)[key] = value;
-      }
-    });
+    if (dto.description) update.description = dto.description;
 
-    return updateData;
+    if (dto.requiredSkills) update.requiredSkills = dto.requiredSkills;
+
+    if (dto.experience) update.experience = dto.experience;
+
+    if (dto.budgetMin) update.budgetMin = dto.budgetMin;
+
+    if (dto.budgetMax) update.budgetMax = dto.budgetMax;
+
+    if (dto.durationMin) update.durationMin = dto.durationMin;
+
+    if (dto.durationMax) update.durationMax = dto.durationMax;
+
+    if (dto.durationUnit) update.durationUnit = dto.durationUnit;
+
+    return update;
   }
   toListContributorsResponseDTO(
     doc: IProjectDocumentPopulated

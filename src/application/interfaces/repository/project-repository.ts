@@ -47,4 +47,10 @@ export interface IProjectRepository extends IBaseRepository<IProjectDocument> {
     skip?: number;
     limit?: number;
   }): Promise<FindWithFilter>;
+
+  findContributorAndUpdateStatus(
+    projectId: string,
+    contributorId: string,
+    status: ContributorStatus
+  ): Promise<IProjectDocument | null>;
 }

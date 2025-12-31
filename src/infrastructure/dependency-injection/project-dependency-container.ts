@@ -50,13 +50,26 @@ import {
 } from "../../application/mappers/user/user.js";
 import type { IStripeService } from "../../application/providers/stripe-service.js";
 import { StripeService } from "../providers/stripe-service.js";
+import {
+  UpdateContributorStatusUseCase,
+  type IUpdateContributorStatusUseCase,
+} from "../../application/use-cases/project/update-contributor-status.js";
+import type { ITaskRepository } from "../../application/interfaces/repository/task-repository.js";
+import {
+  TaskMapper,
+  type ITaskMapper,
+} from "../../application/mappers/task.js";
+import { TaskModel } from "../db/models/task-model.js";
+import { TaskRepository } from "../repositories/task-repository.js";
 
 export class ProjectDependencyContainer {
   private readonly _userRepository: IUserRepository;
   private readonly _projectRepository: IProjectRepository;
   private readonly _applicationRepository: IApplicationRepository;
+  private readonly _taskRepository: ITaskRepository;
   private readonly _projectMapper: IProjectMapper;
   private readonly _applicationMapper: IApplicationMapper;
+  private readonly _taskMapper: ITaskMapper;
   private readonly _userMapper: IUserMapper;
   private readonly _s3Service: IS3FileStorageService;
   private readonly _stripeService: IStripeService;
@@ -65,9 +78,11 @@ export class ProjectDependencyContainer {
     this._userRepository = new UserRepository(UserModel);
     this._projectRepository = new ProjectRepository(ProjectModel);
     this._applicationRepository = new ApplicationRepository(ApplicationModel);
+    this._taskRepository = new TaskRepository(TaskModel);
     this._projectMapper = new ProjectMapper();
     this._applicationMapper = new ApplicationMapper();
     this._userMapper = new UserMapper();
+    this._taskMapper = new TaskMapper();
     this._s3Service = new S3FileStorageService();
     this._stripeService = new StripeService();
   }
@@ -97,7 +112,7 @@ export class ProjectDependencyContainer {
       this._userMapper,
       this._stripeService
     );
-  } 
+  }
 
   private createListApplicationsUseCase(): IListApplicationsUseCase {
     return new ListApplicationsUseCase(
@@ -140,6 +155,15 @@ export class ProjectDependencyContainer {
     );
   }
 
+  private updateContributorStatusUseCase(): IUpdateContributorStatusUseCase {
+    return new UpdateContributorStatusUseCase(
+      this._projectRepository,
+      this._taskRepository,
+      this._projectMapper,
+      this._taskMapper
+    );
+  }
+
   createProjectController(): ProjectController {
     return new ProjectController(
       this.createProjectUseCase(),
@@ -151,7 +175,8 @@ export class ProjectDependencyContainer {
       this.createListMyProjectUseCase(),
       this.createUpdateApplicationStatus(),
       this.createGenerateSignedUrlUseCase(),
-      this.createListContributorsUseCase()
+      this.createListContributorsUseCase(),
+      this.updateContributorStatusUseCase()
     );
   }
 }

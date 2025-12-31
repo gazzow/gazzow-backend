@@ -35,13 +35,12 @@ router.get(
   projectController.generateSignedUrl
 );
 
-
 router.get(
   "/:projectId",
   tokenMiddleware.verifyToken,
   projectController.getProject
 );
-router.patch(
+router.put(
   "/:projectId",
   tokenMiddleware.verifyToken,
   projectController.updateProject
@@ -71,6 +70,12 @@ router.get(
   "/:projectId/contributors",
   tokenMiddleware.verifyToken,
   projectController.listContributors
+);
+
+router.patch(
+  "/:projectId/contributors",
+  tokenMiddleware.verifyToken,
+  projectController.updateContributorStatus
 );
 
 // ----------------------

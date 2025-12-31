@@ -1,8 +1,7 @@
-import type {
-  IApplicationWithPopulatedProject,
-} from "../../domain/entities/application.js";
-import type { IProject } from "../../domain/entities/project.js";
+import type { IApplicationWithPopulatedProject } from "../../domain/entities/application.js";
+import type { IContributor, IProject } from "../../domain/entities/project.js";
 import type { ApplicationStatus } from "../../domain/enums/application.js";
+import type { ContributorStatus } from "../../domain/enums/project.js";
 
 export interface IListContributorProjectRequestDTO {
   userId: string;
@@ -37,4 +36,14 @@ export interface IListContributorProposalsResponseDTO {
     limit: number;
     total: number;
   };
+}
+
+export interface IUpdateContributorStatusRequestDTO {
+  contributorId: string;
+  status: ContributorStatus;
+  projectId: string;
+}
+
+export interface IUpdateContributorStatusResponseDTO {
+  data: IProject;
 }

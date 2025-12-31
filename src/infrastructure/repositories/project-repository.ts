@@ -311,4 +311,25 @@ export class ProjectRepository
       total,
     };
   }
+
+  findContributorAndUpdateStatus(
+    projectId: string,
+    contributorId: string,
+    status: ContributorStatus
+  ): Promise<IProjectDocument | null> {
+    return this.model.findOneAndUpdate(
+      {
+        _id: projectId,
+        "contributors.userId": contributorId,
+      },
+      {
+        $set: {
+          "contributors.$.status": status,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+  }
 }
