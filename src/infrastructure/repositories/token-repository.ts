@@ -1,4 +1,4 @@
-import type { Model } from "mongoose";
+import { Types, type Model } from "mongoose";
 import type { IBaseRepository } from "../../application/interfaces/repository/base-repository.js";
 import type { ITokenDocument } from "../db/models/token-model.js";
 import { BaseRepository } from "./base/base-repository.js";
@@ -38,10 +38,13 @@ export class TokenRepository
     userId: string,
     device: FCM_DEVICES
   ): Promise<ITokenDocument | null> {
-    return this.model.findOne({ userId, device });
+    return this.model.findOne({ userId: new Types.ObjectId(userId), device });
   }
 
-  async deleteByUserAndDevice(userId: string, device: FCM_DEVICES): Promise<boolean> {
+  async deleteByUserAndDevice(
+    userId: string,
+    device: FCM_DEVICES
+  ): Promise<boolean> {
     const result = await this.model.deleteOne({ userId, device });
 
     return result.deletedCount === 1;
@@ -80,7 +83,7 @@ export class TokenRepository
       { token }, // find by token
       {
         token,
-        userId,
+        userId: new Types.ObjectId(userId),
         device,
         lastSeenAt: new Date(),
         isActive: true,
