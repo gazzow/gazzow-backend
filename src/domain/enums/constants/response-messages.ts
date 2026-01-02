@@ -110,5 +110,12 @@ export enum ResponseMessages {
   // Subscription
   UserAlreadySubscribed = "You already has an active subscription",
   FetchUserSubscription = "Retrieved user active subscription",
-  SubscriptionNotFound = "Subscription not found."
+  SubscriptionNotFound = "Subscription not found.",
+
+  // Favorite
+  ProjectMarkedAsFavorite = "Project marked as favorite.",
+  FetchedFavoriteProjects = "Fetched favorite projects successfully",
+  FavoriteNotFound= "Favorite not found or already removed",
+  ProjectAlreadyAddedToFavorite= "Project already added to favorite",
+
 }

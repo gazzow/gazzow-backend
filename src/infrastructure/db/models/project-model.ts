@@ -53,6 +53,11 @@ export interface IProjectDocumentPopulated
   extends Omit<IProjectDocument, "contributors"> {
   contributors: IPopulatedContributor[];
 }
+export interface IAggregatedProjectDocument
+  extends IProjectDocument {
+    isFavorite: boolean
+}
+
 
 const contributorSchema = new Schema<IContributor>(
   {

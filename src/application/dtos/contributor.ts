@@ -1,5 +1,5 @@
 import type { IApplicationWithPopulatedProject } from "../../domain/entities/application.js";
-import type { IContributor, IProject } from "../../domain/entities/project.js";
+import type { IAggregatedProject, IProject } from "../../domain/entities/project.js";
 import type { ApplicationStatus } from "../../domain/enums/application.js";
 import type { ContributorStatus } from "../../domain/enums/project.js";
 
@@ -12,7 +12,7 @@ export interface IListContributorProjectRequestDTO {
 }
 
 export interface IListContributorProjectResponseDTO {
-  data: IProject[];
+  data: IAggregatedProject[];
   pagination: {
     skip: number;
     limit: number;
