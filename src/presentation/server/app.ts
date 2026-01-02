@@ -12,6 +12,7 @@ import planRoutes from "../routes/admin/plan.routes.js";
 import subscriptionRoutes from "../routes/subscription.routes.js";
 import notificationRoutes from "../routes/notification.routes.js";
 import subscriptionManagementRoutes from "../routes/admin/subscription-management.routes.js";
+import favoriteRoutes from "../routes/favorite.routes.js";
 import { env } from "../../infrastructure/config/env.js";
 import { errorHandler } from "../middleware/error-handler.js";
 
@@ -37,6 +38,8 @@ app.use("/api/contributor", contributorRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
 
 app.use("/api/notifications", notificationRoutes);
+
+app.use("/api/favorites", favoriteRoutes);
 
 app.use("/api/admin/plans", planRoutes);
 app.use("/api/admin/subscriptions", subscriptionManagementRoutes);

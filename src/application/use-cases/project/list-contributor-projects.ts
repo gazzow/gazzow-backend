@@ -24,7 +24,7 @@ export class ListContributorProjectsUseCase
       });
 
     const data = projects.map((doc) => {
-      return this._projectMapper.toResponseDTO(doc);
+      return this._projectMapper.toAggregatedResponseDTO(doc);
     });
 
     return {

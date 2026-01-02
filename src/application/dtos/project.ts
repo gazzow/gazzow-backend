@@ -1,4 +1,4 @@
-import type { IProject } from "../../domain/entities/project.js";
+import type { IAggregatedProject, IProject } from "../../domain/entities/project.js";
 import type { Express } from "express";
 import type {
   ContributorStatus,
@@ -41,7 +41,7 @@ export interface IListProjectRequestDTO {
 }
 
 export interface IListProjectResponseDTO {
-  data: IProject[];
+  data: IAggregatedProject[];
   pagination: {
     skip: number;
     limit: number;

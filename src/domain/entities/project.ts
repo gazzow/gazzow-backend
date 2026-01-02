@@ -28,6 +28,10 @@ export interface IProject {
   updatedAt: string;
 }
 
+export interface IAggregatedProject extends IProject {
+  isFavorite: boolean;
+}
+
 export interface IContributor {
   userId: string;
   status: ContributorStatus;

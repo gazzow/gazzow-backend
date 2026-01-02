@@ -1,12 +1,13 @@
 import type { ContributorStatus } from "../../../domain/enums/project.js";
 import type {
+  IAggregatedProjectDocument,
   IProjectDocument,
   IProjectDocumentPopulated,
 } from "../../../infrastructure/db/models/project-model.js";
 import type { IBaseRepository } from "./base-repository.js";
 
 export type FindWithFilter = {
-  projects: IProjectDocument[];
+  projects: IAggregatedProjectDocument[];
   total: number;
 };
 

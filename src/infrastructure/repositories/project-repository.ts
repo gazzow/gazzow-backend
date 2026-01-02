@@ -96,6 +96,39 @@ export class ProjectRepository
       },
     });
 
+    //Check project is added as favorite
+    pipeline.push({
+      $lookup: {
+        from: "favorites",
+        let: { projectId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$projectId", "$$projectId"] },
+                  { $eq: ["$userId", new Types.ObjectId(userId)] },
+                ],
+              },
+            },
+          },
+        ],
+        as: "favorite",
+      },
+    });
+
+    pipeline.push({
+      $addFields: {
+        isFavorite: { $gt: [{ $size: "$favorite" }, 0] },
+      },
+    });
+
+    pipeline.push({
+      $project: {
+        favorite: 0,
+      },
+    });
+
     pipeline.push({
       $match: {
         "applications.applicantId": { $ne: userObjectId },
@@ -288,6 +321,39 @@ export class ProjectRepository
         $match: { "application.0": { $exists: true } },
       }
     );
+
+    //Check project is added as favorite
+    pipeline.push({
+      $lookup: {
+        from: "favorites",
+        let: { projectId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$projectId", "$$projectId"] },
+                  { $eq: ["$userId", new Types.ObjectId(userId)] },
+                ],
+              },
+            },
+          },
+        ],
+        as: "favorite",
+      },
+    });
+
+    pipeline.push({
+      $addFields: {
+        isFavorite: { $gt: [{ $size: "$favorite" }, 0] },
+      },
+    });
+
+    pipeline.push({
+      $project: {
+        favorite: 0,
+      },
+    });
 
     const projects = await this.model.aggregate([
       ...pipeline,

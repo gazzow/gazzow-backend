@@ -4,15 +4,23 @@ import type {
   IListContributorsResponseDTO,
 } from "../dtos/project.js";
 import type {
+  IAggregatedProjectDocument,
   IPopulatedContributor,
   IProjectDocument,
   IProjectDocumentPopulated,
 } from "../../infrastructure/db/models/project-model.js";
-import type { Contributor, IProject } from "../../domain/entities/project.js";
+import type {
+  Contributor,
+  IAggregatedProject,
+  IProject,
+} from "../../domain/entities/project.js";
 
 export interface IProjectMapper {
   toPersistenceEntity(dto: ICreateProjectRequestDTO): Partial<IProjectDocument>;
   toResponseDTO(projectDoc: IProjectDocument): IProject;
+  toAggregatedResponseDTO(
+    projectDoc: IAggregatedProjectDocument
+  ): IAggregatedProject;
   toUpdateProjectEntity(dto: Partial<IProject>): Partial<IProjectDocument>;
   toListContributorsResponseDTO(
     doc: IProjectDocumentPopulated
@@ -101,6 +109,38 @@ export class ProjectMapper implements IProjectMapper {
       durationMax: projectDoc.durationMax,
       durationUnit: projectDoc.durationUnit,
       visibility: projectDoc.visibility,
+      status: projectDoc.status,
+      documents: projectDoc.documents,
+      createdAt: projectDoc.createdAt?.toISOString() ?? "",
+      updatedAt: projectDoc.updatedAt?.toISOString() ?? "",
+    };
+  }
+  
+  toAggregatedResponseDTO(
+    projectDoc: IAggregatedProjectDocument
+  ): IAggregatedProject {
+    return {
+      id: projectDoc._id.toString(),
+      creatorId: projectDoc.creatorId.toString(),
+      title: projectDoc.title,
+      description: projectDoc.description,
+      developersNeeded: projectDoc.developersNeeded,
+      experience: projectDoc.experience,
+      contributors: projectDoc.contributors.map((c) => ({
+        userId: c.userId.toString(),
+        status: c.status,
+        invitedAt: c.invitedAt?.toISOString() ?? "",
+        createdAt: c.createdAt?.toISOString() ?? "",
+        updatedAt: projectDoc.updatedAt?.toISOString() ?? "",
+      })),
+      budgetMin: projectDoc.budgetMin,
+      budgetMax: projectDoc.budgetMax,
+      requiredSkills: projectDoc.requiredSkills,
+      durationMin: projectDoc.durationMin,
+      durationMax: projectDoc.durationMax,
+      durationUnit: projectDoc.durationUnit,
+      visibility: projectDoc.visibility,
+      isFavorite: projectDoc.isFavorite,
       status: projectDoc.status,
       documents: projectDoc.documents,
       createdAt: projectDoc.createdAt?.toISOString() ?? "",
