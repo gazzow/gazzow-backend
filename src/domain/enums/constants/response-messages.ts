@@ -118,4 +118,7 @@ export enum ResponseMessages {
   FavoriteNotFound= "Favorite not found or already removed",
   ProjectAlreadyAddedToFavorite= "Project already added to favorite",
 
+  // Team Chat
+  FetchedTeamChatMessages = "Retrieved team messages successfully",
+
 }
