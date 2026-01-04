@@ -17,4 +17,10 @@ router.get(
   subscriptionController.listSubscriptions
 );
 
+router.put(
+  "/:subscriptionId",
+  verifyMiddleware.isAdmin,
+  subscriptionController.cancelSubscription
+);
+
 export default router;

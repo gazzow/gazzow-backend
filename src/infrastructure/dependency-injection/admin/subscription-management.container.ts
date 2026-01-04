@@ -4,6 +4,10 @@ import {
   SubscriptionMapper,
   type ISubscriptionMapper,
 } from "../../../application/mappers/subscription.js";
+import {
+  CancelSubscriptionUseCase,
+  type ICancelSubscriptionUseCase,
+} from "../../../application/use-cases/admin/subscription/cancel-subscription.js";
 import { ListSubscriptionsUseCase } from "../../../application/use-cases/admin/subscription/list-subscriptions.js";
 import { SubscriptionManagementController } from "../../../presentation/controllers/admin/subscription-management.controller.js";
 import { SubscriptionModel } from "../../db/models/subscription.js";
@@ -20,17 +24,22 @@ export class SubscriptionManagementDependencyContainer {
     this._subscriptionMapper = new SubscriptionMapper();
   }
 
-  createListSubscriptionsUseCase(): IListSubscriptionsUseCase {
+  private createListSubscriptionsUseCase(): IListSubscriptionsUseCase {
     return new ListSubscriptionsUseCase(
       this._subscriptionRepository,
       this._subscriptionMapper
     );
   }
 
+  private createCancelSubscriptionUseCase(): ICancelSubscriptionUseCase {
+    return new CancelSubscriptionUseCase(this._subscriptionRepository);
+  }
+
   // Subscription Management Controller
   createSubscriptionController(): SubscriptionManagementController {
     return new SubscriptionManagementController(
-      this.createListSubscriptionsUseCase()
+      this.createListSubscriptionsUseCase(),
+      this.createCancelSubscriptionUseCase()
     );
   }
 }
