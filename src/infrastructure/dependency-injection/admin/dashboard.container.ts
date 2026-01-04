@@ -3,9 +3,17 @@ import type { ISubscriptionRepository } from "../../../application/interfaces/re
 import type { ITaskRepository } from "../../../application/interfaces/repository/task-repository.js";
 import type { IUserRepository } from "../../../application/interfaces/repository/user-repository.js";
 import {
+  PaymentMapper,
+  type IPaymentMapper,
+} from "../../../application/mappers/payment.js";
+import {
   AdminDashboardStatsUseCase,
   type IAdminDashboardStatsUseCase,
 } from "../../../application/use-cases/admin/dashboard/dashboard-stats.js";
+import {
+  ListPaymentUseCase,
+  type IListPaymentsUseCase,
+} from "../../../application/use-cases/admin/dashboard/list-payments.js";
 import {
   DashboardMonthlyRevenueUseCase,
   type IDashboardMonthlyRevenueUseCase,
@@ -34,6 +42,7 @@ export class AdminDashboardDependencyContainer {
   private readonly _projectRepository: IProjectRepository;
   private readonly _taskRepository: ITaskRepository;
   private readonly _paymentRepository: IPaymentRepository;
+  private readonly _paymentMapper: IPaymentMapper;
   private readonly _subscriptionRepository: ISubscriptionRepository;
 
   constructor() {
@@ -41,6 +50,7 @@ export class AdminDashboardDependencyContainer {
     this._projectRepository = new ProjectRepository(ProjectModel);
     this._taskRepository = new TaskRepository(TaskModel);
     this._paymentRepository = new PaymentRepository(PaymentModel);
+    this._paymentMapper = new PaymentMapper();
     this._subscriptionRepository = new SubscriptionRepository(
       SubscriptionModel
     );
@@ -58,10 +68,15 @@ export class AdminDashboardDependencyContainer {
   private createDashboardMonthlyRevenue(): IDashboardMonthlyRevenueUseCase {
     return new DashboardMonthlyRevenueUseCase(this._taskRepository);
   }
+
   private createSubscriptionDistributionUseCase(): IDashboardSubscriptionDistributionUseCase {
     return new DashboardSubscriptionDistributionUseCase(
       this._subscriptionRepository
     );
+  }
+
+  private createListPaymentsUseCase(): IListPaymentsUseCase {
+    return new ListPaymentUseCase(this._paymentRepository, this._paymentMapper);
   }
 
   // Dashboard Controller
@@ -69,7 +84,8 @@ export class AdminDashboardDependencyContainer {
     return new DashboardController(
       this.createDashboardStatsUseCase(),
       this.createDashboardMonthlyRevenue(),
-      this.createSubscriptionDistributionUseCase()
+      this.createSubscriptionDistributionUseCase(),
+      this.createListPaymentsUseCase()
     );
   }
 }

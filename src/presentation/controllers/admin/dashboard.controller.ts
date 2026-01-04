@@ -6,12 +6,14 @@ import { ApiResponse } from "../../common/api-response.js";
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
 import type { IDashboardMonthlyRevenueUseCase } from "../../../application/use-cases/admin/dashboard/monthly-revenue.js";
 import type { IDashboardSubscriptionDistributionUseCase } from "../../../application/use-cases/admin/dashboard/subscription-distribution.js";
+import type { IListPaymentsUseCase } from "../../../application/use-cases/admin/dashboard/list-payments.js";
 
 export class DashboardController {
   constructor(
     private _adminDashboardStatsUseCase: IAdminDashboardStatsUseCase,
     private _dashboardMonthlyRevenueUseCase: IDashboardMonthlyRevenueUseCase,
-    private _subscriptionDistributionUseCase: IDashboardSubscriptionDistributionUseCase
+    private _subscriptionDistributionUseCase: IDashboardSubscriptionDistributionUseCase,
+    private _listPaymentsUseCase: IListPaymentsUseCase
   ) {}
 
   dashboardStats = async (req: Request, res: Response, next: NextFunction) => {
@@ -57,6 +59,21 @@ export class DashboardController {
         .status(HttpStatusCode.OK)
         .json(
           ApiResponse.success(ResponseMessages.AdminDashboardDataFetched, data)
+        );
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  listPayments = async (req: Request, res: Response, next: NextFunction) => {
+    logger.debug("List Payments API hit 🚀");
+
+    try {
+      const data = await this._listPaymentsUseCase.execute();
+      res
+        .status(HttpStatusCode.OK)
+        .json(
+          ApiResponse.success("List payments successfully", data)
         );
     } catch (error) {
       next(error);
