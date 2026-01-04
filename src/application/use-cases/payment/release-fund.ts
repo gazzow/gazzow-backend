@@ -4,9 +4,11 @@ import { PaymentStatus } from "../../../domain/enums/task.js";
 import { AppError } from "../../../utils/app-error.js";
 import logger from "../../../utils/logger.js";
 import type { IReleaseFundsRequestDTO } from "../../dtos/payment.js";
+import type { ISubscriptionRepository } from "../../interfaces/repository/subscription.repository.js";
 import type { ITaskRepository } from "../../interfaces/repository/task-repository.js";
 import type { IUserRepository } from "../../interfaces/repository/user-repository.js";
 import type { IReleaseFundsUseCase } from "../../interfaces/usecase/payment/release-fund.js";
+import type { ISubscriptionMapper } from "../../mappers/subscription.js";
 import type { ITaskMapper } from "../../mappers/task.js";
 import type { IUserMapper } from "../../mappers/user/user.js";
 import type { IStripeService } from "../../providers/stripe-service.js";
@@ -17,10 +19,13 @@ export class ReleaseFundsUseCase implements IReleaseFundsUseCase {
     private _userRepository: IUserRepository,
     private _taskMapper: ITaskMapper,
     private _userMapper: IUserMapper,
-    private _stripeService: IStripeService
+    private _stripeService: IStripeService,
+    private _subscriptionRepository: ISubscriptionRepository,
+    private _subscriptionMapper: ISubscriptionMapper
   ) {}
 
   async execute(dto: IReleaseFundsRequestDTO) {
+    logger.info("Releasing user fund from stripe dashboard");
     const taskDoc = await this._taskRepository.findById(dto.taskId);
     if (!taskDoc)
       throw new AppError(
@@ -59,11 +64,23 @@ export class ReleaseFundsUseCase implements IReleaseFundsUseCase {
       );
     }
 
-    const PLATFORM_FEE_PERCENTAGE = 12;
-
-    const platformFee = Math.floor(
-      task.totalAmount * (PLATFORM_FEE_PERCENTAGE / 100)
+    const subscriptionDoc = await this._subscriptionRepository.findByUserId(
+      user.id
     );
+
+    let commissionRate = 15; // default
+
+    if (subscriptionDoc) {
+      logger.info("User have a valid subscription plan!");
+
+      const { activePlan, endDate } =
+        this._subscriptionMapper.toResponseDTO(subscriptionDoc);
+      if (new Date(endDate) > new Date()) {
+        commissionRate = activePlan.features.commissionRate;
+      }
+    }
+
+    const platformFee = Math.floor(task.totalAmount * (commissionRate / 100));
 
     logger.debug(`Platform fee: ${platformFee}`);
 

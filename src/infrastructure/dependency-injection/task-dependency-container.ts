@@ -1,4 +1,5 @@
 import type { IProjectRepository } from "../../application/interfaces/repository/project-repository.js";
+import type { ISubscriptionRepository } from "../../application/interfaces/repository/subscription.repository.js";
 import type { ITaskRepository } from "../../application/interfaces/repository/task-repository.js";
 import type { IUserRepository } from "../../application/interfaces/repository/user-repository.js";
 import type { IReleaseFundsUseCase } from "../../application/interfaces/usecase/payment/release-fund.js";
@@ -15,6 +16,10 @@ import {
   ProjectMapper,
   type IProjectMapper,
 } from "../../application/mappers/project.js";
+import {
+  SubscriptionMapper,
+  type ISubscriptionMapper,
+} from "../../application/mappers/subscription.js";
 import {
   TaskMapper,
   type ITaskMapper,
@@ -38,11 +43,13 @@ import { SubmitTaskUseCase } from "../../application/use-cases/task/submit-task.
 import { UpdateTaskUseCase } from "../../application/use-cases/task/update-task.js";
 import { TaskController } from "../../presentation/controllers/task-controller.js";
 import { ProjectModel } from "../db/models/project-model.js";
+import { SubscriptionModel } from "../db/models/subscription.js";
 import { TaskModel } from "../db/models/task-model.js";
 import { UserModel } from "../db/models/user-model.js";
 import { S3FileStorageService } from "../providers/s3-service.js";
 import { StripeService } from "../providers/stripe-service.js";
 import { ProjectRepository } from "../repositories/project-repository.js";
+import { SubscriptionRepository } from "../repositories/subscription.repository.js";
 import { TaskRepository } from "../repositories/task-repository.js";
 import { UserRepository } from "../repositories/user-repository.js";
 import { NotificationDependencyContainer } from "./notification.container.js";
@@ -56,6 +63,8 @@ export class TaskDependencyContainer {
   private readonly _userMapper: IUserMapper;
   private readonly _stripeService: IStripeService;
   private readonly _s3Service: IS3FileStorageService;
+  private readonly _subscriptionRepository: ISubscriptionRepository;
+  private readonly _subscriptionMapper: ISubscriptionMapper;
   private readonly _createNotificationUseCase: ICreateNotificationUseCase;
 
   constructor() {
@@ -67,6 +76,10 @@ export class TaskDependencyContainer {
     this._userMapper = new UserMapper();
     this._stripeService = new StripeService();
     this._s3Service = new S3FileStorageService();
+    this._subscriptionRepository = new SubscriptionRepository(
+      SubscriptionModel
+    );
+    this._subscriptionMapper = new SubscriptionMapper();
     this._createNotificationUseCase =
       new NotificationDependencyContainer().createNotificationUseCase();
   }
@@ -127,7 +140,9 @@ export class TaskDependencyContainer {
       this._userRepository,
       this._taskMapper,
       this._userMapper,
-      this._stripeService
+      this._stripeService,
+      this._subscriptionRepository,
+      this._subscriptionMapper
     );
   }
 
