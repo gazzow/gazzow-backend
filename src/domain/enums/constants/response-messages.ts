@@ -34,6 +34,7 @@ export enum ResponseMessages {
 
   // Admin
   AdminNotFound = "Admin not found",
+  AdminDashboardStatsFetched = "Retrieved admin dashboard status successfully",
 
   // Project
   ProjectCreated = "Project created successfully",
