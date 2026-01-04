@@ -1,7 +1,13 @@
+import {
+  PaymentStatus,
+  PaymentType,
+  type IPayment,
+} from "../../../domain/entities/payment.js";
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
 import { SubscriptionStatus } from "../../../domain/enums/subscription.js";
 import { CalculateEndDate } from "../../../domain/policy/calculate-end-date.js";
+import type { IPaymentRepository } from "../../../infrastructure/repositories/payment.repository.js";
 import { AppError } from "../../../utils/app-error.js";
 import logger from "../../../utils/logger.js";
 import type {
@@ -14,6 +20,7 @@ import type { ISubscriptionRepository } from "../../interfaces/repository/subscr
 import type { IUserRepository } from "../../interfaces/repository/user-repository.js";
 import type { ISubscriptionPaymentUseCase } from "../../interfaces/usecase/subscription/subscription-payment.js";
 import type { IPlanMapper } from "../../mappers/admin/plan.js";
+import type { IPaymentMapper } from "../../mappers/payment.js";
 import type { ISubscriptionMapper } from "../../mappers/subscription.js";
 
 export class SubscriptionPaymentUseCase implements ISubscriptionPaymentUseCase {
@@ -22,7 +29,9 @@ export class SubscriptionPaymentUseCase implements ISubscriptionPaymentUseCase {
     private _subscriptionRepository: ISubscriptionRepository,
     private _planRepository: IPlanRepository,
     private _planMapper: IPlanMapper,
-    private _subscriptionMapper: ISubscriptionMapper
+    private _subscriptionMapper: ISubscriptionMapper,
+    private _paymentRepository: IPaymentRepository,
+    private _paymentMapper: IPaymentMapper
   ) {}
 
   async execute(
@@ -82,6 +91,22 @@ export class SubscriptionPaymentUseCase implements ISubscriptionPaymentUseCase {
 
     const data = this._subscriptionMapper.toResponseDTO(newSubscription);
 
+    const persistentData: Partial<IPayment> = {
+      userId: dto.userId,
+      subscriptionId: data.id,
+      stripePaymentIntentId: dto.stripePaymentIntentId,
+      amount: dto.amount,
+      platformFee: dto.amount,
+      netAmount: 0,
+      currency: dto.currency,
+      type: PaymentType.SUBSCRIPTION,
+      status: PaymentStatus.SUCCESS,
+    };
+
+    const persistentPayment =
+      this._paymentMapper.toPersistentModel(persistentData);
+      
+    await this._paymentRepository.create(persistentPayment);
     return { data };
   }
 }

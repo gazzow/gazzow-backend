@@ -30,6 +30,9 @@ export interface ICheckOnboardingStatusRequestDTO {
 
 export interface ITaskPaymentRequestDTO {
   taskId: string;
+  stripePaymentIntentId: string;
+  amount: number;
+  currency: string;
 }
 
 // Subscription

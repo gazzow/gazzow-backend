@@ -1,6 +1,6 @@
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
-import { PaymentStatus } from "../../../domain/enums/task.js";
+import { TaskPaymentStatus } from "../../../domain/enums/task.js";
 import { AppError } from "../../../utils/app-error.js";
 import logger from "../../../utils/logger.js";
 import type { IReleaseFundsRequestDTO } from "../../dtos/payment.js";
@@ -41,7 +41,7 @@ export class ReleaseFundsUseCase implements IReleaseFundsUseCase {
         HttpStatusCode.BAD_REQUEST
       );
 
-    if (task.paymentStatus === PaymentStatus.PAID)
+    if (task.paymentStatus === TaskPaymentStatus.PAID)
       throw new AppError(
         ResponseMessages.TaskFundAlreadyReleased,
         HttpStatusCode.CONFLICT
@@ -110,7 +110,7 @@ export class ReleaseFundsUseCase implements IReleaseFundsUseCase {
     await Promise.all([
       this._stripeService.transferFunds(user.stripeAccountId, grandTotal),
       this._taskRepository.update(task.id, {
-        paymentStatus: PaymentStatus.PAID,
+        paymentStatus: TaskPaymentStatus.PAID,
         paidAt: new Date(),
       }),
     ]);

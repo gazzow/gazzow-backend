@@ -1,7 +1,7 @@
 import type { IProjectFile } from "../../application/interfaces/s3-bucket/file-storage.js";
 import type {
   AssigneeStatus,
-  PaymentStatus,
+  TaskPaymentStatus,
   RefundStatus,
   Revision,
   SubmissionLink,
@@ -28,7 +28,7 @@ export interface ITask {
   priority: TaskPriority;
   documents: IProjectFile[];
   submissionLinks: SubmissionLink[];
-  paymentStatus?: PaymentStatus;
+  paymentStatus?: TaskPaymentStatus;
   cancellationReason?: string; // for creator/admin cancellation
   revisionCount?: number; // track how many revisions were requested
   expiredAt?: Date; // record when task expired

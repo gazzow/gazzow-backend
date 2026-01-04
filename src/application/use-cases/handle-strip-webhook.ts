@@ -34,18 +34,24 @@ export class HandleStripeWebhookUseCase implements IHandleStripeWebhookUseCase {
   }
 
   private async handleCheckoutCompleted(event: Stripe.Event): Promise<void> {
-    // Implement your logic to handle the completed checkout session
     const session = event.data.object as Stripe.Checkout.Session;
-    logger.info(
-      `Received Stripe event: ${event.type} for session ID: ${session.id}`
-    );
+    logger.info(`Stripe checkout completed: ${session.id}`);
+    const paymentIntentId = session.payment_intent as string;
+    const amount = (session.amount_total || 0) / 100;
+    const currency = session.currency?.toUpperCase() || "USD";
 
     if (session.metadata?.paymentType === PaymentType.TASK_PAYMENT) {
       const taskId = session.metadata?.taskId;
       if (!taskId) {
         throw new Error("Task Id not found in session metadata");
       }
-      await this._taskPaymentUseCase.execute({ taskId });
+
+      await this._taskPaymentUseCase.execute({
+        taskId,
+        stripePaymentIntentId: paymentIntentId,
+        amount,
+        currency,
+      });
     } else if (
       session.metadata?.paymentType === PaymentType.SUBSCRIPTION_PAYMENT
     ) {
@@ -54,8 +60,16 @@ export class HandleStripeWebhookUseCase implements IHandleStripeWebhookUseCase {
       if (!planId) {
         throw new Error("Plan Id not found in session metadata");
       }
+
       if (!userId) throw new Error(ResponseMessages.UserNotFound);
-      await this._subscriptionPaymentUseCase.execute({ planId, userId });
+
+      await this._subscriptionPaymentUseCase.execute({
+        planId,
+        userId,
+        stripePaymentIntentId: paymentIntentId,
+        amount,
+        currency,
+      });
     }
   }
 }
