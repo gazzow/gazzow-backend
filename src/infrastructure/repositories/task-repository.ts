@@ -7,6 +7,7 @@ import type {
 import { BaseRepository } from "./base/base-repository.js";
 import type { IProjectDocument } from "../db/models/project-model.js";
 import type { IUserDocument } from "../db/models/user-model.js";
+import type { IMonthlyRevenue } from "../../application/dtos/admin/dashboard.js";
 
 export class TaskRepository
   extends BaseRepository<ITaskDocument>
@@ -42,5 +43,45 @@ export class TaskRepository
       .populate<{ assigneeId: IUserDocument }>("assigneeId")
       .populate<{ creatorId: IUserDocument }>("creatorId")
       .exec();
+  }
+
+  async getMonthlyPlatformRevenue(): Promise<IMonthlyRevenue[]> {
+    const result = await this.model.aggregate([
+      {
+        $match: {
+          status: "completed",
+          paymentStatus: "paid",
+          paidAt: { $exists: true },
+          isDeleted: false,
+        },
+      },
+      {
+        $project: {
+          month: { $month: "$paidAt" },
+          year: { $year: "$paidAt" },
+          platformAmount: {
+            $subtract: [
+              { $subtract: ["$totalAmount", "$balance"] },
+              { $ifNull: ["$refundAmount", 0] },
+            ],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: { year: "$year", month: "$month" },
+          revenue: { $sum: "$platformAmount" },
+        },
+      },
+      {
+        $sort: { "_id.year": 1, "_id.month": 1 },
+      },
+    ]);
+
+    return result.map((item) => ({
+      year: item._id.year,
+      month: item._id.month,
+      revenue: item.revenue,
+    }));
   }
 }

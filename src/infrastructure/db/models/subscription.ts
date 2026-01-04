@@ -123,7 +123,3 @@ export const SubscriptionModel = model<ISubscriptionDocument>(
   SubscriptionSchema
 );
 
-SubscriptionSchema.index(
-  { userId: 1, status: 1 },
-  { unique: true, partialFilterExpression: { status: "active" } }
-);

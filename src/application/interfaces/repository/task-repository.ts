@@ -4,6 +4,7 @@ import type {
   ITaskDocument,
 } from "../../../infrastructure/db/models/task-model.js";
 import type { IBaseRepository } from "./base-repository.js";
+import type { IMonthlyRevenue } from "../../dtos/admin/dashboard.js";
 
 export interface ITaskRepository extends IBaseRepository<ITaskDocument> {
   findByAssigneeId(assigneeId: string): Promise<ITaskDocument[] | null>;
@@ -13,4 +14,5 @@ export interface ITaskRepository extends IBaseRepository<ITaskDocument> {
     limit?: number;
   }): Promise<IPopulatedTaskDocument[]>;
   findByIdAndPopulate(taskId: string): Promise<IPopulatedTaskDocument | null>;
+  getMonthlyPlatformRevenue(): Promise<IMonthlyRevenue[]>;
 }

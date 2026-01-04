@@ -12,4 +12,16 @@ const dashboardController = dashboardContainer.createDashboardController();
 
 router.get("/", verifyMiddleware.isAdmin, dashboardController.dashboardStats);
 
+router.get(
+  "/monthly-revenue",
+  verifyMiddleware.isAdmin,
+  dashboardController.monthlyRevenue
+);
+
+router.get(
+  "/subscription-distribution",
+  verifyMiddleware.isAdmin,
+  dashboardController.subscriptionDistribution
+);
+
 export default router;
