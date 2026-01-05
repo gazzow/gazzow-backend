@@ -8,11 +8,13 @@ import { ResponseMessages } from "../../../domain/enums/constants/response-messa
 import { pickAllowedFields } from "../../../infrastructure/utils/pick-allowed-fields.js";
 import type { IUpdateProfileRequestDTO } from "../../../application/dtos/user/user.js";
 import { ApiResponse } from "../../common/api-response.js";
+import type { IUserDashboardStatsUseCase } from "../../../application/use-cases/user/dashboard-stats.js";
 
 export class UserController {
   constructor(
     private _updateUserProfileUseCase: IUpdateUserProfileUseCase,
-    private _getUserProfileUseCase: IGetUserProfileUseCase
+    private _getUserProfileUseCase: IGetUserProfileUseCase,
+    private _userDashboardStatsUseCase: IUserDashboardStatsUseCase
   ) {}
 
   getUserProfile = async (req: Request, res: Response, next: NextFunction) => {
@@ -66,7 +68,7 @@ export class UserController {
 
       logger.debug(`Profile date to update: ${JSON.stringify(profileData)}`);
 
-      const {data} = await this._updateUserProfileUseCase.execute(
+      const { data } = await this._updateUserProfileUseCase.execute(
         userId,
         profileData
       );
@@ -74,6 +76,20 @@ export class UserController {
       res
         .status(HttpStatusCode.OK)
         .json(ApiResponse.success(ResponseMessages.ProfileUpdated, data));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  dashboardStats = async (req: Request, res: Response, next: NextFunction) => {
+    logger.debug("User Dashboard API hit 🚀");
+    const userId = req.user!.id;
+
+    try {
+      const data = await this._userDashboardStatsUseCase.execute(userId);
+      res
+        .status(HttpStatusCode.OK)
+        .json(ApiResponse.success("User dashboard stats fetched", data));
     } catch (error) {
       next(error);
     }

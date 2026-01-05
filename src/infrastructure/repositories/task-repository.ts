@@ -1,4 +1,4 @@
-import type { FilterQuery, Model } from "mongoose";
+import { Types, type FilterQuery, type Model } from "mongoose";
 import type { ITaskRepository } from "../../application/interfaces/repository/task-repository.js";
 import type {
   IPopulatedTaskDocument,
@@ -8,6 +8,7 @@ import { BaseRepository } from "./base/base-repository.js";
 import type { IProjectDocument } from "../db/models/project-model.js";
 import type { IUserDocument } from "../db/models/user-model.js";
 import type { IMonthlyRevenue } from "../../application/dtos/admin/dashboard.js";
+import { TaskPaymentStatus } from "../../domain/enums/task.js";
 
 export class TaskRepository
   extends BaseRepository<ITaskDocument>
@@ -83,5 +84,27 @@ export class TaskRepository
       month: item._id.month,
       revenue: item.revenue,
     }));
+  }
+
+  async getTotalEarnings(userId: string): Promise<number> {
+    const result = await this.model.aggregate([
+      {
+        $match: {
+          assigneeId: new Types.ObjectId(userId),
+          paymentStatus: {
+            $in: [TaskPaymentStatus.RELEASED, TaskPaymentStatus.PAID],
+          },
+          isDeleted: false,
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$totalAmount" },
+        },
+      },
+    ]);
+
+    return result.length > 0 ? result[0].total : 0;
   }
 }

@@ -5,7 +5,6 @@ import {
   type IUserMapper,
 } from "../../application/mappers/user/user.js";
 
-
 import type { IUserRepository } from "../../application/interfaces/repository/user-repository.js";
 import { UserRepository } from "../repositories/user-repository.js";
 
@@ -16,8 +15,14 @@ import { GetUserProfileUseCase } from "../../application/use-cases/user/profile/
 
 import { UserController } from "../../presentation/controllers/user/user-controller.js";
 import { UpdateUserProfileUseCase } from "../../application/use-cases/user/profile/update-profile.js";
-
-
+import {
+  UserDashboardStatsUseCase,
+  type IUserDashboardStatsUseCase,
+} from "../../application/use-cases/user/dashboard-stats.js";
+import { ProjectRepository } from "../repositories/project-repository.js";
+import { ProjectModel } from "../db/models/project-model.js";
+import { TaskRepository } from "../repositories/task-repository.js";
+import { TaskModel } from "../db/models/task-model.js";
 
 export class UserDependencyContainer {
   private readonly _userRepository: IUserRepository;
@@ -36,10 +41,18 @@ export class UserDependencyContainer {
     return new GetUserProfileUseCase(this._userRepository, this._userMapper);
   }
 
+  private createDashboardStatsUseCase(): IUserDashboardStatsUseCase {
+    return new UserDashboardStatsUseCase(
+      new ProjectRepository(ProjectModel),
+      new TaskRepository(TaskModel)
+    );
+  }
+
   createUserController(): UserController {
     return new UserController(
       this.createUpdateProfileUseCase(),
-      this.createGetUserProfileUseCase()
+      this.createGetUserProfileUseCase(),
+      this.createDashboardStatsUseCase()
     );
   }
 }

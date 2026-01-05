@@ -15,4 +15,5 @@ export interface ITaskRepository extends IBaseRepository<ITaskDocument> {
   }): Promise<IPopulatedTaskDocument[]>;
   findByIdAndPopulate(taskId: string): Promise<IPopulatedTaskDocument | null>;
   getMonthlyPlatformRevenue(): Promise<IMonthlyRevenue[]>;
+  getTotalEarnings(userId: string): Promise<number>
 }
