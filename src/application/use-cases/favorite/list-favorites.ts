@@ -16,14 +16,19 @@ export class ListFavoriteProjectsUseCase
   async execute(
     dto: IListFavoriteProjectsRequestDTO
   ): Promise<IListFavoriteProjectsResponseDTO> {
+    const { skip, limit } = dto;
     const favoriteDocs = await this._favoriteRepository.getUserFavorites(
-      dto.userId
+      dto.userId,
+      skip,
+      limit
     );
+
+    const total = await this._favoriteRepository.count({ userId: dto.userId });
 
     const data = favoriteDocs.map((fav) =>
       this._favoriteMapper.toPopulatedResponseDTO(fav)
     );
 
-    return { data };
+    return { data, skip, limit, total };
   }
 }
