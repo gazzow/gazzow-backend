@@ -5,10 +5,7 @@ import type { IAdminDashboardStatsResponseDTO } from "../../../dtos/admin/dashbo
 import type { IProjectRepository } from "../../../interfaces/repository/project-repository.js";
 import type { ITaskRepository } from "../../../interfaces/repository/task-repository.js";
 import type { IUserRepository } from "../../../interfaces/repository/user-repository.js";
-
-export interface IAdminDashboardStatsUseCase {
-  execute(): Promise<IAdminDashboardStatsResponseDTO>;
-}
+import type { IAdminDashboardStatsUseCase } from "../../../interfaces/usecase/admin/dashboard/dashboard-stats.js";
 
 export class AdminDashboardStatsUseCase implements IAdminDashboardStatsUseCase {
   constructor(

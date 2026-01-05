@@ -1,9 +1,7 @@
 import type { IDashboardMonthlyRevenueResponseDTO } from "../../../dtos/admin/dashboard.js";
 import type { ITaskRepository } from "../../../interfaces/repository/task-repository.js";
+import type { IDashboardMonthlyRevenueUseCase } from "../../../interfaces/usecase/admin/dashboard/monthly-revenue.js";
 
-export interface IDashboardMonthlyRevenueUseCase {
-  execute(): Promise<IDashboardMonthlyRevenueResponseDTO>;
-}
 
 export class DashboardMonthlyRevenueUseCase
   implements IDashboardMonthlyRevenueUseCase

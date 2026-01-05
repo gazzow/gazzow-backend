@@ -4,7 +4,7 @@ import type { IListSubscriptionsUseCase } from "../../../application/interfaces/
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
 import { ApiResponse } from "../../common/api-response.js";
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
-import type { ICancelSubscriptionUseCase } from "../../../application/use-cases/admin/subscription/cancel-subscription.js";
+import type { ICancelSubscriptionUseCase } from "../../../application/interfaces/usecase/admin/subscription/cancel-subscription.js";
 
 export class SubscriptionManagementController {
   constructor(

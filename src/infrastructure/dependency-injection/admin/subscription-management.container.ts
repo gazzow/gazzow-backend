@@ -1,4 +1,5 @@
 import type { ISubscriptionRepository } from "../../../application/interfaces/repository/subscription.repository.js";
+import type { ICancelSubscriptionUseCase } from "../../../application/interfaces/usecase/admin/subscription/cancel-subscription.js";
 import type { IListSubscriptionsUseCase } from "../../../application/interfaces/usecase/admin/subscription/list-subscriptions.js";
 import {
   SubscriptionMapper,
@@ -6,7 +7,6 @@ import {
 } from "../../../application/mappers/subscription.js";
 import {
   CancelSubscriptionUseCase,
-  type ICancelSubscriptionUseCase,
 } from "../../../application/use-cases/admin/subscription/cancel-subscription.js";
 import { ListSubscriptionsUseCase } from "../../../application/use-cases/admin/subscription/list-subscriptions.js";
 import { SubscriptionManagementController } from "../../../presentation/controllers/admin/subscription-management.controller.js";

@@ -1,9 +1,6 @@
 import type { ISubscriptionDistributionResponseDTO } from "../../../dtos/admin/dashboard.js";
 import type { ISubscriptionRepository } from "../../../interfaces/repository/subscription.repository.js";
-
-export interface IDashboardSubscriptionDistributionUseCase {
-  execute(): Promise<ISubscriptionDistributionResponseDTO>;
-}
+import type { IDashboardSubscriptionDistributionUseCase } from "../../../interfaces/usecase/admin/dashboard/subscription-distribution.js";
 
 export class DashboardSubscriptionDistributionUseCase
   implements IDashboardSubscriptionDistributionUseCase

@@ -15,14 +15,12 @@ import { GetUserProfileUseCase } from "../../application/use-cases/user/profile/
 
 import { UserController } from "../../presentation/controllers/user/user-controller.js";
 import { UpdateUserProfileUseCase } from "../../application/use-cases/user/profile/update-profile.js";
-import {
-  UserDashboardStatsUseCase,
-  type IUserDashboardStatsUseCase,
-} from "../../application/use-cases/user/dashboard-stats.js";
 import { ProjectRepository } from "../repositories/project-repository.js";
 import { ProjectModel } from "../db/models/project-model.js";
 import { TaskRepository } from "../repositories/task-repository.js";
 import { TaskModel } from "../db/models/task-model.js";
+import type { IUserDashboardStatsUseCase } from "../../application/interfaces/usecase/dashboard/dashboard-stats.js";
+import { UserDashboardStatsUseCase } from "../../application/use-cases/dashboard/dashboard-stats.js";
 
 export class UserDependencyContainer {
   private readonly _userRepository: IUserRepository;

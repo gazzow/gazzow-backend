@@ -2,27 +2,17 @@ import type { IProjectRepository } from "../../../application/interfaces/reposit
 import type { ISubscriptionRepository } from "../../../application/interfaces/repository/subscription.repository.js";
 import type { ITaskRepository } from "../../../application/interfaces/repository/task-repository.js";
 import type { IUserRepository } from "../../../application/interfaces/repository/user-repository.js";
+import type { IAdminDashboardStatsUseCase } from "../../../application/interfaces/usecase/admin/dashboard/dashboard-stats.js";
+import type { IDashboardMonthlyRevenueUseCase } from "../../../application/interfaces/usecase/admin/dashboard/monthly-revenue.js";
+import type { IDashboardSubscriptionDistributionUseCase } from "../../../application/interfaces/usecase/admin/dashboard/subscription-distribution.js";
 import {
   PaymentMapper,
   type IPaymentMapper,
 } from "../../../application/mappers/payment.js";
-import {
-  AdminDashboardStatsUseCase,
-  type IAdminDashboardStatsUseCase,
-} from "../../../application/use-cases/admin/dashboard/dashboard-stats.js";
-import {
-  ListPaymentUseCase,
-  type IListPaymentsUseCase,
-} from "../../../application/use-cases/admin/dashboard/list-payments.js";
-import {
-  DashboardMonthlyRevenueUseCase,
-  type IDashboardMonthlyRevenueUseCase,
-} from "../../../application/use-cases/admin/dashboard/monthly-revenue.js";
-import {
-  DashboardSubscriptionDistributionUseCase,
-  type IDashboardSubscriptionDistributionUseCase,
-} from "../../../application/use-cases/admin/dashboard/subscription-distribution.js";
-import { DashboardController } from "../../../presentation/controllers/admin/dashboard.controller.js";
+import { AdminDashboardStatsUseCase } from "../../../application/use-cases/admin/dashboard/dashboard-stats.js";
+import { DashboardMonthlyRevenueUseCase } from "../../../application/use-cases/admin/dashboard/monthly-revenue.js";
+import { DashboardSubscriptionDistributionUseCase } from "../../../application/use-cases/admin/dashboard/subscription-distribution.js";
+import { AdminDashboardController } from "../../../presentation/controllers/admin/dashboard.controller.js";
 import { PaymentModel } from "../../db/models/payment.model.js";
 import { ProjectModel } from "../../db/models/project-model.js";
 import { SubscriptionModel } from "../../db/models/subscription.js";
@@ -75,17 +65,12 @@ export class AdminDashboardDependencyContainer {
     );
   }
 
-  private createListPaymentsUseCase(): IListPaymentsUseCase {
-    return new ListPaymentUseCase(this._paymentRepository, this._paymentMapper);
-  }
-
   // Dashboard Controller
-  createDashboardController(): DashboardController {
-    return new DashboardController(
+  createDashboardController(): AdminDashboardController {
+    return new AdminDashboardController(
       this.createDashboardStatsUseCase(),
       this.createDashboardMonthlyRevenue(),
-      this.createSubscriptionDistributionUseCase(),
-      this.createListPaymentsUseCase()
+      this.createSubscriptionDistributionUseCase()
     );
   }
 }

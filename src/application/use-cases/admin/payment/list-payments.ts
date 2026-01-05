@@ -1,12 +1,9 @@
 import type { IPayment } from "../../../../domain/entities/payment.js";
 import type { IPaymentRepository } from "../../../../infrastructure/repositories/payment.repository.js";
+import type { IListPaymentsUseCase } from "../../../interfaces/usecase/admin/payment/list-payments.js";
 import type { IPaymentMapper } from "../../../mappers/payment.js";
 
-export interface IListPaymentsUseCase {
-  execute(): Promise<IPayment[]>;
-}
-
-export class ListPaymentUseCase implements IListPaymentsUseCase {
+export class ListPaymentsUseCase implements IListPaymentsUseCase {
   constructor(
     private _paymentRepository: IPaymentRepository,
     private _paymentMapper: IPaymentMapper

@@ -8,7 +8,7 @@ import { ResponseMessages } from "../../../domain/enums/constants/response-messa
 import { pickAllowedFields } from "../../../infrastructure/utils/pick-allowed-fields.js";
 import type { IUpdateProfileRequestDTO } from "../../../application/dtos/user/user.js";
 import { ApiResponse } from "../../common/api-response.js";
-import type { IUserDashboardStatsUseCase } from "../../../application/use-cases/user/dashboard-stats.js";
+import type { IUserDashboardStatsUseCase } from "../../../application/interfaces/usecase/dashboard/dashboard-stats.js";
 
 export class UserController {
   constructor(

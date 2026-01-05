@@ -1,15 +1,8 @@
 import { TaskStatus } from "../../../domain/enums/task.js";
 import type { IProjectRepository } from "../../interfaces/repository/project-repository.js";
 import type { ITaskRepository } from "../../interfaces/repository/task-repository.js";
+import type { IUserDashboardStatsUseCase } from "../../interfaces/usecase/dashboard/dashboard-stats.js";
 
-export interface IUserDashboardStatsUseCase {
-  execute(userId: string): Promise<{
-    projectsPosted: number;
-    pendingJobs: number;
-    completedJobs: number;
-    totalEarnings: number;
-  }>;
-}
 
 export class UserDashboardStatsUseCase implements IUserDashboardStatsUseCase {
   constructor(

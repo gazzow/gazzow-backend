@@ -18,6 +18,7 @@ import subscriptionManagementRoutes from "../routes/admin/subscription-managemen
 import favoriteRoutes from "../routes/favorite.routes.js";
 import teamChatRoutes from "../routes/team-chat.routes.js";
 import DashboardRoutes from "../routes/admin/dashboard.routes.js";
+import adminPaymentRoutes from "../routes/admin/payment.routes.js";
 
 const app = express();
 
@@ -46,7 +47,7 @@ app.use("/api/team-chat", teamChatRoutes);
 // Admin Routes
 app.use("/api/admin/plans", planRoutes);
 app.use("/api/admin/subscriptions", subscriptionManagementRoutes);
-
+app.use("/api/admin/payments", adminPaymentRoutes);
 app.use("/api/admin/dashboard", DashboardRoutes);
 
 app.use("/api/admin", adminRoutes);

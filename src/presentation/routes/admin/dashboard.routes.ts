@@ -24,10 +24,5 @@ router.get(
   dashboardController.subscriptionDistribution
 );
 
-router.get(
-  "/payments",
-  verifyMiddleware.isAdmin,
-  dashboardController.listPayments
-);
 
 export default router;

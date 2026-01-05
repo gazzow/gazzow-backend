@@ -1,19 +1,17 @@
 import type { NextFunction, Request, Response } from "express";
-import type { IAdminDashboardStatsUseCase } from "../../../application/use-cases/admin/dashboard/dashboard-stats.js";
 import logger from "../../../utils/logger.js";
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
 import { ApiResponse } from "../../common/api-response.js";
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
-import type { IDashboardMonthlyRevenueUseCase } from "../../../application/use-cases/admin/dashboard/monthly-revenue.js";
-import type { IDashboardSubscriptionDistributionUseCase } from "../../../application/use-cases/admin/dashboard/subscription-distribution.js";
-import type { IListPaymentsUseCase } from "../../../application/use-cases/admin/dashboard/list-payments.js";
+import type { IAdminDashboardStatsUseCase } from "../../../application/interfaces/usecase/admin/dashboard/dashboard-stats.js";
+import type { IDashboardMonthlyRevenueUseCase } from "../../../application/interfaces/usecase/admin/dashboard/monthly-revenue.js";
+import type { IDashboardSubscriptionDistributionUseCase } from "../../../application/interfaces/usecase/admin/dashboard/subscription-distribution.js";
 
-export class DashboardController {
+export class AdminDashboardController {
   constructor(
     private _adminDashboardStatsUseCase: IAdminDashboardStatsUseCase,
     private _dashboardMonthlyRevenueUseCase: IDashboardMonthlyRevenueUseCase,
-    private _subscriptionDistributionUseCase: IDashboardSubscriptionDistributionUseCase,
-    private _listPaymentsUseCase: IListPaymentsUseCase
+    private _subscriptionDistributionUseCase: IDashboardSubscriptionDistributionUseCase
   ) {}
 
   dashboardStats = async (req: Request, res: Response, next: NextFunction) => {
@@ -59,21 +57,6 @@ export class DashboardController {
         .status(HttpStatusCode.OK)
         .json(
           ApiResponse.success(ResponseMessages.AdminDashboardDataFetched, data)
-        );
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  listPayments = async (req: Request, res: Response, next: NextFunction) => {
-    logger.debug("List Payments API hit 🚀");
-
-    try {
-      const data = await this._listPaymentsUseCase.execute();
-      res
-        .status(HttpStatusCode.OK)
-        .json(
-          ApiResponse.success("List payments successfully", data)
         );
     } catch (error) {
       next(error);

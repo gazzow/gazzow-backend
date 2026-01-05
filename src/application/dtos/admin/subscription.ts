@@ -7,3 +7,8 @@ export interface IListSubscriptionsRequestDTO {
 export interface IListSubscriptionsResponseDTO {
   data: ISubscription[];
 }
+
+export interface ICancelSubscriptionRequestDTO {
+  subscriptionId: string;
+}
+
