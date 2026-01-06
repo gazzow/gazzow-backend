@@ -14,6 +14,11 @@ export const registerProjectSocket = (
       socketService.joinTeamChat(socket, payload.projectId);
     });
 
+    socket.on(SOCKET_EVENTS.USER_ONLINE, (payload) => {
+      console.log("user online: ", payload);
+      socketService.joinUser(socket, payload.userId);
+    });
+
     socket.on(
       SOCKET_EVENTS.SEND_MESSAGE,
       (data: { projectId: string; userId: string; content: string }) => {

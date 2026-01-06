@@ -73,5 +73,42 @@ export class SendProjectMessageUseCase implements ISendTeamChatMessageUseCase {
 
     // 5. Emit realtime update
     this._realtime.emitToProject(projectId, "TEAM_MESSAGE", savedMessage);
+
+    const senderName = name;
+    const projectTitle = project.title;
+
+    // Notification
+    if (isCreator) {
+      // Creator sent → notify all contributors
+      project.contributors.forEach((c) => {
+        this._realtime.emitToUser(c.userId, "TEAM_MESSAGE_NOTIFICATION", {
+          projectId,
+          title: "Team Chat Notification",
+          message: `${senderName} (Project Owner) sent a message in "${projectTitle}"`,
+        });
+      });
+    } else {
+      // Contributor sent → notify creator
+      this._realtime.emitToUser(
+        project.creatorId,
+        "TEAM_MESSAGE_NOTIFICATION",
+        {
+          projectId,
+          title: "Team Chat Notification",
+          message: `${senderName} sent a message in "${projectTitle}"`,
+        }
+      );
+
+      // Notify other contributors (except sender)
+      project.contributors.forEach((c) => {
+        if (c.userId !== senderId) {
+          this._realtime.emitToUser(c.userId, "TEAM_MESSAGE_NOTIFICATION", {
+            projectId,
+            title: "Team chat Notification",
+            message: `${senderName} sent a message in "${projectTitle}"`,
+          });
+        }
+      });
+    }
   }
 }

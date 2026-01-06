@@ -9,3 +9,9 @@ export interface IMessage {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface INotificationPayload {
+  projectId: string;
+  title: string;
+  message: string;
+}
