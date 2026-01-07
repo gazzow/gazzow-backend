@@ -1,5 +1,5 @@
 import express from "express";
-import { PaymentDependencyContainer } from "../../infrastructure/dependency-injection/payment-dependency-container.js";
+import { PaymentDependencyContainer } from "../../infrastructure/dependency-injection/payment.container.js";
 import { AuthDependencyContainer } from "../../infrastructure/dependency-injection/auth-dependency-container.js";
 
 const router = express.Router();
@@ -10,11 +10,14 @@ const paymentController = paymentContainer.createPaymentController();
 const authContainer = new AuthDependencyContainer();
 const tokenMiddleware = authContainer.createTokenMiddleware();
 
+router.get("/", tokenMiddleware.verifyToken, paymentController.listPayments);
+
 router.post(
   "/connect",
   tokenMiddleware.verifyToken,
   paymentController.connectAccount
 );
+
 router.get(
   "/onboarding-link",
   tokenMiddleware.verifyToken,
@@ -32,6 +35,7 @@ router.post(
   tokenMiddleware.verifyToken,
   paymentController.taskCheckoutSession
 );
+
 router.post(
   "/subscription-checkout",
   tokenMiddleware.verifyToken,

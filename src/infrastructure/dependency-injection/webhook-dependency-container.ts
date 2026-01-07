@@ -99,7 +99,9 @@ export class WebhookDependencyContainer {
     return new HandleStripeWebhookUseCase(
       this._paymentService,
       this.createTaskPaymentUseCase(),
-      this.createSubscriptionPaymentUseCase()
+      this.createSubscriptionPaymentUseCase(),
+      this._taskRepository,
+      this._paymentRepository
     );
   }
 

@@ -8,8 +8,8 @@ import {
   type IPaymentMapper,
 } from "../../../application/mappers/payment.js";
 import { PaymentModel } from "../../db/models/payment.model.js";
-import type { IListPaymentsUseCase } from "../../../application/interfaces/usecase/admin/payment/list-payments.js";
-import { ListPaymentsUseCase } from "../../../application/use-cases/admin/payment/list-payments.js";
+import type { IAdminListPaymentsUseCase } from "../../../application/interfaces/usecase/admin/payment/list-payments.js";
+import { AdminListPaymentsUseCase } from "../../../application/use-cases/admin/payment/list-payments.js";
 import { AdminPaymentController } from "../../../presentation/controllers/admin/payment.controller.js";
 
 export class AdminPaymentContainer {
@@ -21,8 +21,8 @@ export class AdminPaymentContainer {
     this._paymentMapper = new PaymentMapper();
   }
 
-  private createListPaymentsUseCase(): IListPaymentsUseCase {
-    return new ListPaymentsUseCase(
+  private createListPaymentsUseCase(): IAdminListPaymentsUseCase {
+    return new AdminListPaymentsUseCase(
       this._paymentRepository,
       this._paymentMapper
     );

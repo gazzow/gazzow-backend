@@ -8,7 +8,7 @@ import userRoutes from "../routes/user/user-routes.js";
 import adminRoutes from "../routes/admin/admin-routes.js";
 import projectRoutes from "../routes/project-routes.js";
 import contributorRoutes from "../routes/contributor-routes.js";
-import paymentRoutes from "../routes/payment-routes.js";
+import paymentRoutes from "../routes/payment.routes.js";
 import webhookRoutes from "../routes/webhook-route.js";
 import taskCommentRoutes from "../routes/task-comment.routes.js";
 import planRoutes from "../routes/admin/plan.routes.js";

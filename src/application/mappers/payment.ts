@@ -26,7 +26,9 @@ export class PaymentMapper implements IPaymentMapper {
       ...(doc.stripeTransferId && {
         stripeTransferId: doc.stripeTransferId,
       }),
-      amount: doc.amount!,
+      ...(doc.totalAmount && {
+        totalAmount: doc.totalAmount,
+      }),
       ...(doc.platformFee && {
         platformFee: doc.platformFee,
       }),
@@ -58,7 +60,9 @@ export class PaymentMapper implements IPaymentMapper {
       ...(doc.stripeTransferId && {
         stripeTransferId: doc.stripeTransferId,
       }),
-      amount: doc.amount!,
+      ...(doc.totalAmount && {
+        totalAmount: doc.totalAmount,
+      }),
       ...(doc.platformFee && {
         platformFee: doc.platformFee,
       }),

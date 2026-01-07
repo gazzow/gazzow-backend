@@ -15,13 +15,13 @@ export enum PaymentStatus {
 
 export interface IPayment {
   id: string;
-  userId: string; // who paid or received
+  userId: string; // who paid 
   taskId?: string;
   subscriptionId?: string;
   relatedUserId?: string; // Connected acc user id
   stripePaymentIntentId?: string;
   stripeTransferId?: string; // Connected account transfer Id
-  amount: number; // gross
+  totalAmount?: number; // gross
   platformFee?: number; // Gazzow cut
   netAmount?: number; // user received
   currency: string;

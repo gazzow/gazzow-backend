@@ -3,7 +3,11 @@ import type { IStripeService } from "../../application/providers/stripe-service.
 import { AppError } from "../../utils/app-error.js";
 import { ResponseMessages } from "../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../domain/enums/constants/status-codes.js";
-import { PaymentType } from "../../domain/types/payment.js";
+import { PaymentType } from "../../domain/entities/payment.js";
+import type {
+  RefundStatus,
+  TaskPaymentStatus,
+} from "../../domain/enums/task.js";
 
 export class StripeService implements IStripeService {
   private stripe: Stripe;
@@ -61,16 +65,28 @@ export class StripeService implements IStripeService {
 
   public async transferFunds(
     contributorAccountId: string,
-    amount: number
-  ): Promise<void> {
+    amount: number,
+    meta?: {
+      taskId?: string;
+      refundStatus?: RefundStatus;
+      taskPaymentStatus?: TaskPaymentStatus;
+    }
+  ): Promise<Stripe.Transfer> {
     const stripe = this.getClient();
 
     const totalAmountInCents = amount * 100;
 
-    await stripe.transfers.create({
+    return await stripe.transfers.create({
       amount: totalAmountInCents,
       currency: "usd",
       destination: contributorAccountId,
+      metadata: {
+        ...(meta?.taskId && { taskId: meta?.taskId }),
+        ...(meta?.taskPaymentStatus && {
+          taskPaymentStatus: meta?.taskPaymentStatus,
+        }),
+        ...(meta?.refundStatus && { refundStatus: meta?.refundStatus }),
+      },
     });
   }
 
@@ -157,7 +173,7 @@ export class StripeService implements IStripeService {
       metadata: {
         userId: params.userId,
         planId: params.planId,
-        paymentType: PaymentType.SUBSCRIPTION_PAYMENT,
+        paymentType: PaymentType.SUBSCRIPTION,
       },
     });
 

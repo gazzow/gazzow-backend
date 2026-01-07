@@ -124,4 +124,7 @@ export enum ResponseMessages {
   // Team Chat
   FetchedTeamChatMessages = "Retrieved team messages successfully",
 
+  // Payments
+  FetchedPayments = "List payments successfully",
+
 }

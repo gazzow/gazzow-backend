@@ -8,6 +8,7 @@ import type { IGenerateOnboardingLinkUseCase } from "../../application/interface
 import type { ICheckOnboardingStatusUseCase } from "../../application/interfaces/usecase/payment/check-onboarding-status.js";
 import { ResponseMessages } from "../../domain/enums/constants/response-messages.js";
 import type { ISubscriptionCheckoutUseCase } from "../../application/interfaces/usecase/payment/subscription-checkout.js";
+import type { IListPaymentsUseCase } from "../../application/interfaces/usecase/payment/list-payments.js";
 
 export class PaymentController {
   constructor(
@@ -15,7 +16,8 @@ export class PaymentController {
     private _createConnectedAccount: ICreateConnectedAccountUseCase,
     private _generateOnboardingLink: IGenerateOnboardingLinkUseCase,
     private _checkOnboardingStatus: ICheckOnboardingStatusUseCase,
-    private _subscriptionCheckoutUseCase: ISubscriptionCheckoutUseCase
+    private _subscriptionCheckoutUseCase: ISubscriptionCheckoutUseCase,
+    private _listPaymentsUseCase: IListPaymentsUseCase
   ) {}
 
   connectAccount = async (
@@ -131,6 +133,20 @@ export class PaymentController {
           checkoutUrl,
         })
       );
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  listPayments = async (req: Request, res: Response, next: NextFunction) => {
+    logger.debug("List Payments API hit 🚀");
+    const userId = req.user!.id;
+
+    try {
+      const { data } = await this._listPaymentsUseCase.execute({ userId });
+      res
+        .status(HttpStatusCode.OK)
+        .json(ApiResponse.success(ResponseMessages.FetchedPayments, data));
     } catch (error) {
       next(error);
     }

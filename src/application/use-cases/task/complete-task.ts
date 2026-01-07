@@ -39,9 +39,9 @@ export class CompleteTaskUseCase implements ICompleteTaskUseCase {
     };
     const payload = { taskId: dto.taskId };
 
-    await Promise.all([
-      this._taskRepository.update(dto.taskId, update),
-      this._releaseFundsUseCase.execute(payload),
-    ]);
+    await this._taskRepository.update(dto.taskId, update);
+    
+    // Replace this with Cron Job
+    await this._releaseFundsUseCase.execute(payload);
   }
 }

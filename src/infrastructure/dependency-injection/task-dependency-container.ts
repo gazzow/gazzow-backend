@@ -13,6 +13,10 @@ import type { IStartWorkUseCase } from "../../application/interfaces/usecase/tas
 import type { ISubmitTaskUseCase } from "../../application/interfaces/usecase/task/submit-task.js";
 import type { IUpdateTaskUseCase } from "../../application/interfaces/usecase/task/update-task.js";
 import {
+  PaymentMapper,
+  type IPaymentMapper,
+} from "../../application/mappers/payment.js";
+import {
   ProjectMapper,
   type IProjectMapper,
 } from "../../application/mappers/project.js";
@@ -42,12 +46,17 @@ import { StartWorkUseCase } from "../../application/use-cases/task/start-task.js
 import { SubmitTaskUseCase } from "../../application/use-cases/task/submit-task.js";
 import { UpdateTaskUseCase } from "../../application/use-cases/task/update-task.js";
 import { TaskController } from "../../presentation/controllers/task-controller.js";
+import { PaymentModel } from "../db/models/payment.model.js";
 import { ProjectModel } from "../db/models/project-model.js";
 import { SubscriptionModel } from "../db/models/subscription.js";
 import { TaskModel } from "../db/models/task-model.js";
 import { UserModel } from "../db/models/user-model.js";
 import { S3FileStorageService } from "../providers/s3-service.js";
 import { StripeService } from "../providers/stripe-service.js";
+import {
+  PaymentRepository,
+  type IPaymentRepository,
+} from "../repositories/payment.repository.js";
 import { ProjectRepository } from "../repositories/project-repository.js";
 import { SubscriptionRepository } from "../repositories/subscription.repository.js";
 import { TaskRepository } from "../repositories/task-repository.js";
@@ -66,6 +75,8 @@ export class TaskDependencyContainer {
   private readonly _subscriptionRepository: ISubscriptionRepository;
   private readonly _subscriptionMapper: ISubscriptionMapper;
   private readonly _createNotificationUseCase: ICreateNotificationUseCase;
+  private readonly _paymentRepository: IPaymentRepository;
+  private readonly _paymentMapper: IPaymentMapper;
 
   constructor() {
     this._taskRepository = new TaskRepository(TaskModel);
@@ -79,9 +90,11 @@ export class TaskDependencyContainer {
     this._subscriptionRepository = new SubscriptionRepository(
       SubscriptionModel
     );
+    this._paymentRepository = new PaymentRepository(PaymentModel);
     this._subscriptionMapper = new SubscriptionMapper();
     this._createNotificationUseCase =
       new NotificationDependencyContainer().createNotificationUseCase();
+    this._paymentMapper = new PaymentMapper();
   }
 
   createTaskUseCase(): ICreateTaskUseCase {
@@ -142,7 +155,9 @@ export class TaskDependencyContainer {
       this._userMapper,
       this._stripeService,
       this._subscriptionRepository,
-      this._subscriptionMapper
+      this._subscriptionMapper,
+      this._paymentRepository,
+      this._paymentMapper
     );
   }
 

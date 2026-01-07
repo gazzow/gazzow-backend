@@ -1,3 +1,5 @@
+import type { IPayment } from "../../domain/entities/payment.js";
+
 export interface ICreateTaskCheckoutSessionRequestDTO {
   taskId: string;
   successUrl: string;
@@ -45,4 +47,12 @@ export interface ISubscriptionCheckoutRequestDTO {
 
 export interface ISubscriptionCheckoutResponseDTO {
   checkoutUrl: string;
+}
+
+export interface IListPaymentsRequestDTO {
+  userId: string;
+}
+
+export interface IListPaymentsResponseDTO {
+  data: IPayment[];
 }

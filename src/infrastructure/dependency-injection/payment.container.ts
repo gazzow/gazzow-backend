@@ -18,7 +18,7 @@ import { TaskCheckoutSessionUseCase } from "../../application/use-cases/payment/
 import { CreateConnectedAccountUseCase } from "../../application/use-cases/payment/create-connected-account.js";
 import { GenerateOnboardingLinkUseCase } from "../../application/use-cases/payment/generate-onboarding-links.js";
 
-import { PaymentController } from "../../presentation/controllers/payment-controller.js";
+import { PaymentController } from "../../presentation/controllers/payment.controller.js";
 import { TaskModel } from "../db/models/task-model.js";
 import { UserModel } from "../db/models/user-model.js";
 import { StripeService } from "../providers/stripe-service.js";
@@ -36,6 +36,17 @@ import type { ISubscriptionCheckoutUseCase } from "../../application/interfaces/
 import { SubscriptionModel } from "../db/models/subscription.js";
 import { SubscriptionRepository } from "../repositories/subscription.repository.js";
 import type { ISubscriptionRepository } from "../../application/interfaces/repository/subscription.repository.js";
+import type { IListPaymentsUseCase } from "../../application/interfaces/usecase/payment/list-payments.js";
+import { ListPaymentsUseCase } from "../../application/use-cases/payment/list-payments.js";
+import {
+  PaymentRepository,
+  type IPaymentRepository,
+} from "../repositories/payment.repository.js";
+import {
+  PaymentMapper,
+  type IPaymentMapper,
+} from "../../application/mappers/payment.js";
+import { PaymentModel } from "../db/models/payment.model.js";
 
 export class PaymentDependencyContainer {
   private readonly _taskRepository: ITaskRepository;
@@ -46,6 +57,8 @@ export class PaymentDependencyContainer {
   private readonly _planRepository: IPlanRepository;
   private readonly _planMapper: IPlanMapper;
   private readonly _subscriptionRepository: ISubscriptionRepository;
+  private readonly _paymentRepository: IPaymentRepository;
+  private readonly _paymentMapper: IPaymentMapper;
 
   constructor() {
     this._taskRepository = new TaskRepository(TaskModel);
@@ -54,10 +67,12 @@ export class PaymentDependencyContainer {
     this._subscriptionRepository = new SubscriptionRepository(
       SubscriptionModel
     );
+    this._paymentRepository = new PaymentRepository(PaymentModel);
     this._taskMapper = new TaskMapper();
     this._paymentService = new StripeService();
     this._userMapper = new UserMapper();
     this._planMapper = new PlanMapper();
+    this._paymentMapper = new PaymentMapper();
   }
 
   createCheckoutSessionUseCase(): ITaskCheckoutSessionUseCase {
@@ -101,16 +116,24 @@ export class PaymentDependencyContainer {
     );
   }
 
-  // ----------------
+  createListPaymentsUseCase(): IListPaymentsUseCase {
+    return new ListPaymentsUseCase(
+      this._paymentRepository,
+      this._paymentMapper
+    );
+  }
+
+  // --------------------
   // Payment Controller
-  // ----------------
+  // --------------------
   createPaymentController(): PaymentController {
     return new PaymentController(
       this.createCheckoutSessionUseCase(),
       this.createConnectAccountUseCase(),
       this.createGenerateOnboardingLinkUseCase(),
       this.createCheckOnboardingStatusUseCase(),
-      this.createSubscriptionCheckoutUseCase()
+      this.createSubscriptionCheckoutUseCase(),
+      this.createListPaymentsUseCase()
     );
   }
 }

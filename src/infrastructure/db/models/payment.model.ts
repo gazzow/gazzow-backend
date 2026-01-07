@@ -12,7 +12,7 @@ export type IPaymentDocument = Document & {
   relatedUserId?: Types.ObjectId;
   stripePaymentIntentId?: string;
   stripeTransferId?: string;
-  amount: number;
+  totalAmount: number;
   platformFee?: number;
   netAmount?: number;
   currency: string;
@@ -36,9 +36,9 @@ const PaymentSchema = new Schema<IPaymentDocument>(
     stripePaymentIntentId: { type: String, index: true },
     stripeTransferId: { type: String },
 
-    amount: { type: Number, required: true },
-    platformFee: { type: Number },
-    netAmount: { type: Number },
+    totalAmount: { type: Number, default: null },
+    platformFee: { type: Number, default: null },
+    netAmount: { type: Number, default: null },
 
     currency: { type: String, default: "USD" },
 

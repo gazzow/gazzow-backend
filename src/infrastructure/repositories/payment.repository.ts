@@ -7,6 +7,10 @@ export interface IPaymentRepository extends IBaseRepository<IPaymentDocument> {
   findByStripeIntent(intentId: string): Promise<IPaymentDocument | null>;
   findByUser(userId: string): Promise<IPaymentDocument[]>;
   getPlatformRevenue(): Promise<number>;
+  updateByTransferId(
+    transferId: string,
+    update: Partial<IPaymentDocument>
+  ): Promise<IPaymentDocument | null>;
 }
 
 export class PaymentRepository
@@ -32,5 +36,15 @@ export class PaymentRepository
     ]);
 
     return result[0]?.total || 0;
+  }
+
+  async updateByTransferId(
+    transferId: string,
+    update: Partial<IPaymentDocument>
+  ): Promise<IPaymentDocument | null> {
+    return await this.model.findOneAndUpdate(
+      { stripeTransferId: transferId },
+      update
+    );
   }
 }

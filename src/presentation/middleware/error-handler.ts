@@ -2,7 +2,6 @@ import type { NextFunction, Request, Response } from "express";
 import { AppError } from "../../utils/app-error.js";
 import logger from "../../utils/logger.js";
 import { HttpStatusCode } from "../../domain/enums/constants/status-codes.js";
-import { ResponseMessages } from "../../domain/enums/constants/response-messages.js";
 import { ApiResponse } from "../common/api-response.js";
 
 export const errorHandler = (
@@ -12,15 +11,16 @@ export const errorHandler = (
   _next: NextFunction
 ) => {
   logger.error(`Error handler: ${err.stack}`);
+  logger.error(`[Error handler Message]: ${err.message}`);
 
   if (err instanceof AppError) {
-    logger.warn('app error')
+    logger.warn("app error");
     return res.status(err.statusCode).json(ApiResponse.error(err.message));
   }
-  
-  logger.warn('Internal error')
+
+  logger.warn("Internal error");
   // Fallback for unexpected Error
   return res
     .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-    .json(ApiResponse.error(ResponseMessages.InternalServerError));
+    .json(ApiResponse.error(err.message));
 };
