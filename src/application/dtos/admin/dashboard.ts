@@ -1,6 +1,6 @@
 export interface IAdminDashboardStatsResponseDTO {
   totalUsers: number;
-  activeProjects: number;
+  totalProjects: number;
   completedTasks: number;
   totalRevenue: number;
 }

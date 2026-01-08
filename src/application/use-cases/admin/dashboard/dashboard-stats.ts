@@ -1,4 +1,3 @@
-import { ProjectStatus } from "../../../../domain/enums/project.js";
 import { TaskStatus } from "../../../../domain/enums/task.js";
 import type { IPaymentRepository } from "../../../../infrastructure/repositories/payment.repository.js";
 import type { IAdminDashboardStatsResponseDTO } from "../../../dtos/admin/dashboard.js";
@@ -17,9 +16,7 @@ export class AdminDashboardStatsUseCase implements IAdminDashboardStatsUseCase {
   async execute(): Promise<IAdminDashboardStatsResponseDTO> {
     const totalUsers = await this._userRepository.count({});
 
-    const activeProjects = await this._projectRepository.count({
-      status: ProjectStatus.IN_PROGRESS,
-    });
+    const totalProjects = await this._projectRepository.count({});
 
     const completedTasks = await this._taskRepository.count({
       status: TaskStatus.COMPLETED,
@@ -29,7 +26,7 @@ export class AdminDashboardStatsUseCase implements IAdminDashboardStatsUseCase {
 
     return {
       totalUsers,
-      activeProjects,
+      totalProjects,
       completedTasks,
       totalRevenue,
     };

@@ -1,4 +1,4 @@
-import { Types, type FilterQuery, type Model } from "mongoose";
+import { type FilterQuery, type Model } from "mongoose";
 import type { ITaskRepository } from "../../application/interfaces/repository/task-repository.js";
 import type {
   IPopulatedTaskDocument,
@@ -7,8 +7,7 @@ import type {
 import { BaseRepository } from "./base/base-repository.js";
 import type { IProjectDocument } from "../db/models/project-model.js";
 import type { IUserDocument } from "../db/models/user-model.js";
-import type { IMonthlyRevenue } from "../../application/dtos/admin/dashboard.js";
-import { TaskPaymentStatus } from "../../domain/enums/task.js";
+import type { ITaskStatistics } from "../../application/dtos/task.js";
 
 export class TaskRepository
   extends BaseRepository<ITaskDocument>
@@ -46,65 +45,26 @@ export class TaskRepository
       .exec();
   }
 
-  async getMonthlyPlatformRevenue(): Promise<IMonthlyRevenue[]> {
-    const result = await this.model.aggregate([
+ 
+
+  async getTaskStatusOverview(): Promise<ITaskStatistics[]> {
+    return await this.model.aggregate([
       {
-        $match: {
-          status: "completed",
-          paymentStatus: "paid",
-          paidAt: { $exists: true },
-          isDeleted: false,
+        $match: { isDeleted: false },
+      },
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 },
         },
       },
       {
         $project: {
-          month: { $month: "$paidAt" },
-          year: { $year: "$paidAt" },
-          platformAmount: {
-            $subtract: [
-              { $subtract: ["$totalAmount", "$balance"] },
-              { $ifNull: ["$refundAmount", 0] },
-            ],
-          },
-        },
-      },
-      {
-        $group: {
-          _id: { year: "$year", month: "$month" },
-          revenue: { $sum: "$platformAmount" },
-        },
-      },
-      {
-        $sort: { "_id.year": 1, "_id.month": 1 },
-      },
-    ]);
-
-    return result.map((item) => ({
-      year: item._id.year,
-      month: item._id.month,
-      revenue: item.revenue,
-    }));
-  }
-
-  async getTotalEarnings(userId: string): Promise<number> {
-    const result = await this.model.aggregate([
-      {
-        $match: {
-          assigneeId: new Types.ObjectId(userId),
-          paymentStatus: {
-            $in: [TaskPaymentStatus.RELEASED, TaskPaymentStatus.PAID],
-          },
-          isDeleted: false,
-        },
-      },
-      {
-        $group: {
-          _id: null,
-          total: { $sum: "$totalAmount" },
+          _id: 0,
+          name: "$_id",
+          value: "$count",
         },
       },
     ]);
-
-    return result.length > 0 ? result[0].total : 0;
   }
 }

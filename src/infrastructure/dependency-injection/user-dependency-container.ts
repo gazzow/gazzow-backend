@@ -21,14 +21,25 @@ import { TaskRepository } from "../repositories/task-repository.js";
 import { TaskModel } from "../db/models/task-model.js";
 import type { IUserDashboardStatsUseCase } from "../../application/interfaces/usecase/dashboard/dashboard-stats.js";
 import { UserDashboardStatsUseCase } from "../../application/use-cases/dashboard/dashboard-stats.js";
+import {
+  PaymentRepository,
+  type IPaymentRepository,
+} from "../repositories/payment.repository.js";
+import { PaymentModel } from "../db/models/payment.model.js";
 
 export class UserDependencyContainer {
   private readonly _userRepository: IUserRepository;
   private readonly _userMapper: IUserMapper;
+  private readonly _projectRepository: ProjectRepository;
+  private readonly _taskRepository: TaskRepository;
+  private readonly _paymentRepository: IPaymentRepository;
 
   constructor() {
     this._userRepository = new UserRepository(UserModel);
     this._userMapper = new UserMapper();
+    this._projectRepository = new ProjectRepository(ProjectModel);
+    this._taskRepository = new TaskRepository(TaskModel);
+    this._paymentRepository = new PaymentRepository(PaymentModel);
   }
 
   private createUpdateProfileUseCase(): IUpdateUserProfileUseCase {
@@ -41,8 +52,9 @@ export class UserDependencyContainer {
 
   private createDashboardStatsUseCase(): IUserDashboardStatsUseCase {
     return new UserDashboardStatsUseCase(
-      new ProjectRepository(ProjectModel),
-      new TaskRepository(TaskModel)
+      this._projectRepository,
+      this._taskRepository,
+      this._paymentRepository
     );
   }
 

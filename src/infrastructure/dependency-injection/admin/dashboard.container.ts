@@ -56,7 +56,7 @@ export class AdminDashboardDependencyContainer {
   }
 
   private createDashboardMonthlyRevenue(): IDashboardMonthlyRevenueUseCase {
-    return new DashboardMonthlyRevenueUseCase(this._taskRepository);
+    return new DashboardMonthlyRevenueUseCase(this._paymentRepository);
   }
 
   private createSubscriptionDistributionUseCase(): IDashboardSubscriptionDistributionUseCase {
