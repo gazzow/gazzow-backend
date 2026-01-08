@@ -75,7 +75,7 @@ export class FavoriteController {
 
       res
         .status(HttpStatusCode.OK)
-        .json(ApiResponse.success(ResponseMessages.FetchedFavoriteProjects));
+        .json(ApiResponse.success(ResponseMessages.RemoveProjectFromFavorite));
     } catch (error) {
       next(error);
     }

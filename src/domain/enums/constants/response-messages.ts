@@ -118,6 +118,7 @@ export enum ResponseMessages {
   // Favorite
   ProjectMarkedAsFavorite = "Project marked as favorite.",
   FetchedFavoriteProjects = "Fetched favorite projects successfully",
+  RemoveProjectFromFavorite = "Project removed from favorites successfully",
   FavoriteNotFound= "Favorite not found or already removed",
   ProjectAlreadyAddedToFavorite= "Project already added to favorite",
 
