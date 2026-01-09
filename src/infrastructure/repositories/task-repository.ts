@@ -1,4 +1,4 @@
-import { type FilterQuery, type Model } from "mongoose";
+import { Types, type FilterQuery, type Model } from "mongoose";
 import type { ITaskRepository } from "../../application/interfaces/repository/task-repository.js";
 import type {
   IPopulatedTaskDocument,
@@ -45,12 +45,13 @@ export class TaskRepository
       .exec();
   }
 
- 
-
-  async getTaskStatusOverview(): Promise<ITaskStatistics[]> {
+  async getTaskStatusOverview(assigneeId: string): Promise<ITaskStatistics[]> {
     return await this.model.aggregate([
       {
-        $match: { isDeleted: false },
+        $match: {
+          assigneeId: new Types.ObjectId(assigneeId),
+          isDeleted: false,
+        },
       },
       {
         $group: {

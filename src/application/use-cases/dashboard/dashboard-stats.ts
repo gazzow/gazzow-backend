@@ -40,7 +40,7 @@ export class UserDashboardStatsUseCase implements IUserDashboardStatsUseCase {
     const monthlyEarnings =
       await this._paymentRepository.getMonthlyUserEarnings(userId);
 
-    const taskStatistics = await this._taskRepository.getTaskStatusOverview();
+    const taskStatistics = await this._taskRepository.getTaskStatusOverview(userId);
 
     return {
       projectsPosted,
