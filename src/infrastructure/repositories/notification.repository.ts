@@ -6,6 +6,7 @@ import type { INotificationDocument } from "../db/models/notification.model.js";
 export interface INotificationRepository
   extends IBaseRepository<INotificationDocument> {
   findByUserId(userId: string): Promise<INotificationDocument[]>;
+  getUnreadCountByUserId(userId: string): Promise<number>;
 }
 
 export class NotificationRepository
@@ -17,5 +18,10 @@ export class NotificationRepository
   }
   findByUserId(userId: string): Promise<INotificationDocument[]> {
     return this.findAll({ filter: { userId } });
+  }
+  getUnreadCountByUserId(userId: string): Promise<number> {
+    return this.model
+      .countDocuments({ userId, isRead: false, readAt: null })
+      .exec();
   }
 }

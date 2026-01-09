@@ -10,13 +10,16 @@ import type { IListNotificationUseCase } from "../../application/use-cases/notif
 import type { IMarkNotificationAsReadUseCase } from "../../application/use-cases/notification/mark-notification-as-read.js";
 import type { IDeleteFirebaseTokenUseCase } from "../../application/use-cases/notification/delete-token.js";
 import { FCM_DEVICES } from "../../domain/enums/FCMToken.js";
+import type { IGetUnreadNotificationCountUseCase } from "../../application/interfaces/usecase/notification/get-count.js";
+import { ResponseMessages } from "../../domain/enums/constants/response-messages.js";
 
 export class NotificationController {
   constructor(
     private _registerTokenUseCase: IRegisterTokenUseCase,
     private _listNotificationUseCase: IListNotificationUseCase,
     private _markNotificationAsReadUseCase: IMarkNotificationAsReadUseCase,
-    private _deleteTokenUseCase: IDeleteFirebaseTokenUseCase
+    private _deleteTokenUseCase: IDeleteFirebaseTokenUseCase,
+    private _getUnreadNotificationCountUseCase: IGetUnreadNotificationCountUseCase
   ) {}
 
   /**
@@ -113,6 +116,26 @@ export class NotificationController {
       res
         .status(HttpStatusCode.NO_CONTENT)
         .json(ApiResponse.success("Firebase Token deleted successfully"));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getUnreadCount = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    logger.debug("Get Unread Notification Count API hit🚀");
+    const userId = req.user!.id;
+    try {
+      const count =
+        await this._getUnreadNotificationCountUseCase.execute(userId);
+      res.status(HttpStatusCode.OK).json(
+        ApiResponse.success(ResponseMessages.UnreadNotificationCountRetrieved, {
+          count,
+        })
+      );
     } catch (error) {
       next(error);
     }

@@ -26,4 +26,10 @@ router.patch(
   tokenMiddleware.verifyToken,
   controller.markAsRead
 );
+
+router.get(
+  "/unread-count",
+  tokenMiddleware.verifyToken,
+  controller.getUnreadCount
+);
 export default router;

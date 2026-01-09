@@ -128,4 +128,7 @@ export enum ResponseMessages {
   // Payments
   FetchedPayments = "List payments successfully",
 
+  // Notification 
+  NotificationMarkedAsRead = "Notification marked as read",
+  UnreadNotificationCountRetrieved = "Unread notification count retrieved successfully",
 }
