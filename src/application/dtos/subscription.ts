@@ -9,6 +9,9 @@ import type { SubscriptionStatus } from "../../domain/enums/subscription.js";
 export interface ICreateSubscriptionRequestDTO {
   userId: string;
   planId: string;
+  stripePaymentIntentId: string;
+  amount: number;
+  currency: string;
 }
 
 export interface ICreateSubscriptionDTO {

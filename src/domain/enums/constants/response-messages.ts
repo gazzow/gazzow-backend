@@ -34,6 +34,8 @@ export enum ResponseMessages {
 
   // Admin
   AdminNotFound = "Admin not found",
+  AdminDashboardDataFetched = "Retrieved admin dashboard data successfully",
+
 
   // Project
   ProjectCreated = "Project created successfully",
@@ -111,14 +113,22 @@ export enum ResponseMessages {
   UserAlreadySubscribed = "You already has an active subscription",
   FetchUserSubscription = "Retrieved user active subscription",
   SubscriptionNotFound = "Subscription not found.",
+  SubscriptionCancelled = "Subscription cancelled successfully",
 
   // Favorite
   ProjectMarkedAsFavorite = "Project marked as favorite.",
   FetchedFavoriteProjects = "Fetched favorite projects successfully",
+  RemoveProjectFromFavorite = "Project removed from favorites successfully",
   FavoriteNotFound= "Favorite not found or already removed",
   ProjectAlreadyAddedToFavorite= "Project already added to favorite",
 
   // Team Chat
   FetchedTeamChatMessages = "Retrieved team messages successfully",
 
+  // Payments
+  FetchedPayments = "List payments successfully",
+
+  // Notification 
+  NotificationMarkedAsRead = "Notification marked as read",
+  UnreadNotificationCountRetrieved = "Unread notification count retrieved successfully",
 }

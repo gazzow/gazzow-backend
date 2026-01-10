@@ -306,7 +306,7 @@ export class ProjectController {
     };
 
     try {
-      const { data } = await this._updateContributorStatusUseCase.execute(dto);
+      await this._updateContributorStatusUseCase.execute(dto);
       res
         .status(HttpStatusCode.OK)
         .json(ApiResponse.success(ResponseMessages.ContributorStatusUpdated));

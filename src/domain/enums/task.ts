@@ -19,7 +19,7 @@ export enum TaskPriority {
   HIGH = "high",
 }
 
-export enum PaymentStatus {
+export enum TaskPaymentStatus {
   PENDING = "pending",
   PAID = "paid",
   ESCROW_HELD = "escrow_held",

@@ -1,6 +1,6 @@
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
-import { PaymentStatus } from "../../../domain/enums/task.js";
+import { TaskPaymentStatus } from "../../../domain/enums/task.js";
 import { AppError } from "../../../utils/app-error.js";
 import type {
   ICreateTaskCheckoutSessionRequestDTO,
@@ -30,13 +30,13 @@ export class TaskCheckoutSessionUseCase implements ITaskCheckoutSessionUseCase {
 
     const task = this._taskMapper.toResponseDTO(taskDoc);
 
-    if (task.paymentStatus === PaymentStatus.PAID)
+    if (task.paymentStatus === TaskPaymentStatus.PAID)
       throw new AppError(
         ResponseMessages.TaskAlreadyPaid,
         HttpStatusCode.CONFLICT
       );
 
-    if (task.paymentStatus !== PaymentStatus.PENDING) {
+    if (task.paymentStatus !== TaskPaymentStatus.PENDING) {
       throw new AppError(
         ResponseMessages.UnableToPayForThisTask,
         HttpStatusCode.BAD_REQUEST

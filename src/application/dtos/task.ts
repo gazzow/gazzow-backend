@@ -6,7 +6,6 @@ import type { IProject } from "../../domain/entities/project.js";
 import type { IUser } from "../../domain/entities/user.js";
 import type { TaskDateFields } from "../../domain/types/task.js";
 
-
 export interface BaseTaskDTO {
   title: string;
   projectId: string;
@@ -129,4 +128,9 @@ export interface IReassignTaskRequestDTO {
 
 export interface IReassignTaskResponseDTO {
   data: ITaskResponseDTO;
+}
+
+export interface ITaskStatistics {
+  plan: string;
+  count: number;
 }

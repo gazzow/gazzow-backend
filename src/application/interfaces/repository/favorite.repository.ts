@@ -10,6 +10,13 @@ export interface IFavoriteRepository
     userId: string,
     projectId: string
   ): Promise<IFavoriteDocument | null>;
-  getUserFavorites(userId: string): Promise<IFavoritePopulatedDocument[]>;
-  deleteByUserIdAndFavoriteId(userId:string, projectId: string): Promise<boolean>
+  getUserFavorites(
+    userId: string,
+    skip: number,
+    limit: number
+  ): Promise<IFavoritePopulatedDocument[]>;
+  deleteByUserIdAndFavoriteId(
+    userId: string,
+    projectId: string
+  ): Promise<boolean>;
 }

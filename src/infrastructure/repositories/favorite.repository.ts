@@ -23,12 +23,16 @@ export class FavoriteRepository
   }
 
   async getUserFavorites(
-    userId: string
+    userId: string,
+    skip: number,
+    limit: number
   ): Promise<IFavoritePopulatedDocument[]> {
     const favorites = await this.model
       .find({ userId })
       .populate<{ projectId: IProjectDocument }>("projectId")
       .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
       .exec();
 
     return favorites;

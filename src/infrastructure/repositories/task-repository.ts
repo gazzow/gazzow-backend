@@ -1,4 +1,4 @@
-import type { FilterQuery, Model } from "mongoose";
+import { Types, type FilterQuery, type Model } from "mongoose";
 import type { ITaskRepository } from "../../application/interfaces/repository/task-repository.js";
 import type {
   IPopulatedTaskDocument,
@@ -7,6 +7,7 @@ import type {
 import { BaseRepository } from "./base/base-repository.js";
 import type { IProjectDocument } from "../db/models/project-model.js";
 import type { IUserDocument } from "../db/models/user-model.js";
+import type { ITaskStatistics } from "../../application/dtos/task.js";
 
 export class TaskRepository
   extends BaseRepository<ITaskDocument>
@@ -42,5 +43,29 @@ export class TaskRepository
       .populate<{ assigneeId: IUserDocument }>("assigneeId")
       .populate<{ creatorId: IUserDocument }>("creatorId")
       .exec();
+  }
+
+  async getTaskStatusOverview(assigneeId: string): Promise<ITaskStatistics[]> {
+    return await this.model.aggregate([
+      {
+        $match: {
+          assigneeId: new Types.ObjectId(assigneeId),
+          isDeleted: false,
+        },
+      },
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          name: "$_id",
+          value: "$count",
+        },
+      },
+    ]);
   }
 }

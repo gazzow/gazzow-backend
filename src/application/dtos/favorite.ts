@@ -16,10 +16,15 @@ export interface IAddProjectFavoriteResponseDTO {
 
 export interface IListFavoriteProjectsRequestDTO {
   userId: string;
+  skip: number;
+  limit: number;
 }
 
 export interface IListFavoriteProjectsResponseDTO {
   data: IFavoriteResponseDTO[];
+  skip: number;
+  limit: number;
+  total: number;
 }
 
 export interface IRemoveFavoriteProjectRequestDTO {

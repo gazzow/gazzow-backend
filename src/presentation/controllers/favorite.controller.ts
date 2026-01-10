@@ -38,16 +38,24 @@ export class FavoriteController {
   listFavorites = async (req: Request, res: Response, next: NextFunction) => {
     logger.info("List Favorites API hit 🚀");
     const userId = req.user!.id;
+    const limit = req.query.limit || 6;
+    const skip = req.query.skip || 0;
 
     try {
-      const { data } = await this._listFavoriteUseCase.execute({
+      const { data, total } = await this._listFavoriteUseCase.execute({
         userId,
+        limit: Number(limit),
+        skip: Number(skip),
       });
 
       res
         .status(HttpStatusCode.OK)
         .json(
-          ApiResponse.success(ResponseMessages.FetchedFavoriteProjects, data)
+          ApiResponse.paginated(
+            ResponseMessages.FetchedFavoriteProjects,
+            data,
+            { limit: Number(limit), skip: Number(skip), total }
+          )
         );
     } catch (error) {
       next(error);
@@ -67,9 +75,7 @@ export class FavoriteController {
 
       res
         .status(HttpStatusCode.OK)
-        .json(
-          ApiResponse.success(ResponseMessages.FetchedFavoriteProjects)
-        );
+        .json(ApiResponse.success(ResponseMessages.RemoveProjectFromFavorite));
     } catch (error) {
       next(error);
     }

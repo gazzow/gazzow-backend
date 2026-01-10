@@ -1,10 +1,14 @@
 import type { Socket } from "socket.io";
-import type { SendProjectMessageUseCase } from "../../application/use-cases/team-chat/send-message.js";
 import type { ISocketService } from "../../application/providers/socket.service.js";
 import type { ISendTeamChatMessageRequestDTO } from "../../application/dtos/team-chat.js";
+import type { IGetUnreadNotificationCountUseCase } from "../../application/interfaces/usecase/notification/get-count.js";
+import type { ISendTeamChatMessageUseCase } from "../../application/interfaces/usecase/team-chat/send-message.js";
 
 export class SocketService implements ISocketService {
-  constructor(private sendMessageUseCase: SendProjectMessageUseCase) {}
+  constructor(
+    private _sendMessageUseCase: ISendTeamChatMessageUseCase,
+    private _getUnreadNotificationCountUseCase: IGetUnreadNotificationCountUseCase
+  ) {}
 
   async handleSendMessage(
     socket: Socket,
@@ -18,7 +22,15 @@ export class SocketService implements ISocketService {
       content: payload.content,
     };
 
-    await this.sendMessageUseCase.execute(dto);
+    await this._sendMessageUseCase.execute(dto);
+  }
+
+  async handleNotificationCountUpdate(
+    socket: Socket,
+    userId: string
+  ): Promise<void> {
+    const count = await this._getUnreadNotificationCountUseCase.execute(userId);
+    socket.emit("NOTIFICATION_COUNT", { count });
   }
 
   joinTeamChat(socket: Socket, projectId: string) {

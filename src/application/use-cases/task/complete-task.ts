@@ -1,6 +1,6 @@
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
-import { PaymentStatus, TaskStatus } from "../../../domain/enums/task.js";
+import { TaskPaymentStatus, TaskStatus } from "../../../domain/enums/task.js";
 import { AppError } from "../../../utils/app-error.js";
 import type { ICompleteTaskRequestDTO } from "../../dtos/task.js";
 import type { ITaskRepository } from "../../interfaces/repository/task-repository.js";
@@ -34,14 +34,14 @@ export class CompleteTaskUseCase implements ICompleteTaskUseCase {
 
     const update = {
       status: TaskStatus.COMPLETED,
-      paymentStatus: PaymentStatus.RELEASED,
+      paymentStatus: TaskPaymentStatus.RELEASED,
       completedAt: new Date(dto.time),
     };
     const payload = { taskId: dto.taskId };
 
-    await Promise.all([
-      this._taskRepository.update(dto.taskId, update),
-      this._releaseFundsUseCase.execute(payload),
-    ]);
+    await this._taskRepository.update(dto.taskId, update);
+    
+    // Replace this with Cron Job
+    await this._releaseFundsUseCase.execute(payload);
   }
 }

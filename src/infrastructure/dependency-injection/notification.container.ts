@@ -1,3 +1,4 @@
+import type { IGetUnreadNotificationCountUseCase } from "../../application/interfaces/usecase/notification/get-count.js";
 import {
   NotificationMapper,
   type INotificationMapper,
@@ -10,6 +11,7 @@ import {
   DeleteFirebaseTokenUseCase,
   type IDeleteFirebaseTokenUseCase,
 } from "../../application/use-cases/notification/delete-token.js";
+import { GetUnreadNotificationCountUseCase } from "../../application/use-cases/notification/get-count.js";
 import {
   ListNotificationUseCase,
   type IListNotificationUseCase,
@@ -93,13 +95,18 @@ export class NotificationDependencyContainer {
     return new CreateNotificationUseCase(this._notificationService);
   }
 
+  private createGetUnreadNotificationCountUseCase(): IGetUnreadNotificationCountUseCase {
+    return new GetUnreadNotificationCountUseCase(this._notificationRepository);
+  }
+
   // Subscription Controller
   createNotificationController(): NotificationController {
     return new NotificationController(
       this.createRegisterTokenUseCase(),
       this.createListNotificationsUseCase(),
       this.createMarkAsReadUseCase(),
-      this.createDeleteTokenUseCase()
+      this.createDeleteTokenUseCase(),
+      this.createGetUnreadNotificationCountUseCase()
     );
   }
 }

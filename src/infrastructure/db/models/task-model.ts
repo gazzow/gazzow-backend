@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
 import {
   AssigneeStatus,
-  PaymentStatus,
+  TaskPaymentStatus,
   RefundStatus,
   TaskPriority,
   TaskStatus,
@@ -36,7 +36,7 @@ export type ITaskDocument = Document & {
   documents: IProjectFile[];
   submissionLinks: SubmissionLink[];
 
-  paymentStatus: PaymentStatus;
+  paymentStatus: TaskPaymentStatus;
   rejectionReason?: string;
   cancellationReason?: string;
   revisionCount?: number;
@@ -160,8 +160,8 @@ const taskSchema = new Schema<ITaskDocument>(
     // Payment
     paymentStatus: {
       type: String,
-      enum: Object.values(PaymentStatus),
-      default: PaymentStatus.PENDING,
+      enum: Object.values(TaskPaymentStatus),
+      default: TaskPaymentStatus.PENDING,
       required: true,
     },
 

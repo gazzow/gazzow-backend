@@ -3,7 +3,7 @@ import type { Contributor } from "../entities/project.js";
 import type { ITask } from "../entities/task.js";
 import {
   AssigneeStatus,
-  PaymentStatus,
+  TaskPaymentStatus,
   RefundStatus,
   TaskStatus,
 } from "../enums/task.js";
@@ -21,7 +21,7 @@ export class TaskRules {
     if (task.amountInEscrow > 0 && newTotal > task.amountInEscrow) {
       logger.info("Total amount greater than escrow amount");
       update.balance = newTotal - task.amountInEscrow;
-      update.paymentStatus = PaymentStatus.PENDING;
+      update.paymentStatus = TaskPaymentStatus.PENDING;
     }
     // Case 2: User paid upfront, then decrease hours
     else if (task.amountInEscrow > 0 && newTotal < task.amountInEscrow) {
@@ -35,13 +35,13 @@ export class TaskRules {
       update.balance = 0;
       update.refundAmount = 0;
       update.refundStatus = RefundStatus.NONE;
-      update.paymentStatus = PaymentStatus.ESCROW_HELD;
+      update.paymentStatus = TaskPaymentStatus.ESCROW_HELD;
     }
     // Case 4: User edited hours before any payment
     else {
       logger.info("Edited hours before any payment");
       update.balance = newTotal;
-      update.paymentStatus = PaymentStatus.PENDING;
+      update.paymentStatus = TaskPaymentStatus.PENDING;
     }
 
     return update;
