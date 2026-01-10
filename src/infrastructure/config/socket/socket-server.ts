@@ -7,13 +7,16 @@ import { ProjectRepository } from "../../repositories/project-repository.js";
 import { ProjectModel } from "../../db/models/project-model.js";
 import { ProjectMapper } from "../../../application/mappers/project.js";
 import { SocketService } from "../../providers/socket.service.js";
-import { registerProjectSocket } from "./register-project-socket.js";
+import { registerSocket } from "./register-socket.js";
 import { TeamChatRepository } from "../../repositories/team-chat.repository.js";
 import { TeamChatModel } from "../../db/models/team-chat.model.js";
 import { TeamChatMapper } from "../../../application/mappers/team-chat.js";
 import { UserRepository } from "../../repositories/user-repository.js";
 import { UserModel } from "../../db/models/user-model.js";
 import { UserMapper } from "../../../application/mappers/user/user.js";
+import { GetUnreadNotificationCountUseCase } from "../../../application/use-cases/notification/get-count.js";
+import { NotificationRepository } from "../../repositories/notification.repository.js";
+import { NotificationModel } from "../../db/models/notification.model.js";
 
 export function createSocketServer(server: http.Server) {
   const io: Server = new Server(server, {
@@ -33,6 +36,7 @@ export function createSocketServer(server: http.Server) {
   const teamChatMapper = new TeamChatMapper();
   const userRepository = new UserRepository(UserModel);
   const userMapper = new UserMapper();
+  const notificationRepository = new NotificationRepository(NotificationModel);
 
   const sendMessageUseCase = new SendProjectMessageUseCase(
     projectRepository,
@@ -41,10 +45,13 @@ export function createSocketServer(server: http.Server) {
     teamChatMapper,
     userRepository,
     userMapper,
-    realtimeGateway,
+    realtimeGateway
   );
 
-  const socketService = new SocketService(sendMessageUseCase);
+  const getUnreadNotificationCountUseCase =
+    new GetUnreadNotificationCountUseCase(notificationRepository);
 
-  registerProjectSocket(io, socketService);
+  const socketService = new SocketService(sendMessageUseCase, getUnreadNotificationCountUseCase);
+
+  registerSocket(io, socketService);
 }

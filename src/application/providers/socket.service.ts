@@ -8,5 +8,7 @@ export interface ISocketService {
 
   joinTeamChat(socket: Socket, projectId: string): void;
 
-  joinUser(socket: Socket, userId: string): void
+  joinUser(socket: Socket, userId: string): void;
+
+  handleNotificationCountUpdate(socket: Socket, userId: string): Promise<void>;
 }
