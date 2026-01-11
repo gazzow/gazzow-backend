@@ -6,6 +6,7 @@ const router = express.Router();
 
 const authContainer = new AuthDependencyContainer();
 const tokenMiddleware = authContainer.createTokenMiddleware();
+const blockedUserMiddleware = authContainer.createBlockedUserMiddleware();
 
 const teamChatContainer = new TeamChatDependencyContainer();
 const teamChatController = teamChatContainer.createTeamChatController();
@@ -13,6 +14,7 @@ const teamChatController = teamChatContainer.createTeamChatController();
 router.get(
   "/:projectId",
   tokenMiddleware.verifyToken,
+  blockedUserMiddleware.isBlocked,
   teamChatController.listTeamMessages
 );
 

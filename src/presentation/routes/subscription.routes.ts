@@ -6,6 +6,7 @@ const router = express.Router();
 
 const authContainer = new AuthDependencyContainer();
 const tokenMiddleware = authContainer.createTokenMiddleware();
+const blockedUserMiddleware = authContainer.createBlockedUserMiddleware();
 
 const subscriptionContainer = new SubscriptionDependencyContainer();
 const subscriptionController =
@@ -14,12 +15,14 @@ const subscriptionController =
 router.get(
   "/",
   tokenMiddleware.verifyToken,
+  blockedUserMiddleware.isBlocked,
   subscriptionController.getSubscription
 );
 
 router.get(
   "/plans",
   tokenMiddleware.verifyToken,
+  blockedUserMiddleware.isBlocked,
   subscriptionController.listPlans
 );
 
