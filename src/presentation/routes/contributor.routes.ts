@@ -27,4 +27,11 @@ router.get(
   contributionController.getContributorProposals
 );
 
+router.get(
+  "/completed",
+  tokenMiddleware.verifyToken,
+  blockedUserMiddleware.isBlocked,
+  contributionController.listCompletedContributions
+);
+
 export default router;

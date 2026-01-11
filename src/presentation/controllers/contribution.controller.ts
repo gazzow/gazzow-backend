@@ -7,11 +7,13 @@ import type { IListContributorProjectsUseCase } from "../../application/interfac
 import type { IListContributorProposalsUseCase } from "../../application/interfaces/usecase/project/list-contributor-proposals.js";
 import { ApplicationStatus } from "../../domain/enums/application.js";
 import type { IListContributorProposalsRequestDTO } from "../../application/dtos/contributor.js";
+import type { IListCompletedContributionsUseCase } from "../../application/interfaces/usecase/project/list-completed-contributions.js";
 
 export class ContributorController {
   constructor(
     private _listContributorProjectsUseCase: IListContributorProjectsUseCase,
-    private _listContributorProposalsUseCase: IListContributorProposalsUseCase
+    private _listContributorProposalsUseCase: IListContributorProposalsUseCase,
+    private _listCompletedContributionsUseCase: IListCompletedContributionsUseCase
   ) {}
 
   getContributorProjects = async (
@@ -84,6 +86,25 @@ export class ContributorController {
             pagination
           )
         );
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  listCompletedContributions = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    logger.debug("List Completed Contributions API hit 🚀");
+    const userId = req.user!.id;
+    try {
+      const { data } = await this._listCompletedContributionsUseCase.execute({
+        userId,
+      });
+      res
+        .status(HttpStatusCode.OK)
+        .json(ApiResponse.success(ResponseMessages.FetchedProjects, data));
     } catch (error) {
       next(error);
     }
