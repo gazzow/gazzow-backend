@@ -28,9 +28,26 @@ export interface IProject {
   updatedAt: string;
 }
 
+export interface IAggregatedProject extends IProject {
+  isFavorite: boolean;
+}
+
 export interface IContributor {
   userId: string;
   status: ContributorStatus;
+  invitedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Contributor {
+  id: string;
+  name: string;
+  email: string;
+  imageUrl: string;
+  developerRole: string;
+  status: ContributorStatus;
+  expectedRate: number;
   invitedAt?: string;
   createdAt: string;
   updatedAt: string;

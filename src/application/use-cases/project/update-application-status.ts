@@ -56,6 +56,7 @@ export class UpdateApplicationStatusUseCase
       await this._projectRepository.addContributor(
         dto.projectId,
         application.applicantId.toString(),
+        application.expectedRate,
         ContributorStatus.ACTIVE
       );
     } else if (dto.status === ApplicationStatus.REJECTED) {

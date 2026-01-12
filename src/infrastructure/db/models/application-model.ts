@@ -1,7 +1,8 @@
 import mongoose, { Schema, type Document, type Types } from "mongoose";
 import { ApplicationStatus } from "../../../domain/enums/application.js";
+import type { IProjectDocument } from "./project-model.js";
 
-export type IApplicationDocument = Document & {
+export interface IApplicationDocument extends Document {
   _id: Types.ObjectId;
   projectId: Types.ObjectId;
   applicantId: Types.ObjectId;
@@ -10,7 +11,12 @@ export type IApplicationDocument = Document & {
   proposal?: string | undefined;
   createdAt: Date;
   updatedAt: Date;
-};
+}
+
+export interface IApplicationPopulatedProjectDocument
+  extends Omit<IApplicationDocument, "projectId"> {
+  projectId: Partial<IProjectDocument>;
+}
 
 const applicationSchema = new Schema<IApplicationDocument>(
   {

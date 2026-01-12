@@ -1,4 +1,3 @@
-import { Types } from "mongoose";
 import type {
   IListProjectRequestDTO,
   IListProjectResponseDTO,
@@ -12,16 +11,20 @@ export class ListProjectUseCase implements IListProjectUseCase {
     private _projectRepository: IProjectRepository,
     private _projectMapper: IProjectMapper
   ) {}
+
   async execute(dto: IListProjectRequestDTO): Promise<IListProjectResponseDTO> {
-    const projects = await this._projectRepository.findAll({
-      filter: {
-        creatorId: { $ne: new Types.ObjectId(dto.userId) },
-      },
-    });
-    const data = projects.map((project) => {
-      return this._projectMapper.toResponseDTO(project);
+    const { skip = 0, limit = 6 }: IListProjectRequestDTO = dto;
+
+    const { projects, total } =
+      await this._projectRepository.findWithFilter(dto);
+
+    const data = projects.map((doc) => {
+      return this._projectMapper.toAggregatedResponseDTO(doc);
     });
 
-    return { data };
+    return {
+      data,
+      pagination: { skip, limit, total },
+    };
   }
 }

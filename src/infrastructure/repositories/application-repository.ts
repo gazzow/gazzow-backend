@@ -1,6 +1,13 @@
 import { Types, type Model } from "mongoose";
-import type { IApplicationRepository } from "../../application/interfaces/repository/application-repository.js";
-import type { IApplicationDocument } from "../db/models/application-model.js";
+import type {
+  ApplicationPopulatedQuery,
+  FindWithPagination,
+  IApplicationRepository,
+} from "../../application/interfaces/repository/application-repository.js";
+import type {
+  IApplicationDocument,
+  IApplicationPopulatedProjectDocument,
+} from "../db/models/application-model.js";
 import { BaseRepository } from "./base/base-repository.js";
 import type { IApplicationDocumentWithApplicant } from "../../domain/entities/application.js";
 import { ApplicationStatus } from "../../domain/enums/application.js";
@@ -74,5 +81,33 @@ export class ApplicationRepository
     return this.model
       .findByIdAndUpdate(applicationId, { status }, { new: true })
       .exec();
+  }
+
+  async findApplicationsWithPopulatedProject(
+    query: ApplicationPopulatedQuery
+  ): Promise<FindWithPagination> {
+    const { userId, status, skip = 0, limit = 6 } = query;
+
+    const applicantObjId = new Types.ObjectId(userId);
+
+    const filter: any = {};
+
+    filter.applicantId = applicantObjId;
+    filter.status = status;
+
+    const applications = await this.model
+      .find(filter)
+      .populate<{
+        projectId: IApplicationPopulatedProjectDocument["projectId"];
+      }>(
+        "projectId",
+        "_id title description budgetMin budgetMax durationMin durationMax durationUnit"
+      )
+      .skip(skip)
+      .limit(limit);
+
+    const total = await this.count(filter);
+
+    return { applications, total };
   }
 }

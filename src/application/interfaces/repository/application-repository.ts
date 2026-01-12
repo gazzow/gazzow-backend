@@ -1,7 +1,24 @@
 import type { IApplicationDocumentWithApplicant } from "../../../domain/entities/application.js";
 import type { ApplicationStatus } from "../../../domain/enums/application.js";
-import type { IApplicationDocument } from "../../../infrastructure/db/models/application-model.js";
+import type {
+  IApplicationDocument,
+  IApplicationPopulatedProjectDocument,
+} from "../../../infrastructure/db/models/application-model.js";
 import type { IBaseRepository } from "./base-repository.js";
+
+export type ApplicationPopulatedQuery = {
+  userId: string;
+  status: ApplicationStatus;
+  sortBy?: string;
+  sortOrder?: string;
+  skip: number;
+  limit: number;
+};
+
+export type FindWithPagination = {
+  applications: IApplicationPopulatedProjectDocument[];
+  total: number;
+};
 
 export interface IApplicationRepository
   extends IBaseRepository<IApplicationDocument> {
@@ -16,4 +33,7 @@ export interface IApplicationRepository
     applicationId: string,
     status: ApplicationStatus
   ): Promise<IApplicationDocument | null>;
+  findApplicationsWithPopulatedProject(
+    query: ApplicationPopulatedQuery
+  ): Promise<FindWithPagination>;
 }

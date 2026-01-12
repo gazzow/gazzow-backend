@@ -36,11 +36,7 @@ export class AuthController {
 
       res
         .status(HttpStatusCode.OK)
-        .json(
-          ApiResponse.success(
-           ResponseMessages.OtpHasBeenSent
-          )
-        );
+        .json(ApiResponse.success(ResponseMessages.OtpHasBeenSent));
     } catch (error) {
       next(error);
     }
@@ -126,11 +122,7 @@ export class AuthController {
 
       res
         .status(HttpStatusCode.OK)
-        .json(
-          ApiResponse.success(
-           ResponseMessages.OtpHasBeenSent
-          )
-        );
+        .json(ApiResponse.success(ResponseMessages.OtpHasBeenSent));
     } catch (e) {
       next(e);
     }
@@ -178,11 +170,7 @@ export class AuthController {
       await this._resendOtpUseCase.execute({ email, purpose });
       res
         .status(HttpStatusCode.OK)
-        .json(
-          ApiResponse.success(
-            ResponseMessages.OtpHasBeenSent
-          )
-        );
+        .json(ApiResponse.success(ResponseMessages.OtpHasBeenSent));
     } catch (error) {
       next(error);
     }

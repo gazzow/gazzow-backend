@@ -14,7 +14,9 @@ import type { IListMyProjectsUsecase } from "../../application/interfaces/usecas
 import type { IGetProjectUseCase } from "../../application/interfaces/usecase/project/get-project.js";
 import type { IUpdateApplicationStatusUseCase } from "../../application/interfaces/usecase/project/update-application-status.js";
 import type { IUpdateProjectUseCase } from "../../application/interfaces/usecase/project/update-project.js";
-import type { IGenerateSignedUrlUseCase } from "../../application/interfaces/usecase/project/generate-signedurl.js";
+import type { IGenerateSignedUrlUseCase } from "../../application/interfaces/usecase/project/generate-signed-url.js";
+import type { IListContributorsUseCase } from "../../application/interfaces/usecase/project/list-contributors.js";
+import type { IUpdateContributorStatusUseCase } from "../../application/use-cases/project/update-contributor-status.js";
 
 export class ProjectController {
   constructor(
@@ -26,7 +28,9 @@ export class ProjectController {
     private _listApplicationsUseCase: IListApplicationsUseCase,
     private _listMyProjectsUseCase: IListMyProjectsUsecase,
     private _updateApplicationStatusUseCase: IUpdateApplicationStatusUseCase,
-    private _generateSignedUrlUseCase: IGenerateSignedUrlUseCase
+    private _generateSignedUrlUseCase: IGenerateSignedUrlUseCase,
+    private _listContributorsUseCase: IListContributorsUseCase,
+    private _updateContributorStatusUseCase: IUpdateContributorStatusUseCase
   ) {}
 
   createProject = async (req: Request, res: Response, next: NextFunction) => {
@@ -39,7 +43,7 @@ export class ProjectController {
       const { data } = await this._createProjectUseCase.execute(dto);
       res
         .status(HttpStatusCode.CREATED)
-        .json(ApiResponse.success("project created", data));
+        .json(ApiResponse.success(ResponseMessages.ProjectCreated, data));
     } catch (error) {
       next(error);
     }
@@ -74,6 +78,7 @@ export class ProjectController {
           HttpStatusCode.BAD_REQUEST
         );
       }
+      logger.warn(`req body [update project]: ${JSON.stringify(req.body)}`);
 
       const { data } = await this._updateProjectUseCase.execute({
         projectId,
@@ -92,11 +97,27 @@ export class ProjectController {
   listProjects = async (req: Request, res: Response, next: NextFunction) => {
     logger.debug("List Project API hit 🚀");
     const userId = req.user!.id;
+    const skip = parseInt(req.query.skip as string);
+    const limit = parseInt(req.query.limit as string);
+
+    const payload = {
+      ...req.query,
+      skip,
+      limit,
+      userId,
+    };
     try {
-      const { data } = await this._listProjectUseCase.execute({ userId });
+      const { data, pagination } =
+        await this._listProjectUseCase.execute(payload);
       res
         .status(HttpStatusCode.OK)
-        .json(ApiResponse.success(ResponseMessages.FetchedProjects, data));
+        .json(
+          ApiResponse.paginated(
+            ResponseMessages.FetchedProjects,
+            data,
+            pagination
+          )
+        );
     } catch (error) {
       next(error);
     }
@@ -180,10 +201,27 @@ export class ProjectController {
 
     logger.debug(`My project api creatorId: ${creatorId}`);
     try {
-      const { data } = await this._listMyProjectsUseCase.execute({ creatorId });
+      const skip = parseInt(req.query.skip as string) || 0;
+      const limit = parseInt(req.query.limit as string) || 6;
+
+      const payload = {
+        ...req.query,
+        skip,
+        limit,
+        creatorId,
+      };
+
+      const { data, pagination } =
+        await this._listMyProjectsUseCase.execute(payload);
       res
         .status(HttpStatusCode.OK)
-        .json(ApiResponse.success(ResponseMessages.FetchedProjects, data));
+        .json(
+          ApiResponse.paginated(
+            ResponseMessages.FetchedProjects,
+            data,
+            pagination
+          )
+        );
     } catch (error) {
       next(error);
     }
@@ -215,6 +253,63 @@ export class ProjectController {
       res
         .status(HttpStatusCode.OK)
         .json(ApiResponse.success(ResponseMessages.ApplicationStatusUpdated));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  listContributors = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    logger.debug("List contributors API hit 🚀");
+    const { projectId } = req.params;
+    logger.debug(projectId);
+    if (!projectId) {
+      throw new AppError(
+        ResponseMessages.ProjectIdIsRequired,
+        HttpStatusCode.BAD_REQUEST
+      );
+    }
+    try {
+      const data = await this._listContributorsUseCase.execute({ projectId });
+      res
+        .status(HttpStatusCode.OK)
+        .json(ApiResponse.success(ResponseMessages.FetchedContributors, data));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  updateContributorStatus = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    logger.debug("Update Contributor Status API hit 🚀");
+
+    const { projectId } = req.params;
+    const { contributorId, status } = req.body;
+
+    if (!projectId) {
+      throw new AppError(
+        ResponseMessages.ProjectIdIsRequired,
+        HttpStatusCode.BAD_REQUEST
+      );
+    }
+
+    const dto = {
+      projectId,
+      contributorId,
+      status,
+    };
+
+    try {
+      await this._updateContributorStatusUseCase.execute(dto);
+      res
+        .status(HttpStatusCode.OK)
+        .json(ApiResponse.success(ResponseMessages.ContributorStatusUpdated));
     } catch (error) {
       next(error);
     }

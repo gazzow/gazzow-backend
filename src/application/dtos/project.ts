@@ -1,6 +1,10 @@
-import type { IProject } from "../../domain/entities/project.js";
-import type {Express} from 'express'
 import type {
+  IAggregatedProject,
+  IProject,
+} from "../../domain/entities/project.js";
+import type { Express } from "express";
+import type {
+  ContributorStatus,
   ProjectDurationUnit,
   ProjectExperience,
   ProjectStatus,
@@ -32,18 +36,38 @@ export interface ICreateProjectResponseDTO {
 
 export interface IListProjectRequestDTO {
   userId: string;
+  search?: string;
+  experience?: string;
+  budgetOrder?: "asc" | "desc";
+  skip?: number;
+  limit?: number;
 }
 
 export interface IListProjectResponseDTO {
-  data: IProject[];
+  data: IAggregatedProject[];
+  pagination: {
+    skip: number;
+    limit: number;
+    total: number;
+  };
 }
 
 export interface IListMyProjectRequestDTO {
   creatorId: string;
+  search?: string;
+  status?: string;
+  budgetOrder?: "asc" | "desc";
+  skip?: number;
+  limit?: number;
 }
 
 export interface IListMyProjectsResponseDTO {
   data: IProject[];
+  pagination: {
+    skip: number;
+    limit: number;
+    total: number;
+  };
 }
 
 export interface IGetProjectRequestDTO {
@@ -61,5 +85,34 @@ export interface IUpdateProjectRequestDTO {
 }
 
 export interface IUpdateProjectResponseDTO {
-  data: IProject
+  data: IProject;
+}
+
+export interface IListContributorsRequestDTO {
+  projectId: string;
+}
+
+export interface IListContributorsResponseDTO {
+  projectId: string;
+  title: string;
+  contributors: {
+    userId: string;
+    name: string;
+    email: string;
+    imageUrl: string;
+    developerRole: string;
+    status: ContributorStatus;
+    expectedRate: number;
+    invitedAt?: string;
+    createdAt: string;
+    updatedAt: string;
+  }[];
+}
+
+export interface IListCompletedContributionsRequestDTO {
+  userId: string;
+}
+
+export interface IListCompletedContributionsResponseDTO {
+  data: IProject[];
 }

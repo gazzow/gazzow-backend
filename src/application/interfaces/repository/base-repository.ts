@@ -7,7 +7,9 @@ export interface IBaseRepository<T> {
     filter?: FilterQuery<T>;
     skip?: number;
     limit?: number;
+    sort?: Record<string, 1 | -1>;
   }): Promise<T[]>;
   update(id: string, data: Partial<T>): Promise<T | null>;
   delete(id: string): Promise<boolean>;
+  count(filter: FilterQuery<T>): Promise<number>;
 }

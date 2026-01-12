@@ -1,6 +1,7 @@
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
 import { AppError } from "../../../utils/app-error.js";
+import logger from "../../../utils/logger.js";
 import type {
   IUpdateProjectRequestDTO,
   IUpdateProjectResponseDTO,
@@ -31,8 +32,10 @@ export class UpdateProjectUseCase implements IUpdateProjectUseCase {
         HttpStatusCode.UNAUTHORIZED
       );
     }
+    logger.warn(`update project dto: ${JSON.stringify(dto.data)}`);
 
     const data = this._projectMapper.toUpdateProjectEntity(dto.data);
+    logger.warn(`update project entity: ${JSON.stringify(data)}`);
     const projectDoc = await this._projectRepository.update(
       dto.projectId,
       data
