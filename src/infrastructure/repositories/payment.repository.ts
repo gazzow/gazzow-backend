@@ -36,8 +36,31 @@ export class PaymentRepository
 
   async getPlatformRevenue(): Promise<number> {
     const result = await this.model.aggregate([
-      { $match: { status: "SUCCESS", platformFee: { $exists: true } } },
-      { $group: { _id: null, total: { $sum: "$platformFee" } } },
+      {
+        $match: {
+          status: PaymentStatus.SUCCESS,
+          type: {
+            $in: [PaymentType.SUBSCRIPTION, PaymentType.PAYOUT],
+          },
+        },
+      },
+      {
+        $addFields: {
+          platformAmount: {
+            $cond: [
+              { $eq: ["$type", PaymentType.SUBSCRIPTION] },
+              "$totalAmount", // Subscription → full amount to platform
+              "$platformFee", // Payout → only fee to platform
+            ],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$platformAmount" },
+        },
+      },
     ]);
 
     return result[0]?.total || 0;
@@ -115,20 +138,30 @@ export class PaymentRepository
           type: {
             $in: [PaymentType.SUBSCRIPTION, PaymentType.PAYOUT],
           },
-          platformFee: { $exists: true },
+        },
+      },
+      {
+        $addFields: {
+          platformAmount: {
+            $cond: [
+              { $eq: ["$type", PaymentType.SUBSCRIPTION] },
+              "$totalAmount", // Subscription revenue
+              "$platformFee", // Payout fee
+            ],
+          },
         },
       },
       {
         $project: {
           month: { $month: "$createdAt" },
           year: { $year: "$createdAt" },
-          total: { $sum: "$platformFee" },
+          platformAmount: 1, 
         },
       },
       {
         $group: {
           _id: { year: "$year", month: "$month" },
-          revenue: { $sum: "$total" },
+          revenue: { $sum: "$platformAmount" }, 
         },
       },
       {

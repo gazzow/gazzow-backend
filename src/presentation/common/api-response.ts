@@ -1,7 +1,8 @@
+import type { ErrorCode } from "../../domain/enums/constants/error-code.js";
 
 export type ErrorDetail = {
-  field?: string;  
-  message: string;  
+  field?: string;
+  message: string;
 };
 
 export type PaginationMeta = {
@@ -15,6 +16,7 @@ export class ApiResponse<T = unknown, M = unknown, E = ErrorDetail | string> {
   message: string;
   data?: T | null;
   errors?: E[] | null;
+  code?: ErrorCode | null;
   meta?: M | null;
   timestamp: string;
 
@@ -23,11 +25,13 @@ export class ApiResponse<T = unknown, M = unknown, E = ErrorDetail | string> {
     message: string,
     data: T | null = null,
     errors: E[] | null = null,
+    code: ErrorCode | null = null,
     meta: M | null = null
   ) {
     this.success = success;
     this.message = message;
     this.data = data;
+    this.code = code;
     this.errors = errors;
     this.meta = meta;
     this.timestamp = new Date().toISOString();
@@ -39,16 +43,24 @@ export class ApiResponse<T = unknown, M = unknown, E = ErrorDetail | string> {
     data: T | null = null,
     meta: M | null = null
   ): ApiResponse<T, M, never> {
-    return new ApiResponse<T, M, never>(true, message, data, null, meta);
+    return new ApiResponse<T, M, never>(true, message, data, null, null, meta);
   }
 
   /** ❌ Error Response */
   static error<E extends ErrorDetail | string, M = null>(
     message: string,
     errors: E[] | null = null,
-    meta: M | null = null
+    code: ErrorCode | null = null,
+    meta: M | null = null,
   ): ApiResponse<null, M, E> {
-    return new ApiResponse<null, M, E>(false, message, null, errors, meta);
+    return new ApiResponse<null, M, E>(
+      false,
+      message,
+      null,
+      errors,
+      code,
+      meta
+    );
   }
 
   /** ⚠️ Validation Error Response */
@@ -73,6 +85,7 @@ export class ApiResponse<T = unknown, M = unknown, E = ErrorDetail | string> {
       true,
       message,
       data,
+      null,
       null,
       meta
     );

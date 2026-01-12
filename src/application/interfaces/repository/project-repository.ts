@@ -54,4 +54,6 @@ export interface IProjectRepository extends IBaseRepository<IProjectDocument> {
     contributorId: string,
     status: ContributorStatus
   ): Promise<IProjectDocument | null>;
+
+  findByProjectIds(projectIds: string[]): Promise<IProjectDocument[]>;
 }

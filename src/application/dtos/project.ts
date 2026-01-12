@@ -1,4 +1,7 @@
-import type { IAggregatedProject, IProject } from "../../domain/entities/project.js";
+import type {
+  IAggregatedProject,
+  IProject,
+} from "../../domain/entities/project.js";
 import type { Express } from "express";
 import type {
   ContributorStatus,
@@ -104,4 +107,12 @@ export interface IListContributorsResponseDTO {
     createdAt: string;
     updatedAt: string;
   }[];
+}
+
+export interface IListCompletedContributionsRequestDTO {
+  userId: string;
+}
+
+export interface IListCompletedContributionsResponseDTO {
+  data: IProject[];
 }

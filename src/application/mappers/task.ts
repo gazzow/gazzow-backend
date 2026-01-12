@@ -20,6 +20,7 @@ export interface ITaskMapper {
   ): IPopulatedResponseDTO;
   toUpdatePersistent(dto: Partial<ITask>): Partial<ITaskDocument>;
   toReassignPersistent(data: Partial<ITask>): Partial<ITaskDocument>;
+  getCompletedTaskProjectIds(taskDoc: ITaskDocument[]): string[];
 }
 
 export class TaskMapper implements ITaskMapper {
@@ -208,12 +209,12 @@ export class TaskMapper implements ITaskMapper {
 
     if (data.assigneeId) {
       update.assigneeId = new Types.ObjectId(data.assigneeId);
-      update.assigneeStatus = AssigneeStatus.ASSIGNED
+      update.assigneeStatus = AssigneeStatus.ASSIGNED;
     }
 
     if (data.expectedRate !== undefined) {
       update.expectedRate = data.expectedRate;
-    } 
+    }
 
     if (data.totalAmount !== undefined) {
       update.totalAmount = data.totalAmount;
@@ -234,5 +235,15 @@ export class TaskMapper implements ITaskMapper {
       update.refundStatus = data.refundStatus;
 
     return update;
+  }
+
+  getCompletedTaskProjectIds(taskDoc: ITaskDocument[]): string[] {
+    const projectIdsSet = new Set<string>();
+    taskDoc.forEach((task) => {
+      if (task.projectId) {
+        projectIdsSet.add(task.projectId.toString());
+      }
+    });
+    return Array.from(projectIdsSet);
   }
 }

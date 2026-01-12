@@ -8,19 +8,30 @@ const contributorContainer = new ContributorDependencyContainer();
 const authContainer = new AuthDependencyContainer();
 
 const tokenMiddleware = authContainer.createTokenMiddleware();
+const blockedUserMiddleware = authContainer.createBlockedUserMiddleware();
+
 const contributionController =
   contributorContainer.createContributorController();
 
 router.get(
   "/active",
   tokenMiddleware.verifyToken,
+  blockedUserMiddleware.isBlocked,
   contributionController.getContributorProjects
 );
 
 router.get(
   "/applications",
   tokenMiddleware.verifyToken,
+  blockedUserMiddleware.isBlocked,
   contributionController.getContributorProposals
+);
+
+router.get(
+  "/completed",
+  tokenMiddleware.verifyToken,
+  blockedUserMiddleware.isBlocked,
+  contributionController.listCompletedContributions
 );
 
 export default router;

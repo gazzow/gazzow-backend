@@ -15,7 +15,9 @@ export const errorHandler = (
 
   if (err instanceof AppError) {
     logger.warn("app error");
-    return res.status(err.statusCode).json(ApiResponse.error(err.message));
+    return res
+      .status(err.statusCode)
+      .json(ApiResponse.error(err.message, undefined, err.code));
   }
 
   logger.warn("Internal error");

@@ -8,6 +8,7 @@ import { BaseRepository } from "./base/base-repository.js";
 import type { IProjectDocument } from "../db/models/project-model.js";
 import type { IUserDocument } from "../db/models/user-model.js";
 import type { ITaskStatistics } from "../../application/dtos/task.js";
+import { TaskPaymentStatus, TaskStatus } from "../../domain/enums/task.js";
 
 export class TaskRepository
   extends BaseRepository<ITaskDocument>
@@ -67,5 +68,16 @@ export class TaskRepository
         },
       },
     ]);
+  }
+
+  getCompletedTaskByAssigneeId(assigneeId: string): Promise<ITaskDocument[]> {
+    return this.model
+      .find({
+        assigneeId: new Types.ObjectId(assigneeId),
+        status: TaskStatus.COMPLETED,
+        paymentStatus: TaskPaymentStatus.PAID,
+        isDeleted: false,
+      })
+      .exec();
   }
 }

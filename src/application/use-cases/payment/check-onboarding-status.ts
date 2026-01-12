@@ -29,7 +29,7 @@ export class CheckOnboardingStatusUseCase
     if (!user.stripeAccountId) {
       throw new AppError(
         ResponseMessages.StripeAccountIdNotFound,
-        HttpStatusCode.NOT_FOUND
+        HttpStatusCode.OK
       );
     }
 

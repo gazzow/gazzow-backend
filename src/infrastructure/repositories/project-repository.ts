@@ -398,4 +398,9 @@ export class ProjectRepository
       }
     );
   }
+
+  findByProjectIds(projectIds: string[]): Promise<IProjectDocument[]> {
+    const objectIds = projectIds.map((id) => new Types.ObjectId(id));
+    return this.model.find({ _id: { $in: objectIds } }).exec();
+  }
 }
