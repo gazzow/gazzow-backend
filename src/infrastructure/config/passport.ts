@@ -19,7 +19,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      callbackURL: "/api/auth/google/callback",
+      callbackURL:  process.env.GOOGLE_CALLBACK_URL!,
     },
     async (_accessToken, _refreshToken, profile, done) => {
       logger.debug("google auth api got hit");
