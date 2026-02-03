@@ -1,9 +1,10 @@
 import logger from "../../../../utils/logger.js";
-import type { IResendOtpRequestDTO } from "../../../dtos/user/user.js";
-import type { IUserRepository } from "../../../interfaces/repository/user-repository.js";
 import type {
-  IResendOtpUseCase,
-} from "../../../interfaces/usecase/user/auth/resend-otp.js";
+  IResendOtpRequestDTO,
+  IResendOtpResponseDTO,
+} from "../../../dtos/user/user.js";
+import type { IUserRepository } from "../../../interfaces/repository/user-repository.js";
+import type { IResendOtpUseCase } from "../../../interfaces/usecase/user/auth/resend-otp.js";
 
 import type { IAuthService } from "../../../providers/auth-service.js";
 import type { IEmailService } from "../../../providers/email-service.js";
@@ -23,10 +24,10 @@ export class ResendOtpUseCase implements IResendOtpUseCase {
     private _hashService: IHashService,
     private _emailService: IEmailService,
     private _otpStore: IOtpStore,
-    private _otpConfig: IOtpConfig
+    private _otpConfig: IOtpConfig,
   ) {}
 
-  async execute(data: IResendOtpRequestDTO): Promise<void> {
+  async execute(data: IResendOtpRequestDTO): Promise<IResendOtpResponseDTO> {
     const otp = this._authService.generateOtp();
     logger.info(`Re-send otp: [ ${otp} ]`);
 
@@ -40,13 +41,16 @@ export class ResendOtpUseCase implements IResendOtpUseCase {
 
     const emailContent = this._otpConfig.emailTemplate(
       otp,
-      Math.floor(this._otpConfig.ttlSeconds / 60)
+      Math.floor(this._otpConfig.ttlSeconds / 60),
     );
+    const otpExpiresAt = Date.now() + this._otpConfig.ttlSeconds * 1000;
 
     await this._emailService.sendOtpNotification(
       data.email,
       this._otpConfig.emailSubject,
-      emailContent
+      emailContent,
     );
+
+    return { otpExpiresAt };
   }
 }

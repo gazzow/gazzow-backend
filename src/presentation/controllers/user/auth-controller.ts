@@ -26,17 +26,23 @@ export class AuthController {
     private _resetPasswordUseCase: IResetPasswordUseCase,
     private _resendOtpUseCase: IResendOtpUseCase,
     private _refreshAccessTokenUseCase: IRefreshAccessTokenUseCase,
-    private _googleCallbackUseCase: IGoogleCallbackUseCase
+    private _googleCallbackUseCase: IGoogleCallbackUseCase,
   ) {}
 
   register = async (req: Request, res: Response, next: NextFunction) => {
     console.log("User Register API hit");
     try {
-      await this._registerUserUseCase.execute(req.body);
+      const { otpExpiresAt } = await this._registerUserUseCase.execute(
+        req.body,
+      );
 
       res
         .status(HttpStatusCode.OK)
-        .json(ApiResponse.success(ResponseMessages.OtpHasBeenSent));
+        .json(
+          ApiResponse.success(ResponseMessages.OtpHasBeenSent, {
+            otpExpiresAt,
+          }),
+        );
     } catch (error) {
       next(error);
     }
@@ -114,15 +120,16 @@ export class AuthController {
       if (!email) {
         throw new AppError(
           ResponseMessages.BadRequest,
-          HttpStatusCode.BAD_REQUEST
+          HttpStatusCode.BAD_REQUEST,
         );
       }
 
-      await this._forgotPasswordUseCase.execute(email);
-
-      res
-        .status(HttpStatusCode.OK)
-        .json(ApiResponse.success(ResponseMessages.OtpHasBeenSent));
+      const { otpExpiresAt } = await this._forgotPasswordUseCase.execute(email);
+      res.status(HttpStatusCode.OK).json(
+        ApiResponse.success(ResponseMessages.OtpHasBeenSent, {
+          otpExpiresAt,
+        }),
+      );
     } catch (e) {
       next(e);
     }
@@ -167,10 +174,15 @@ export class AuthController {
     try {
       const { email, purpose } = req.body;
 
-      await this._resendOtpUseCase.execute({ email, purpose });
-      res
-        .status(HttpStatusCode.OK)
-        .json(ApiResponse.success(ResponseMessages.OtpHasBeenSent));
+      const { otpExpiresAt } = await this._resendOtpUseCase.execute({
+        email,
+        purpose,
+      });
+      res.status(HttpStatusCode.OK).json(
+        ApiResponse.success(ResponseMessages.OtpHasBeenSent, {
+          otpExpiresAt,
+        }),
+      );
     } catch (error) {
       next(error);
     }
@@ -179,7 +191,7 @@ export class AuthController {
   refreshAccessToken = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     logger.debug(`Refresh Token api hit🚀`);
     try {
@@ -188,7 +200,7 @@ export class AuthController {
       if (!refreshToken) {
         throw new AppError(
           ResponseMessages.NoRefreshToken,
-          HttpStatusCode.UNAUTHORIZED
+          HttpStatusCode.UNAUTHORIZED,
         );
       }
 

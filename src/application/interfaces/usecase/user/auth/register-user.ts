@@ -1,7 +1,8 @@
-import type { ITempUserData } from "../../../../../domain/entities/user.js";
+import type {
+  IRegisterUserRequestDTO,
+  IRegisterUserResponseDTO,
+} from "../../../../dtos/user/user.js";
 
 export interface IRegisterUserUseCase {
-  execute(
-    userData: ITempUserData
-  ): Promise<void>;
+  execute(dto: IRegisterUserRequestDTO): Promise<IRegisterUserResponseDTO>;
 }

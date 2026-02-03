@@ -20,16 +20,19 @@ export class ForgotPasswordUseCase implements IForgotPasswordUseCase {
     private _hashService: IHashService,
     private _emailService: IEmailService,
     private _otpStore: IOtpStore,
-    private _otpConfig: IOtpConfig
+    private _otpConfig: IOtpConfig,
   ) {}
 
-  async execute(email: string): Promise<void> {
+  async execute(email: string): Promise<{ otpExpiresAt: number }> {
     // Check if the user exists
     const userDoc = await this._authService.checkUserExists(email);
     if (!userDoc) {
-      throw new AppError(ResponseMessages.UserNotFound, HttpStatusCode.NOT_FOUND)
+      throw new AppError(
+        ResponseMessages.UserNotFound,
+        HttpStatusCode.NOT_FOUND,
+      );
     }
-    
+
     const otp = this._authService.generateOtp();
     logger.info(`Otp for forgot password: [${otp}]`);
 
@@ -40,17 +43,20 @@ export class ForgotPasswordUseCase implements IForgotPasswordUseCase {
     logger.info(`otpKey in forgot-password: ${otpKey}`);
 
     await this._otpStore.set(otpKey, hashedOtp, this._otpConfig.ttlSeconds);
+    const otpExpiresAt = Date.now() + this._otpConfig.ttlSeconds * 1000;
 
     // Send OTP via email
     const emailContent = this._otpConfig.emailTemplate(
       otp,
-      Math.floor(this._otpConfig.ttlSeconds / 60)
+      Math.floor(this._otpConfig.ttlSeconds / 60),
     );
 
     await this._emailService.sendOtpNotification(
       email,
       this._otpConfig.emailSubject,
-      emailContent
+      emailContent,
     );
+
+    return { otpExpiresAt };
   }
 }

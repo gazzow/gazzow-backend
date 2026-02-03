@@ -24,6 +24,16 @@ export interface IUserPublicDTO {
   createdAt: Date;
 }
 
+export interface IRegisterUserRequestDTO {
+  name: string;
+  email: string;
+  password: string;
+}
+
+export interface IRegisterUserResponseDTO{
+  otpExpiresAt: number
+}
+
 export interface ILoginRequestDTO {
   email: string;
   password: string;
@@ -47,6 +57,10 @@ export interface IVerifyOtpRequestDTO {
 export interface IResendOtpRequestDTO {
   email: string;
   purpose: OtpPurpose;
+}
+
+export interface IResendOtpResponseDTO {
+  otpExpiresAt: number;
 }
 
 export interface IResetPasswordRequestDTO {
