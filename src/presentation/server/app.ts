@@ -3,7 +3,6 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { env } from "../../infrastructure/config/env.js";
 import { errorHandler } from "../middleware/error-handler.js";
-import apiRouter from "../routes/routes.index.js";
 import webhookRoutes from "../routes/webhook.route.js";
 
 const app = express();
@@ -19,8 +18,6 @@ app.use(
 app.use("/api/webhook", webhookRoutes);
 
 app.use(express.json());
-
-app.use("/api", apiRouter);
 
 app.use(errorHandler);
 

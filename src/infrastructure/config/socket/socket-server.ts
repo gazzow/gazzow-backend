@@ -30,6 +30,7 @@ export function createSocketServer(server: http.Server) {
 
   // 2. Create socket gateway
   const realtimeGateway = new SocketGateway(io);
+
   const projectRepository = new ProjectRepository(ProjectModel);
   const projectMapper = new ProjectMapper();
   const teamChatRepository = new TeamChatRepository(TeamChatModel);
@@ -54,4 +55,6 @@ export function createSocketServer(server: http.Server) {
   const socketService = new SocketService(sendMessageUseCase, getUnreadNotificationCountUseCase);
 
   registerSocket(io, socketService);
+
+  return realtimeGateway; // return socket gateway
 }

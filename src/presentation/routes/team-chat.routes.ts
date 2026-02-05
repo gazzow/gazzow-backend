@@ -1,21 +1,32 @@
 import express from "express";
+import type { SocketGateway } from "../../infrastructure/config/socket/socket-gateway.js";
 import { AuthDependencyContainer } from "../../infrastructure/dependency-injection/auth-dependency-container.js";
 import { TeamChatDependencyContainer } from "../../infrastructure/dependency-injection/team-chat-container.js";
 
-const router = express.Router();
+export const createTeamChatRoutes = (socketGateway: SocketGateway) => {
+  const router = express.Router();
 
-const authContainer = new AuthDependencyContainer();
-const tokenMiddleware = authContainer.createTokenMiddleware();
-const blockedUserMiddleware = authContainer.createBlockedUserMiddleware();
+  const authContainer = new AuthDependencyContainer();
+  const tokenMiddleware = authContainer.createTokenMiddleware();
+  const blockedUserMiddleware = authContainer.createBlockedUserMiddleware();
 
-const teamChatContainer = new TeamChatDependencyContainer();
-const teamChatController = teamChatContainer.createTeamChatController();
+  const teamChatContainer = new TeamChatDependencyContainer(socketGateway);
 
-router.get(
-  "/:projectId",
-  tokenMiddleware.verifyToken,
-  blockedUserMiddleware.isBlocked,
-  teamChatController.listTeamMessages
-);
+  const teamChatController = teamChatContainer.createTeamChatController();
 
-export default router;
+  router.get(
+    "/:projectId",
+    tokenMiddleware.verifyToken,
+    blockedUserMiddleware.isBlocked,
+    teamChatController.listTeamMessages,
+  );
+
+  router.patch(
+    "/:messageId/delete",
+    tokenMiddleware.verifyToken,
+    blockedUserMiddleware.isBlocked,
+    teamChatController.deleteMessage,
+  );
+
+  return router;
+};

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import passport from "../../../infrastructure/config/passport.js";
+import { passport } from "../../../infrastructure/config/passport.js";
 import { AuthDependencyContainer } from "../../../infrastructure/dependency-injection/auth-dependency-container.js";
 import { UserDependencyContainer } from "../../../infrastructure/dependency-injection/user-dependency-container.js";
 
@@ -26,38 +26,38 @@ userRouter.post("/auth/refresh", authController.refreshAccessToken);
 
 userRouter.get(
   "/auth/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
+  passport.authenticate("google", { scope: ["profile", "email"] }),
 );
 
 userRouter.get(
   "/auth/google/callback",
   passport.authenticate("google", { session: false }),
-  authController.googleCallback
+  authController.googleCallback,
 );
 
 userRouter.post(
   "/auth/logout",
   tokenMiddleware.verifyToken,
-  authController.logout
+  authController.logout,
 );
 
 userRouter.put(
   "/profile/update",
   tokenMiddleware.verifyToken,
   blockedUserMiddleware.isBlocked,
-  userController.updateProfile
+  userController.updateProfile,
 );
 userRouter.get(
   "/profile/me",
   tokenMiddleware.verifyToken,
   blockedUserMiddleware.isBlocked,
-  userController.getUserProfile
+  userController.getUserProfile,
 );
 
 userRouter.get(
   "/dashboard",
   tokenMiddleware.verifyToken,
-  userController.dashboardStats
+  userController.dashboardStats,
 );
 
 export default userRouter;

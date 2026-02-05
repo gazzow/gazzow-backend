@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
 
-export type IMessageDocument = Document & {
+export type ITeamChatDocument = Document & {
   _id: Types.ObjectId;
   projectId: Types.ObjectId;
   senderId: Types.ObjectId;
@@ -8,11 +8,16 @@ export type IMessageDocument = Document & {
   senderImageUrl: string;
   isCreator: boolean;
   content: string;
+  deletedFor: Types.ObjectId[];
+  isDeletedForEveryone: boolean;
+  deletedAt: Date;
+  isEdited: boolean;
+  editedAt: Date;
   createdAt: Date;
   updatedAt: Date;
 };
 
-const TeamChatSchema = new Schema<IMessageDocument>(
+const TeamChatSchema = new Schema<ITeamChatDocument>(
   {
     projectId: {
       type: Schema.Types.ObjectId,
@@ -49,16 +54,31 @@ const TeamChatSchema = new Schema<IMessageDocument>(
       trim: true,
       maxlength: 5000,
     },
+    deletedFor: {
+      type: [Schema.Types.ObjectId],
+      default: [],
+    },
+    isDeletedForEveryone: {
+      type: Boolean,
+      default: false,
+    },
+    deletedAt: {
+      type: Date,
+    },
+    isEdited: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-// 🔥 Index for fast project chat loading
+// Index for fast project chat loading
 TeamChatSchema.index({ projectId: 1, createdAt: 1 });
 
-export const TeamChatModel = mongoose.model<IMessageDocument>(
+export const TeamChatModel = mongoose.model<ITeamChatDocument>(
   "TeamChat",
-  TeamChatSchema
+  TeamChatSchema,
 );
