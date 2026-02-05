@@ -15,7 +15,6 @@ export class CheckBlockedUserMiddleware implements ICheckBlockedUserMiddleware {
   constructor(private _userRepository: IUserRepository) {}
 
   isBlocked = async (req: Request, res: Response, next: NextFunction) => {
-    logger.debug("is blocked middleware check");
     try {
       if (!req.user) {
         throw new AppError(
@@ -24,7 +23,6 @@ export class CheckBlockedUserMiddleware implements ICheckBlockedUserMiddleware {
         );
       }
 
-      logger.debug(`req user data: ${JSON.stringify(req.user)}`);
 
       const user = await this._userRepository.findById(req.user.id);
       if (!user) {

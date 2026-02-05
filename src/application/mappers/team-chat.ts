@@ -1,15 +1,16 @@
 import { Types } from "mongoose";
 import type { IMessage } from "../../domain/entities/message.js";
-import type { IMessageDocument } from "../../infrastructure/db/models/team-chat.model.js";
+import type { ITeamChatDocument } from "../../infrastructure/db/models/team-chat.model.js";
 
 export interface ITeamChatMapper {
-  toPersistent(data: Partial<IMessage>): Partial<IMessageDocument>;
-  toResponseDTO(doc: IMessageDocument): IMessage;
+  toPersistent(data: Partial<IMessage>): Partial<ITeamChatDocument>;
+  toResponseDTO(doc: ITeamChatDocument): IMessage;
+  toEntity(doc: ITeamChatDocument): IMessage;
 }
 
 export class TeamChatMapper implements ITeamChatMapper {
-  toPersistent(data: Partial<IMessage>): Partial<IMessageDocument> {
-    const persistent: Partial<IMessageDocument> = {};
+  toPersistent(data: Partial<IMessage>): Partial<ITeamChatDocument> {
+    const persistent: Partial<ITeamChatDocument> = {};
 
     if (data.projectId)
       persistent.projectId = new Types.ObjectId(data.projectId);
@@ -27,7 +28,7 @@ export class TeamChatMapper implements ITeamChatMapper {
     return persistent;
   }
 
-  toResponseDTO(doc: IMessageDocument): IMessage {
+  toResponseDTO(doc: ITeamChatDocument): IMessage {
     return {
       id: doc._id.toString(),
       projectId: doc.projectId.toString(),
@@ -36,6 +37,29 @@ export class TeamChatMapper implements ITeamChatMapper {
       senderImageUrl: doc.senderImageUrl,
       content: doc.content,
       isCreator: doc.isCreator,
+      deletedFor: doc.deletedFor.map((id) => id.toString()),
+      isDeletedForEveryone: doc.isDeletedForEveryone,
+      deletedAt: doc.deletedAt,
+      isEdited: doc.isEdited,
+      editedAt: doc.editedAt,
+      createdAt: doc.createdAt,
+      updatedAt: doc.updatedAt,
+    };
+  }
+  toEntity(doc: ITeamChatDocument): IMessage {
+    return {
+      id: doc._id.toString(),
+      projectId: doc.projectId.toString(),
+      senderId: doc.senderId.toString(),
+      senderName: doc.senderName,
+      senderImageUrl: doc.senderImageUrl,
+      content: doc.content,
+      isCreator: doc.isCreator,
+      deletedFor: doc.deletedFor.map((id) => id.toString()),
+      isDeletedForEveryone: doc.isDeletedForEveryone,
+      deletedAt: doc.deletedAt,
+      isEdited: doc.isEdited,
+      editedAt: doc.editedAt,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     };

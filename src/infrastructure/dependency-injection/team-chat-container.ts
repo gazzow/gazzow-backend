@@ -1,32 +1,48 @@
 import type { ITeamChatRepository } from "../../application/interfaces/repository/team-chat.repository.js";
+import type { IDeleteTeamChatMessageUseCase } from "../../application/interfaces/usecase/team-chat/delete-message.js";
 import type { IListTeamChatMessagesUseCase } from "../../application/interfaces/usecase/team-chat/list-messages.js";
 import {
   TeamChatMapper,
   type ITeamChatMapper,
 } from "../../application/mappers/team-chat.js";
+import { DeleteTeamChatMessageUseCase } from "../../application/use-cases/team-chat/delete-message.js";
 import { ListTeamChatMessagesUseCase } from "../../application/use-cases/team-chat/list-message.js";
 import { TeamChatController } from "../../presentation/controllers/team-chat.controller.js";
+import type { IRealtimeGateway } from "../config/socket/socket-gateway.js";
 import { TeamChatModel } from "../db/models/team-chat.model.js";
 import { TeamChatRepository } from "../repositories/team-chat.repository.js";
 
 export class TeamChatDependencyContainer {
   private readonly _teamChatRepository: ITeamChatRepository;
   private readonly _teamChatMapper: ITeamChatMapper;
+  private readonly _socketGateway: IRealtimeGateway;
 
-  constructor() {
+  constructor(socketGateway: IRealtimeGateway) {
     this._teamChatRepository = new TeamChatRepository(TeamChatModel);
     this._teamChatMapper = new TeamChatMapper();
+    this._socketGateway = socketGateway;
   }
 
   private createListTeamChatMessagesUseCase(): IListTeamChatMessagesUseCase {
     return new ListTeamChatMessagesUseCase(
       this._teamChatRepository,
-      this._teamChatMapper
+      this._teamChatMapper,
     );
   }
 
-  //   Team Chat Controller
+  private createDeleteTeamChatMessageUseCase(): IDeleteTeamChatMessageUseCase {
+    return new DeleteTeamChatMessageUseCase(
+      this._teamChatRepository,
+      this._teamChatMapper,
+      this._socketGateway,
+    );
+  }
+
+  // Team Chat Controller
   createTeamChatController(): TeamChatController {
-    return new TeamChatController(this.createListTeamChatMessagesUseCase());
+    return new TeamChatController(
+      this.createListTeamChatMessagesUseCase(),
+      this.createDeleteTeamChatMessageUseCase(),
+    );
   }
 }
