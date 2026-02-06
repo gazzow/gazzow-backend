@@ -110,6 +110,7 @@ export enum ResponseMessages {
 
   // Subscription
   UserAlreadySubscribed = "You already has an active subscription",
+  FailedToUpgradeSubscription = "Failed to upgrade subscription",
   FetchUserSubscription = "Retrieved user active subscription",
   SubscriptionNotFound = "Subscription not found.",
   SubscriptionCancelled = "Subscription cancelled successfully",

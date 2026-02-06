@@ -1,8 +1,6 @@
 import { ResponseMessages } from "../../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.js";
-import { PlanType } from "../../../../domain/enums/plan.js";
 import { AppError } from "../../../../utils/app-error.js";
-import logger from "../../../../utils/logger.js";
 import type {
   ICreatePlanRequestDTO,
   ICreatePlanResponseDTO,
@@ -17,8 +15,7 @@ export class CreatePlanUseCase implements ICreatePlanUseCase {
         private _planMapper: IPlanMapper
     ) {}
   async execute(dto: ICreatePlanRequestDTO): Promise<ICreatePlanResponseDTO> {
-    logger.debug(`create plan dto: ${JSON.stringify(dto)}`);
-    logger.info(dto.type === PlanType.BASE  )
+    
     const planExists = await this._planRepository.findByPlanTypeAndDuration(
       dto.type,
       dto.duration
