@@ -14,6 +14,7 @@ import type {
   ICreateSubscriptionDTO,
   ICreateSubscriptionRequestDTO,
   ICreateSubscriptionResponseDTO,
+  IUpdateSubscription,
 } from "../../dtos/subscription.js";
 import type { IPlanRepository } from "../../interfaces/repository/plan.repository.js";
 import type { ISubscriptionRepository } from "../../interfaces/repository/subscription.repository.js";
@@ -31,11 +32,11 @@ export class SubscriptionPaymentUseCase implements ISubscriptionPaymentUseCase {
     private _planMapper: IPlanMapper,
     private _subscriptionMapper: ISubscriptionMapper,
     private _paymentRepository: IPaymentRepository,
-    private _paymentMapper: IPaymentMapper
+    private _paymentMapper: IPaymentMapper,
   ) {}
 
   async execute(
-    dto: ICreateSubscriptionRequestDTO
+    dto: ICreateSubscriptionRequestDTO,
   ): Promise<ICreateSubscriptionResponseDTO> {
     logger.info(`Processing payment for plan ID: ${dto.planId}`);
 
@@ -43,24 +44,17 @@ export class SubscriptionPaymentUseCase implements ISubscriptionPaymentUseCase {
     if (!userExists)
       throw new AppError(
         ResponseMessages.UserNotFound,
-        HttpStatusCode.NOT_FOUND
+        HttpStatusCode.NOT_FOUND,
       );
 
-    const activeSubscription = await this._subscriptionRepository.findByUserId(
-      dto.userId
-    );
-    if (activeSubscription) {
-      throw new AppError(
-        ResponseMessages.UserAlreadySubscribed,
-        HttpStatusCode.CONFLICT
-      );
-    }
+    const activeSubscriptionDocument =
+      await this._subscriptionRepository.findByUserId(dto.userId);
 
     const planDoc = await this._planRepository.findById(dto.planId);
     if (!planDoc) {
       throw new AppError(
         ResponseMessages.PlanNotFound,
-        HttpStatusCode.BAD_REQUEST
+        HttpStatusCode.BAD_REQUEST,
       );
     }
 
@@ -69,42 +63,95 @@ export class SubscriptionPaymentUseCase implements ISubscriptionPaymentUseCase {
     const startDate = new Date();
     const endDate = CalculateEndDate(startDate, plan.duration);
 
-    const payload: ICreateSubscriptionDTO = {
-      userId: dto.userId,
-      planId: plan.id,
-      activePlan: {
-        name: plan.name,
-        type: plan.type,
-        duration: plan.duration,
-        price: plan.price,
-        features: plan.features,
-      },
-      status: SubscriptionStatus.ACTIVE,
-      startDate: startDate,
-      endDate: endDate,
-    };
+    if (activeSubscriptionDocument) {
+      const activeSubscription = this._subscriptionMapper.toEntity(
+        activeSubscriptionDocument,
+      );
+      const update: IUpdateSubscription = {
+        planId: plan.id,
+        activePlan: {
+          name: plan.name,
+          type: plan.type,
+          duration: plan.duration,
+          price: plan.price,
+          features: plan.features,
+        },
+        status: SubscriptionStatus.ACTIVE,
+        startDate: startDate,
+        endDate: endDate,
+        paymentId: dto.stripePaymentIntentId,
+      };
+      const persistentModel =
+        this._subscriptionMapper.toUpdatePersistent(update);
 
-    const persistentModel = this._subscriptionMapper.toPersistentModel(payload);
+      const updatedSubscription = await this._subscriptionRepository.update(
+        activeSubscription.id,
+        persistentModel,
+      );
 
-    const newSubscription =
-      await this._subscriptionRepository.create(persistentModel);
+      if (!updatedSubscription) {
+        throw new AppError(
+          ResponseMessages.FailedToUpgradeSubscription,
+          HttpStatusCode.INTERNAL_SERVER_ERROR,
+        );
+      }
+      const data = this._subscriptionMapper.toResponseDTO(updatedSubscription);
 
-    const data = this._subscriptionMapper.toResponseDTO(newSubscription);
+      const persistentData: Partial<IPayment> = {
+        userId: dto.userId,
+        subscriptionId: data.id,
+        stripePaymentIntentId: dto.stripePaymentIntentId,
+        totalAmount: dto.amount,
+        currency: dto.currency,
+        type: PaymentType.SUBSCRIPTION,
+        status: PaymentStatus.SUCCESS,
+      };
 
-    const persistentData: Partial<IPayment> = {
-      userId: dto.userId,
-      subscriptionId: data.id,
-      stripePaymentIntentId: dto.stripePaymentIntentId,
-      totalAmount: dto.amount,
-      currency: dto.currency,
-      type: PaymentType.SUBSCRIPTION,
-      status: PaymentStatus.SUCCESS,
-    };
+      const persistentPayment =
+        this._paymentMapper.toPersistentModel(persistentData);
 
-    const persistentPayment =
-      this._paymentMapper.toPersistentModel(persistentData);
-      
-    await this._paymentRepository.create(persistentPayment);
-    return { data };
+      await this._paymentRepository.create(persistentPayment);
+
+      return { data };
+    } else {
+      const payload: ICreateSubscriptionDTO = {
+        userId: dto.userId,
+        planId: plan.id,
+        activePlan: {
+          name: plan.name,
+          type: plan.type,
+          duration: plan.duration,
+          price: plan.price,
+          features: plan.features,
+        },
+        startDate: startDate,
+        endDate: endDate,
+        status: SubscriptionStatus.ACTIVE,
+        paymentId: dto.stripePaymentIntentId,
+      };
+      const persistentModel =
+        this._subscriptionMapper.toPersistentModel(payload);
+
+      const newSubscription =
+        await this._subscriptionRepository.create(persistentModel);
+
+      const data = this._subscriptionMapper.toResponseDTO(newSubscription);
+      const persistentData: Partial<IPayment> = {
+        userId: dto.userId,
+        subscriptionId: data.id,
+        stripePaymentIntentId: dto.stripePaymentIntentId,
+        totalAmount: dto.amount,
+        currency: dto.currency,
+        type: PaymentType.SUBSCRIPTION,
+        status: PaymentStatus.SUCCESS,
+      };
+
+      const persistentPayment =
+        this._paymentMapper.toPersistentModel(persistentData);
+
+      await this._paymentRepository.create(persistentPayment);
+
+      return { data };
+    }
   }
 }

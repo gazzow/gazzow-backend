@@ -14,12 +14,24 @@ export interface ICreateSubscriptionRequestDTO {
   currency: string;
 }
 
+export interface IUpdateSubscription {
+  planId: string;
+  activePlan: IActivePlan;
+  status: SubscriptionStatus;
+  paymentId?: string;
+  startDate: Date;
+  endDate: Date;
+  autoRenew?: boolean;
+  canceledAt?: Date;
+  expiredAt?: Date;
+}
+
 export interface ICreateSubscriptionDTO {
   userId: string;
   planId: string;
   activePlan: IActivePlan;
   status: SubscriptionStatus;
-  paymentId?: string;
+  paymentId: string;
   startDate: Date;
   endDate: Date;
   autoRenew?: boolean;
