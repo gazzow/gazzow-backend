@@ -47,6 +47,7 @@ import {
   type IPaymentMapper,
 } from "../../application/mappers/payment.js";
 import { PaymentModel } from "../db/models/payment.model.js";
+import { SubscriptionMapper, type ISubscriptionMapper } from "../../application/mappers/subscription.js";
 
 export class PaymentDependencyContainer {
   private readonly _taskRepository: ITaskRepository;
@@ -57,6 +58,7 @@ export class PaymentDependencyContainer {
   private readonly _planRepository: IPlanRepository;
   private readonly _planMapper: IPlanMapper;
   private readonly _subscriptionRepository: ISubscriptionRepository;
+  private readonly _subscriptionMapper: ISubscriptionMapper;
   private readonly _paymentRepository: IPaymentRepository;
   private readonly _paymentMapper: IPaymentMapper;
 
@@ -67,6 +69,7 @@ export class PaymentDependencyContainer {
     this._subscriptionRepository = new SubscriptionRepository(
       SubscriptionModel
     );
+    this._subscriptionMapper = new SubscriptionMapper();
     this._paymentRepository = new PaymentRepository(PaymentModel);
     this._taskMapper = new TaskMapper();
     this._paymentService = new StripeService();
@@ -111,6 +114,7 @@ export class PaymentDependencyContainer {
     return new SubscriptionCheckoutUseCase(
       this._planRepository,
       this._subscriptionRepository,
+      this._subscriptionMapper,
       this._planMapper,
       this._paymentService
     );
