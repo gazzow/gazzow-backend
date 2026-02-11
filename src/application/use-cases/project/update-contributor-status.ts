@@ -13,8 +13,8 @@ import type { ITaskRepository } from "../../interfaces/repository/task-repositor
 import type { INotificationMapper } from "../../mappers/notification.js";
 import type { IProjectMapper } from "../../mappers/project.js";
 import { NotificationType } from "../../../domain/enums/notification.js";
-import type { CreateNotificationDTO } from "../../../domain/entities/notification.js";
 import type { INotificationRepository } from "../../interfaces/repository/notification.repository.js";
+import type { CreateNotificationDTO } from "../../dtos/notification.js";
 
 export interface IUpdateContributorStatusUseCase {
   execute(
@@ -93,7 +93,7 @@ export class UpdateContributorStatusUseCase
         );
 
       const messageBody = `Your contributor status was updated to ${contributor.status} in ${project.title}.`;
-     
+
       const messagePayload: INotificationPayload = {
         projectId: project.id,
         message: messageBody,
@@ -127,7 +127,7 @@ export class UpdateContributorStatusUseCase
         const count = await this._notificationRepository.getUnreadCountByUserId(
           contributor.userId,
         );
-        logger.debug(`updating user notification bell icon count: ${count}`)
+        logger.debug(`updating user notification bell icon count: ${count}`);
         this._realtimeGateway.updateNotificationCount(
           contributor.userId,
           count,
