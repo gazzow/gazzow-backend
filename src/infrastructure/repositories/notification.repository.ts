@@ -1,13 +1,7 @@
 import type { Model } from "mongoose";
-import type { IBaseRepository } from "../../application/interfaces/repository/base-repository.js";
 import { BaseRepository } from "./base/base-repository.js";
 import type { INotificationDocument } from "../db/models/notification.model.js";
-
-export interface INotificationRepository
-  extends IBaseRepository<INotificationDocument> {
-  findByUserId(userId: string): Promise<INotificationDocument[]>;
-  getUnreadCountByUserId(userId: string): Promise<number>;
-}
+import type { INotificationRepository } from "../../application/interfaces/repository/notification.repository.js";
 
 export class NotificationRepository
   extends BaseRepository<INotificationDocument>

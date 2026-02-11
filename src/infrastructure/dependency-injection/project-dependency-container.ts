@@ -64,13 +64,13 @@ import { TaskRepository } from "../repositories/task-repository.js";
 import type { IRealtimeGateway } from "../config/socket/socket-gateway.js";
 import {
   NotificationRepository,
-  type INotificationRepository,
 } from "../repositories/notification.repository.js";
 import {
   NotificationMapper,
   type INotificationMapper,
 } from "../../application/mappers/notification.js";
 import { NotificationModel } from "../db/models/notification.model.js";
+import type { INotificationRepository } from "../../application/interfaces/repository/notification.repository.js";
 
 export class ProjectDependencyContainer {
   private readonly _userRepository: IUserRepository;

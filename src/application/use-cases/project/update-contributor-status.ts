@@ -2,7 +2,6 @@ import type { INotificationPayload } from "../../../domain/entities/message.js";
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
 import type { IRealtimeGateway } from "../../../infrastructure/config/socket/socket-gateway.js";
-import type { INotificationRepository } from "../../../infrastructure/repositories/notification.repository.js";
 import { AppError } from "../../../utils/app-error.js";
 import logger from "../../../utils/logger.js";
 import type {
@@ -15,6 +14,7 @@ import type { INotificationMapper } from "../../mappers/notification.js";
 import type { IProjectMapper } from "../../mappers/project.js";
 import { NotificationType } from "../../../domain/enums/notification.js";
 import type { CreateNotificationDTO } from "../../../domain/entities/notification.js";
+import type { INotificationRepository } from "../../interfaces/repository/notification.repository.js";
 
 export interface IUpdateContributorStatusUseCase {
   execute(

@@ -1,5 +1,5 @@
-import type { INotificationService } from "../../../infrastructure/providers/notification.service.js";
 import type { CreateNotificationDTO } from "../../../domain/entities/notification.js";
+import type { INotificationService } from "../../providers/notification.service.js";
 
 export interface ICreateNotificationUseCase {
   execute(dto: CreateNotificationDTO): Promise<void>;
