@@ -10,5 +10,4 @@ export interface ISocketService {
 
   joinUser(socket: Socket, userId: string): void;
 
-  handleNotificationCountUpdate(socket: Socket, userId: string): Promise<void>;
 }

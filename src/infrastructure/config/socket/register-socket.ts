@@ -23,12 +23,5 @@ export const registerSocket = (io: Server, socketService: ISocketService) => {
       },
     );
 
-    socket.on(
-      SOCKET_EVENTS.UPDATE_NOTIFICATION_COUNT,
-      (data: { userId: string }) => {
-        console.log("Updating notification count for user:", data.userId);
-        socketService.handleNotificationCountUpdate(socket, data.userId);
-      },
-    );
   });
 };
