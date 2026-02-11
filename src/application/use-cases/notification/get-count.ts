@@ -1,4 +1,4 @@
-import type { INotificationRepository } from "../../../infrastructure/repositories/notification.repository.js";
+import type { INotificationRepository } from "../../interfaces/repository/notification.repository.js";
 import type { IGetUnreadNotificationCountUseCase } from "../../interfaces/usecase/notification/get-count.js";
 
 export class GetUnreadNotificationCountUseCase

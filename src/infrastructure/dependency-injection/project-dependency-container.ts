@@ -61,6 +61,16 @@ import {
 } from "../../application/mappers/task.js";
 import { TaskModel } from "../db/models/task-model.js";
 import { TaskRepository } from "../repositories/task-repository.js";
+import type { IRealtimeGateway } from "../config/socket/socket-gateway.js";
+import {
+  NotificationRepository,
+} from "../repositories/notification.repository.js";
+import {
+  NotificationMapper,
+  type INotificationMapper,
+} from "../../application/mappers/notification.js";
+import { NotificationModel } from "../db/models/notification.model.js";
+import type { INotificationRepository } from "../../application/interfaces/repository/notification.repository.js";
 
 export class ProjectDependencyContainer {
   private readonly _userRepository: IUserRepository;
@@ -73,8 +83,11 @@ export class ProjectDependencyContainer {
   private readonly _userMapper: IUserMapper;
   private readonly _s3Service: IS3FileStorageService;
   private readonly _stripeService: IStripeService;
+  private readonly _socketGateway: IRealtimeGateway;
+  private readonly _notificationRepository: INotificationRepository;
+  private readonly _notificationMapper: INotificationMapper;
 
-  constructor() {
+  constructor(socketGateway: IRealtimeGateway) {
     this._userRepository = new UserRepository(UserModel);
     this._projectRepository = new ProjectRepository(ProjectModel);
     this._applicationRepository = new ApplicationRepository(ApplicationModel);
@@ -85,13 +98,18 @@ export class ProjectDependencyContainer {
     this._taskMapper = new TaskMapper();
     this._s3Service = new S3FileStorageService();
     this._stripeService = new StripeService();
+    this._socketGateway = socketGateway;
+    this._notificationRepository = new NotificationRepository(
+      NotificationModel,
+    );
+    this._notificationMapper = new NotificationMapper();
   }
 
   private createProjectUseCase(): ICreateProjectUseCase {
     return new CreateProjectUseCase(
       this._projectRepository,
       this._projectMapper,
-      this._s3Service
+      this._s3Service,
     );
   }
 
@@ -110,7 +128,7 @@ export class ProjectDependencyContainer {
       this._applicationMapper,
       this._userRepository,
       this._userMapper,
-      this._stripeService
+      this._stripeService,
     );
   }
 
@@ -118,7 +136,7 @@ export class ProjectDependencyContainer {
     return new ListApplicationsUseCase(
       this._applicationRepository,
       this._projectRepository,
-      this._applicationMapper
+      this._applicationMapper,
     );
   }
 
@@ -126,21 +144,21 @@ export class ProjectDependencyContainer {
     return new ListMyProjectsUseCase(
       this._userRepository,
       this._projectRepository,
-      this._projectMapper
+      this._projectMapper,
     );
   }
 
   private createUpdateApplicationStatus(): IUpdateApplicationStatusUseCase {
     return new UpdateApplicationStatusUseCase(
       this._projectRepository,
-      this._applicationRepository
+      this._applicationRepository,
     );
   }
 
   private createUpdateProjectUseCase(): IUpdateProjectUseCase {
     return new UpdateProjectUseCase(
       this._projectRepository,
-      this._projectMapper
+      this._projectMapper,
     );
   }
 
@@ -151,7 +169,7 @@ export class ProjectDependencyContainer {
   private createListContributorsUseCase(): IListContributorsUseCase {
     return new ListContributorsUseCase(
       this._projectRepository,
-      this._projectMapper
+      this._projectMapper,
     );
   }
 
@@ -160,7 +178,9 @@ export class ProjectDependencyContainer {
       this._projectRepository,
       this._taskRepository,
       this._projectMapper,
-      this._taskMapper
+      this._socketGateway,
+      this._notificationRepository,
+      this._notificationMapper,
     );
   }
 
@@ -176,7 +196,7 @@ export class ProjectDependencyContainer {
       this.createUpdateApplicationStatus(),
       this.createGenerateSignedUrlUseCase(),
       this.createListContributorsUseCase(),
-      this.updateContributorStatusUseCase()
+      this.updateContributorStatusUseCase(),
     );
   }
 }

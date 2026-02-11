@@ -33,17 +33,3 @@ export type NotificationData =
       type: "SYSTEM";
       action: "SUBSCRIPTION_EXPIRED" | "PAYMENT_SUCCESS";
     };
-
-export interface PushPayload {
-  title: string;
-  body: string;
-  data?: NotificationData;
-}
-
-export interface CreateNotificationDTO {
-  userId: string;
-  title: string;
-  body: string;
-  type: NotificationType;
-  data?: NotificationData;
-}
