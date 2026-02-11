@@ -1,4 +1,4 @@
-import type { CreateNotificationDTO } from "../../../domain/entities/notification.js";
+import type { CreateNotificationDTO } from "../../dtos/notification.js";
 import type { INotificationService } from "../../providers/notification.service.js";
 
 export interface ICreateNotificationUseCase {
