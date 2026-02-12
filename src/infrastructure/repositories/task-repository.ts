@@ -80,4 +80,21 @@ export class TaskRepository
       })
       .exec();
   }
+
+  async existsActiveTask(projectId: string): Promise<boolean> {
+    return this.model
+      .exists({
+        projectId: new Types.ObjectId(projectId),
+        status: {
+          $in: [
+            TaskStatus.TODO,
+            TaskStatus.IN_PROGRESS,
+            TaskStatus.SUBMITTED,
+            TaskStatus.REVISIONS_REQUESTED,
+          ],
+        },
+        isDeleted: false,
+      })
+      .then((result) => !!result);
+  }
 }

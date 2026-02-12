@@ -1,7 +1,6 @@
 import type { IDeletedMessageSocketPayload } from "../../../domain/entities/message.js";
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
-import { SOCKET_EVENTS } from "../../../domain/types/socket-events.js";
 import type { IRealtimeGateway } from "../../../infrastructure/config/socket/socket-gateway.js";
 import { AppError } from "../../../utils/app-error.js";
 import type { IDeleteTeamChatMessageRequestDTO } from "../../dtos/team-chat.js";
@@ -51,7 +50,7 @@ export class DeleteTeamChatMessageUseCase
 
       this._realTimeGateway.emitToProject(
         message.projectId,
-        SOCKET_EVENTS.TEAM_MESSAGE_DELETED,
+        "TEAM_MESSAGE_DELETED",
         socketPayload,
       );
     }

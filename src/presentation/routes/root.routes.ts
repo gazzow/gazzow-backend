@@ -2,7 +2,6 @@ import { Router } from "express";
 
 import userRoutes from "./user/user.routes.js";
 import adminRoutes from "./admin/admin.routes.js";
-import projectRoutes from "./project.routes.js";
 import paymentRoutes from "./payment.routes.js";
 import taskCommentRoutes from "./task-comment.routes.js";
 import contributorRoutes from "./contributor.routes.js";
@@ -15,6 +14,7 @@ import DashboardRoutes from "./admin/dashboard.routes.js";
 import adminPaymentRoutes from "./admin/payment.routes.js";
 import type { SocketGateway } from "../../infrastructure/config/socket/socket-gateway.js";
 import { createTeamChatRoutes } from "./team-chat.routes.js";
+import { createProjectRouter } from "./project.routes.js";
 
 export const createRootRoutes = (socketGateway: SocketGateway) => {
   const router = Router();
@@ -22,7 +22,7 @@ export const createRootRoutes = (socketGateway: SocketGateway) => {
   // Public routes
   router.use("/", userRoutes);
   router.use("/payments", paymentRoutes);
-  router.use("/projects", projectRoutes);
+  router.use("/projects", createProjectRouter(socketGateway));
   router.use("/comments", taskCommentRoutes);
   router.use("/contributor", contributorRoutes);
   router.use("/subscriptions", subscriptionRoutes);
@@ -36,6 +36,6 @@ export const createRootRoutes = (socketGateway: SocketGateway) => {
   router.use("/admin/payments", adminPaymentRoutes);
   router.use("/admin/dashboard", DashboardRoutes);
   router.use("/admin", adminRoutes);
-  
+
   return router;
 };

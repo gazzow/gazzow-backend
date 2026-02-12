@@ -1,10 +1,10 @@
-import type { CreateNotificationDTO } from "../../../domain/entities/notification.js";
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
 import { NotificationType } from "../../../domain/enums/notification.js";
 import { TaskRules } from "../../../domain/rules/task-rules.js";
 import { AppError } from "../../../utils/app-error.js";
 import logger from "../../../utils/logger.js";
+import type { CreateNotificationDTO } from "../../dtos/notification.js";
 import type {
   IReassignTaskRequestDTO,
   IReassignTaskResponseDTO,
@@ -22,17 +22,17 @@ export class ReassignTaskUseCase implements IReassignTaskUseCase {
     private _projectRepository: IProjectRepository,
     private _projectMapper: IProjectMapper,
     private _taskMapper: ITaskMapper,
-    private _createNotificationUseCase: ICreateNotificationUseCase
+    private _createNotificationUseCase: ICreateNotificationUseCase,
   ) {}
 
   async execute(
-    dto: IReassignTaskRequestDTO
+    dto: IReassignTaskRequestDTO,
   ): Promise<IReassignTaskResponseDTO> {
     const taskDoc = await this._taskRepository.findById(dto.taskId);
     if (!taskDoc) {
       throw new AppError(
         ResponseMessages.TaskNotFound,
-        HttpStatusCode.NOT_FOUND
+        HttpStatusCode.NOT_FOUND,
       );
     }
 
@@ -42,39 +42,39 @@ export class ReassignTaskUseCase implements IReassignTaskUseCase {
     if (!TaskRules.isTaskCreator(task.creatorId, dto.userId))
       throw new AppError(
         ResponseMessages.UnauthorizedTaskModification,
-        HttpStatusCode.FORBIDDEN
+        HttpStatusCode.FORBIDDEN,
       );
 
     if (dto.assigneeId === task.assigneeId) {
       throw new AppError(
         ResponseMessages.TaskAlreadyAssignedToUser,
-        HttpStatusCode.BAD_REQUEST
+        HttpStatusCode.BAD_REQUEST,
       );
     }
 
     if (TaskRules.hasWorkStarted(task.status)) {
       throw new AppError(
         ResponseMessages.UnableToReassignTaskWhileInProgress,
-        HttpStatusCode.FORBIDDEN
+        HttpStatusCode.FORBIDDEN,
       );
     }
 
     if (!TaskRules.canReassign(task.assigneeStatus)) {
       throw new AppError(
         ResponseMessages.CannotReassignWithoutAssignee,
-        HttpStatusCode.BAD_REQUEST
+        HttpStatusCode.BAD_REQUEST,
       );
     }
 
     // check new assignee is a valid contributor of this project
     const populatedProjectDoc = await this._projectRepository.findContributors(
-      task.projectId
+      task.projectId,
     );
 
     if (!populatedProjectDoc) {
       throw new AppError(
         ResponseMessages.ProjectNotFound,
-        HttpStatusCode.NOT_FOUND
+        HttpStatusCode.NOT_FOUND,
       );
     }
 
@@ -86,13 +86,13 @@ export class ReassignTaskUseCase implements IReassignTaskUseCase {
 
     const contributor = TaskRules.getValidContributor(
       dto.assigneeId,
-      contributors
+      contributors,
     );
 
     if (!contributor) {
       throw new AppError(
         ResponseMessages.UserIsNotAProjectContributor,
-        HttpStatusCode.BAD_REQUEST
+        HttpStatusCode.BAD_REQUEST,
       );
     }
 
@@ -104,7 +104,7 @@ export class ReassignTaskUseCase implements IReassignTaskUseCase {
 
     const reCalculatedFinancial = TaskRules.reCalculateFinancial(
       newTotal,
-      task
+      task,
     );
 
     // Reassign
@@ -119,13 +119,13 @@ export class ReassignTaskUseCase implements IReassignTaskUseCase {
 
     const updatedTaskDoc = await this._taskRepository.update(
       task.id,
-      updatePersistent
+      updatePersistent,
     );
 
     if (!updatedTaskDoc) {
       throw new AppError(
         ResponseMessages.TaskUpdateFailed,
-        HttpStatusCode.INTERNAL_SERVER_ERROR
+        HttpStatusCode.INTERNAL_SERVER_ERROR,
       );
     }
 

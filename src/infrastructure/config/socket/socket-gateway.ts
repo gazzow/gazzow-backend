@@ -4,7 +4,10 @@ import type {
   IMessage,
   INotificationPayload,
 } from "../../../domain/entities/message.js";
-import type { SocketEvent } from "../../../domain/types/socket-events.js";
+import {
+  SOCKET_EVENTS,
+  type SocketEvent,
+} from "../../../domain/types/socket-events.js";
 
 export interface IRealtimeGateway {
   emitToProject(
@@ -17,6 +20,8 @@ export interface IRealtimeGateway {
     event: SocketEvent,
     payload: INotificationPayload,
   ): void;
+
+  updateNotificationCount(userId: string, count: number): void;
 }
 
 export class SocketGateway implements IRealtimeGateway {
@@ -36,5 +41,10 @@ export class SocketGateway implements IRealtimeGateway {
     payload: INotificationPayload,
   ) {
     this.io.to(userId).emit(event, payload);
+  }
+
+  updateNotificationCount(userId: string, count: number): void {
+    console.log(userId, count)
+    this.io.to(userId).emit(SOCKET_EVENTS.NOTIFICATION_COUNT, {count});
   }
 }

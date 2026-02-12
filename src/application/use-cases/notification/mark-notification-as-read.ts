@@ -1,6 +1,6 @@
 import type { INotification } from "../../../domain/entities/notification.js";
-import type { INotificationRepository } from "../../../infrastructure/repositories/notification.repository.js";
 import { AppError } from "../../../utils/app-error.js";
+import type { INotificationRepository } from "../../interfaces/repository/notification.repository.js";
 import type { INotificationMapper } from "../../mappers/notification.js";
 
 export interface IMarkNotificationAsReadUseCase {

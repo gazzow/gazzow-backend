@@ -3,105 +3,117 @@ import { ProjectDependencyContainer } from "../../infrastructure/dependency-inje
 import { AuthDependencyContainer } from "../../infrastructure/dependency-injection/auth-dependency-container.js";
 import { upload } from "../middleware/upload.js";
 import taskRouter from "./task.routes.js";
+import type { SocketGateway } from "../../infrastructure/config/socket/socket-gateway.js";
 
-const router = express.Router();
+export const createProjectRouter = (socketGateway: SocketGateway) => {
+  const router = express.Router();
 
-const authContainer = new AuthDependencyContainer();
-const tokenMiddleware = authContainer.createTokenMiddleware();
-const blockedUserMiddleware = authContainer.createBlockedUserMiddleware();
+  const authContainer = new AuthDependencyContainer();
+  const tokenMiddleware = authContainer.createTokenMiddleware();
+  const blockedUserMiddleware = authContainer.createBlockedUserMiddleware();
 
-const projectContainer = new ProjectDependencyContainer();
-const projectController = projectContainer.createProjectController();
+  const projectContainer = new ProjectDependencyContainer(socketGateway);
+  const projectController = projectContainer.createProjectController();
 
-// Project routes
-router.post(
-  "/",
-  tokenMiddleware.verifyToken,
-  blockedUserMiddleware.isBlocked,
-  upload.array("files"),
-  projectController.createProject
-);
-router.get(
-  "/",
-  tokenMiddleware.verifyToken,
-  blockedUserMiddleware.isBlocked,
-  projectController.listProjects
-);
-router.get(
-  "/me",
-  tokenMiddleware.verifyToken,
-  blockedUserMiddleware.isBlocked,
-  projectController.listMyProjects
-);
+  // Project routes
+  router.post(
+    "/",
+    tokenMiddleware.verifyToken,
+    blockedUserMiddleware.isBlocked,
+    upload.array("files"),
+    projectController.createProject,
+  );
+  router.get(
+    "/",
+    tokenMiddleware.verifyToken,
+    blockedUserMiddleware.isBlocked,
+    projectController.listProjects,
+  );
 
-// ----------------------
-// 📁  Generate Signed Url Route
-// ----------------------
-router.get(
-  "/generate-signed-url",
-  tokenMiddleware.verifyToken,
-  blockedUserMiddleware.isBlocked,
-  projectController.generateSignedUrl
-);
+  router.get(
+    "/me",
+    tokenMiddleware.verifyToken,
+    blockedUserMiddleware.isBlocked,
+    projectController.listMyProjects,
+  );
 
-router.get(
-  "/:projectId",
-  tokenMiddleware.verifyToken,
-  blockedUserMiddleware.isBlocked,
-  projectController.getProject
-);
-router.put(
-  "/:projectId",
-  tokenMiddleware.verifyToken,
-  blockedUserMiddleware.isBlocked,
-  projectController.updateProject
-);
+  router.delete(
+    "/:projectId",
+    tokenMiddleware.verifyToken,
+    blockedUserMiddleware.isBlocked,
+    projectController.deleteProject,
+  );
 
-// ----------------------
-// 📁 Application Routes
-// ----------------------
+  
+  // ----------------------
+  // 📁  Generate Signed Url Route
+  // ----------------------
+  router.get(
+    "/generate-signed-url",
+    tokenMiddleware.verifyToken,
+    blockedUserMiddleware.isBlocked,
+    projectController.generateSignedUrl,
+  );
 
-router.post(
-  "/:projectId/applications",
-  tokenMiddleware.verifyToken,
-  blockedUserMiddleware.isBlocked,
-  projectController.createApplication
-);
-router.get(
-  "/:projectId/applications",
-  tokenMiddleware.verifyToken,
-  blockedUserMiddleware.isBlocked,
-  projectController.listApplications
-);
-router.patch(
-  "/:projectId/applications/:applicationId",
-  tokenMiddleware.verifyToken,
-  blockedUserMiddleware.isBlocked,
-  projectController.updateApplicationStatus
-);
+  router.get(
+    "/:projectId",
+    tokenMiddleware.verifyToken,
+    blockedUserMiddleware.isBlocked,
+    projectController.getProject,
+  );
+  router.put(
+    "/:projectId",
+    tokenMiddleware.verifyToken,
+    blockedUserMiddleware.isBlocked,
+    projectController.updateProject,
+  );
 
-router.get(
-  "/:projectId/contributors",
-  tokenMiddleware.verifyToken,
-  blockedUserMiddleware.isBlocked,
-  projectController.listContributors
-);
+  // ----------------------
+  // 📁 Application Routes
+  // ----------------------
 
-router.patch(
-  "/:projectId/contributors",
-  tokenMiddleware.verifyToken,
-  blockedUserMiddleware.isBlocked,
-  projectController.updateContributorStatus
-);
+  router.post(
+    "/:projectId/applications",
+    tokenMiddleware.verifyToken,
+    blockedUserMiddleware.isBlocked,
+    projectController.createApplication,
+  );
+  router.get(
+    "/:projectId/applications",
+    tokenMiddleware.verifyToken,
+    blockedUserMiddleware.isBlocked,
+    projectController.listApplications,
+  );
+  router.patch(
+    "/:projectId/applications/:applicationId",
+    tokenMiddleware.verifyToken,
+    blockedUserMiddleware.isBlocked,
+    projectController.updateApplicationStatus,
+  );
 
-// ----------------------
-// 📁 Task Routes
-// ----------------------
-router.use(
-  "/:projectId/tasks",
-  tokenMiddleware.verifyToken,
-  blockedUserMiddleware.isBlocked,
-  taskRouter
-);
+  router.get(
+    "/:projectId/contributors",
+    tokenMiddleware.verifyToken,
+    blockedUserMiddleware.isBlocked,
+    projectController.listContributors,
+  );
 
-export default router;
+  router.patch(
+    "/:projectId/contributors",
+    tokenMiddleware.verifyToken,
+    blockedUserMiddleware.isBlocked,
+    projectController.updateContributorStatus,
+  );
+
+  // ----------------------
+  // 📁 Task Routes
+  // ----------------------
+  router.use(
+    "/:projectId/tasks",
+    tokenMiddleware.verifyToken,
+    blockedUserMiddleware.isBlocked,
+    taskRouter,
+  );
+
+  return router;
+};
