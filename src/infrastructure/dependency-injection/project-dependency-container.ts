@@ -62,15 +62,15 @@ import {
 import { TaskModel } from "../db/models/task-model.js";
 import { TaskRepository } from "../repositories/task-repository.js";
 import type { IRealtimeGateway } from "../config/socket/socket-gateway.js";
-import {
-  NotificationRepository,
-} from "../repositories/notification.repository.js";
+import { NotificationRepository } from "../repositories/notification.repository.js";
 import {
   NotificationMapper,
   type INotificationMapper,
 } from "../../application/mappers/notification.js";
 import { NotificationModel } from "../db/models/notification.model.js";
 import type { INotificationRepository } from "../../application/interfaces/repository/notification.repository.js";
+import type { IDeleteProjectUseCase } from "../../application/interfaces/usecase/project/delete-project.js";
+import { DeleteProjectUseCase } from "../../application/use-cases/project/delete-project.js";
 
 export class ProjectDependencyContainer {
   private readonly _userRepository: IUserRepository;
@@ -162,6 +162,14 @@ export class ProjectDependencyContainer {
     );
   }
 
+  private createDeleteProjectUseCase(): IDeleteProjectUseCase {
+    return new DeleteProjectUseCase(
+      this._projectRepository,
+      this._projectMapper,
+      this._taskRepository,
+    );
+  }
+
   private createGenerateSignedUrlUseCase(): IGenerateSignedUrlUseCase {
     return new GenerateSignedUrlUseCase(this._s3Service);
   }
@@ -197,6 +205,7 @@ export class ProjectDependencyContainer {
       this.createGenerateSignedUrlUseCase(),
       this.createListContributorsUseCase(),
       this.updateContributorStatusUseCase(),
+      this.createDeleteProjectUseCase(),
     );
   }
 }

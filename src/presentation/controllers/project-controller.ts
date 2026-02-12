@@ -17,6 +17,7 @@ import type { IUpdateProjectUseCase } from "../../application/interfaces/usecase
 import type { IGenerateSignedUrlUseCase } from "../../application/interfaces/usecase/project/generate-signed-url.js";
 import type { IListContributorsUseCase } from "../../application/interfaces/usecase/project/list-contributors.js";
 import type { IUpdateContributorStatusUseCase } from "../../application/use-cases/project/update-contributor-status.js";
+import type { IDeleteProjectUseCase } from "../../application/interfaces/usecase/project/delete-project.js";
 
 export class ProjectController {
   constructor(
@@ -30,7 +31,8 @@ export class ProjectController {
     private _updateApplicationStatusUseCase: IUpdateApplicationStatusUseCase,
     private _generateSignedUrlUseCase: IGenerateSignedUrlUseCase,
     private _listContributorsUseCase: IListContributorsUseCase,
-    private _updateContributorStatusUseCase: IUpdateContributorStatusUseCase
+    private _updateContributorStatusUseCase: IUpdateContributorStatusUseCase,
+    private _deleteProjectUseCase: IDeleteProjectUseCase,
   ) {}
 
   createProject = async (req: Request, res: Response, next: NextFunction) => {
@@ -75,7 +77,7 @@ export class ProjectController {
       if (!projectId) {
         throw new AppError(
           "Project ID is required",
-          HttpStatusCode.BAD_REQUEST
+          HttpStatusCode.BAD_REQUEST,
         );
       }
       logger.warn(`req body [update project]: ${JSON.stringify(req.body)}`);
@@ -115,8 +117,30 @@ export class ProjectController {
           ApiResponse.paginated(
             ResponseMessages.FetchedProjects,
             data,
-            pagination
-          )
+            pagination,
+          ),
+        );
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  deleteProject = async (req: Request, res: Response, next: NextFunction) => {
+    logger.debug("Delete Project API hit 🚀");
+    const userId = req.user!.id;
+    const projectId = req.params.projectId;
+    if (!projectId) {
+      throw new AppError("Project ID is required", HttpStatusCode.BAD_REQUEST);
+    }
+    try {
+      const { isDeleted } = await this._deleteProjectUseCase.execute({
+        projectId,
+        userId,
+      });
+      res
+        .status(HttpStatusCode.OK)
+        .json(
+          ApiResponse.success(ResponseMessages.ProjectDeleted, { isDeleted }),
         );
     } catch (error) {
       next(error);
@@ -126,7 +150,7 @@ export class ProjectController {
   generateSignedUrl = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     logger.debug("Generate Signed url API hit 🚀");
     const fileKey = req.query.fileKey as string;
@@ -138,7 +162,7 @@ export class ProjectController {
       res
         .status(HttpStatusCode.OK)
         .json(
-          ApiResponse.success(ResponseMessages.GeneratedSignedUrl, signedUrl)
+          ApiResponse.success(ResponseMessages.GeneratedSignedUrl, signedUrl),
         );
     } catch (error) {
       next(error);
@@ -147,7 +171,7 @@ export class ProjectController {
   createApplication = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     logger.debug("Apply project API hit 🚀");
 
@@ -172,7 +196,7 @@ export class ProjectController {
   listApplications = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     logger.debug("List Application API hit 🚀");
 
@@ -219,8 +243,8 @@ export class ProjectController {
           ApiResponse.paginated(
             ResponseMessages.FetchedProjects,
             data,
-            pagination
-          )
+            pagination,
+          ),
         );
     } catch (error) {
       next(error);
@@ -230,7 +254,7 @@ export class ProjectController {
   updateApplicationStatus = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     logger.debug("Update Application Status API hit 🚀");
     const { status } = req.body;
@@ -261,7 +285,7 @@ export class ProjectController {
   listContributors = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     logger.debug("List contributors API hit 🚀");
     const { projectId } = req.params;
@@ -269,7 +293,7 @@ export class ProjectController {
     if (!projectId) {
       throw new AppError(
         ResponseMessages.ProjectIdIsRequired,
-        HttpStatusCode.BAD_REQUEST
+        HttpStatusCode.BAD_REQUEST,
       );
     }
     try {
@@ -285,7 +309,7 @@ export class ProjectController {
   updateContributorStatus = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     logger.debug("Update Contributor Status API hit 🚀");
 
@@ -295,7 +319,7 @@ export class ProjectController {
     if (!projectId) {
       throw new AppError(
         ResponseMessages.ProjectIdIsRequired,
-        HttpStatusCode.BAD_REQUEST
+        HttpStatusCode.BAD_REQUEST,
       );
     }
 

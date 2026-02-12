@@ -45,6 +45,8 @@ export type IProjectDocument = Document & {
   status: ProjectStatus;
   contributors: IContributor[];
   documents: IProjectFile[];
+  isDeleted: boolean;
+  deletedAt: Date;
   createdAt?: Date;
   updatedAt?: Date;
 };
@@ -53,11 +55,9 @@ export interface IProjectDocumentPopulated
   extends Omit<IProjectDocument, "contributors"> {
   contributors: IPopulatedContributor[];
 }
-export interface IAggregatedProjectDocument
-  extends IProjectDocument {
-    isFavorite: boolean
+export interface IAggregatedProjectDocument extends IProjectDocument {
+  isFavorite: boolean;
 }
-
 
 const contributorSchema = new Schema<IContributor>(
   {
@@ -73,7 +73,7 @@ const contributorSchema = new Schema<IContributor>(
     invitedAt: { type: Date },
     expectedRate: { type: Number },
   },
-  { timestamps: true, _id: false }
+  { timestamps: true, _id: false },
 );
 
 const ProjectFileSchema = new Schema<IProjectFile>({
@@ -177,13 +177,20 @@ const projectSchema = new Schema<IProjectDocument>(
       type: [ProjectFileSchema],
       default: [],
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
+    deletedAt: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export const ProjectModel = mongoose.model<IProjectDocument>(
   "Project",
-  projectSchema
+  projectSchema,
 );
