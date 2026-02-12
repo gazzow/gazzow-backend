@@ -46,6 +46,9 @@ export enum ResponseMessages {
   ProjectIdIsRequired = "Project is required",
   UnauthorizedProjectModification = "Unauthorized to modify this project",
   GeneratedSignedUrl = "Generated signed url successfully",
+  ProjectAlreadyDeleted = "Project has already been deleted",
+  UnableToDeleteProjectWithActiveTasks = "Unable to delete project with active tasks",
+  ProjectDeleted = "Project deleted successfully",
 
   // Contributor
   FetchedContributors = "Contributors fetched successfully",

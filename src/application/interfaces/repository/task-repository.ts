@@ -16,4 +16,5 @@ export interface ITaskRepository extends IBaseRepository<ITaskDocument> {
   findByIdAndPopulate(taskId: string): Promise<IPopulatedTaskDocument | null>;
   getTaskStatusOverview(assigneeId: string): Promise<ITaskStatistics[]>;
   getCompletedTaskByAssigneeId(assigneeId: string): Promise<ITaskDocument[]>;
+  existsActiveTask(projectId: string): Promise<boolean>;
 }

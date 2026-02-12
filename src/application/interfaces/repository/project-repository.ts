@@ -34,11 +34,11 @@ export interface IProjectRepository extends IBaseRepository<IProjectDocument> {
     projectId: string,
     userId: string,
     expectedRate: number,
-    status: ContributorStatus
+    status: ContributorStatus,
   ): Promise<IProjectDocument | null>;
 
   findContributors(
-    projectId: string
+    projectId: string,
   ): Promise<IProjectDocumentPopulated | null>;
 
   findActiveProjects(query: {
@@ -52,8 +52,10 @@ export interface IProjectRepository extends IBaseRepository<IProjectDocument> {
   findContributorAndUpdateStatus(
     projectId: string,
     contributorId: string,
-    status: ContributorStatus
+    status: ContributorStatus,
   ): Promise<IProjectDocument | null>;
 
   findByProjectIds(projectIds: string[]): Promise<IProjectDocument[]>;
+
+  softDelete(id: string): Promise<boolean>;
 }

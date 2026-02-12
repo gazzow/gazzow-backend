@@ -116,3 +116,12 @@ export interface IListCompletedContributionsRequestDTO {
 export interface IListCompletedContributionsResponseDTO {
   data: IProject[];
 }
+
+export interface IDeleteProjectRequestDTO {
+  projectId: string;
+  userId: string;
+}
+
+export interface IDeleteProjectResponseDTO {
+  isDeleted: boolean;
+}

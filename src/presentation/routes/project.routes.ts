@@ -29,6 +29,7 @@ export const createProjectRouter = (socketGateway: SocketGateway) => {
     blockedUserMiddleware.isBlocked,
     projectController.listProjects,
   );
+
   router.get(
     "/me",
     tokenMiddleware.verifyToken,
@@ -36,6 +37,14 @@ export const createProjectRouter = (socketGateway: SocketGateway) => {
     projectController.listMyProjects,
   );
 
+  router.delete(
+    "/:projectId",
+    tokenMiddleware.verifyToken,
+    blockedUserMiddleware.isBlocked,
+    projectController.deleteProject,
+  );
+
+  
   // ----------------------
   // 📁  Generate Signed Url Route
   // ----------------------

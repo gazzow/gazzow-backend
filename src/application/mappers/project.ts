@@ -19,23 +19,23 @@ export interface IProjectMapper {
   toPersistenceEntity(dto: ICreateProjectRequestDTO): Partial<IProjectDocument>;
   toResponseDTO(projectDoc: IProjectDocument): IProject;
   toAggregatedResponseDTO(
-    projectDoc: IAggregatedProjectDocument
+    projectDoc: IAggregatedProjectDocument,
   ): IAggregatedProject;
   toUpdateProjectEntity(dto: Partial<IProject>): Partial<IProjectDocument>;
   toListContributorsResponseDTO(
-    doc: IProjectDocumentPopulated
+    doc: IProjectDocumentPopulated,
   ): IListContributorsResponseDTO;
 
   toDomain(projectDoc: IProjectDocument): IProject;
 
   toListContributorsEntity(
-    populatedContributor: IPopulatedContributor
+    populatedContributor: IPopulatedContributor,
   ): Contributor;
 }
 
 export class ProjectMapper implements IProjectMapper {
   toPersistenceEntity(
-    dto: ICreateProjectRequestDTO
+    dto: ICreateProjectRequestDTO,
   ): Partial<IProjectDocument> {
     return {
       title: dto.title,
@@ -82,6 +82,8 @@ export class ProjectMapper implements IProjectMapper {
       visibility: projectDoc.visibility,
       status: projectDoc.status,
       documents: projectDoc.documents,
+      isDeleted: projectDoc.isDeleted,
+      deletedAt: projectDoc.deletedAt,
       createdAt: projectDoc.createdAt?.toISOString() ?? "",
       updatedAt: projectDoc.updatedAt?.toISOString() ?? "",
     };
@@ -111,13 +113,15 @@ export class ProjectMapper implements IProjectMapper {
       visibility: projectDoc.visibility,
       status: projectDoc.status,
       documents: projectDoc.documents,
+      isDeleted: projectDoc.isDeleted,
+      deletedAt: projectDoc.deletedAt,
       createdAt: projectDoc.createdAt?.toISOString() ?? "",
       updatedAt: projectDoc.updatedAt?.toISOString() ?? "",
     };
   }
-  
+
   toAggregatedResponseDTO(
-    projectDoc: IAggregatedProjectDocument
+    projectDoc: IAggregatedProjectDocument,
   ): IAggregatedProject {
     return {
       id: projectDoc._id.toString(),
@@ -143,6 +147,8 @@ export class ProjectMapper implements IProjectMapper {
       isFavorite: projectDoc.isFavorite,
       status: projectDoc.status,
       documents: projectDoc.documents,
+      isDeleted: projectDoc.isDeleted,
+      deletedAt: projectDoc.deletedAt,
       createdAt: projectDoc.createdAt?.toISOString() ?? "",
       updatedAt: projectDoc.updatedAt?.toISOString() ?? "",
     };
@@ -172,7 +178,7 @@ export class ProjectMapper implements IProjectMapper {
     return update;
   }
   toListContributorsResponseDTO(
-    doc: IProjectDocumentPopulated
+    doc: IProjectDocumentPopulated,
   ): IListContributorsResponseDTO {
     return {
       projectId: doc._id.toString(),
@@ -193,7 +199,7 @@ export class ProjectMapper implements IProjectMapper {
   }
 
   toListContributorsEntity(
-    populatedContributor: IPopulatedContributor
+    populatedContributor: IPopulatedContributor,
   ): Contributor {
     return {
       id: populatedContributor.userId._id.toString(),

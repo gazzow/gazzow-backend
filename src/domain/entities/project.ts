@@ -24,6 +24,8 @@ export interface IProject {
   status: ProjectStatus;
   contributors: IContributor[];
   documents: IProjectFile[];
+  isDeleted: boolean;
+  deletedAt: Date;
   createdAt: string;
   updatedAt: string;
 }

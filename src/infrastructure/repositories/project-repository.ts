@@ -130,6 +130,10 @@ export class ProjectRepository
     });
 
     pipeline.push({
+      $match: { isDeleted: false },
+    });
+
+    pipeline.push({
       $match: {
         "applications.applicantId": { $ne: userObjectId },
       },
@@ -195,6 +199,10 @@ export class ProjectRepository
       });
     }
 
+    pipeline.push({
+      $match: { isDeleted: false },
+    });
+
     if (budgetOrder) {
       pipeline.push({
         $addFields: {
@@ -231,7 +239,7 @@ export class ProjectRepository
     projectId: string,
     userId: string,
     expectedRate: number,
-    status: ContributorStatus
+    status: ContributorStatus,
   ): Promise<IProjectDocument | null> {
     return this.model
       .findByIdAndUpdate(
@@ -245,13 +253,13 @@ export class ProjectRepository
             },
           },
         },
-        { new: true }
+        { new: true },
       )
       .exec();
   }
 
   async findContributors(
-    projectId: string
+    projectId: string,
   ): Promise<IProjectDocumentPopulated | null> {
     const project = await this.model
       .findById(projectId)
@@ -319,7 +327,7 @@ export class ProjectRepository
       {
         // Only show projects where the contributor has an application
         $match: { "application.0": { $exists: true } },
-      }
+      },
     );
 
     //Check project is added as favorite
@@ -381,7 +389,7 @@ export class ProjectRepository
   findContributorAndUpdateStatus(
     projectId: string,
     contributorId: string,
-    status: ContributorStatus
+    status: ContributorStatus,
   ): Promise<IProjectDocument | null> {
     return this.model.findOneAndUpdate(
       {
@@ -395,12 +403,23 @@ export class ProjectRepository
       },
       {
         new: true,
-      }
+      },
     );
   }
 
   findByProjectIds(projectIds: string[]): Promise<IProjectDocument[]> {
     const objectIds = projectIds.map((id) => new Types.ObjectId(id));
     return this.model.find({ _id: { $in: objectIds } }).exec();
+  }
+
+  async softDelete(id: string): Promise<boolean> {
+    return this.model
+      .findByIdAndUpdate(
+        id,
+        { isDeleted: true, deletedAt: new Date() },
+        { new: true },
+      )
+      .exec()
+      .then((result) => !!result);
   }
 }
