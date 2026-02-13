@@ -18,9 +18,6 @@ export class SubscriptionRepository
   async getPlanDistribution(): Promise<ISubscriptionDistribution[]> {
     return await this.model.aggregate([
       {
-        $match: { status: "active" },
-      },
-      {
         $group: {
           _id: "$activePlan.type",
           count: { $sum: 1 },

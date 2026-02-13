@@ -127,7 +127,6 @@ export class UpdateContributorStatusUseCase
         const count = await this._notificationRepository.getUnreadCountByUserId(
           contributor.userId,
         );
-        logger.debug(`updating user notification bell icon count: ${count}`);
         this._realtimeGateway.updateNotificationCount(
           contributor.userId,
           count,

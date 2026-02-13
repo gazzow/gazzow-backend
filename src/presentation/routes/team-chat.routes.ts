@@ -1,9 +1,9 @@
 import express from "express";
-import type { SocketGateway } from "../../infrastructure/config/socket/socket-gateway.js";
+import type { IRealtimeGateway } from "../../infrastructure/config/socket/socket-gateway.js";
 import { AuthDependencyContainer } from "../../infrastructure/dependency-injection/auth-dependency-container.js";
 import { TeamChatDependencyContainer } from "../../infrastructure/dependency-injection/team-chat-container.js";
 
-export const createTeamChatRoutes = (socketGateway: SocketGateway) => {
+export const createTeamChatRoutes = (socketGateway: IRealtimeGateway) => {
   const router = express.Router();
 
   const authContainer = new AuthDependencyContainer();

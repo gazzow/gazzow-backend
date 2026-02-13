@@ -3,9 +3,9 @@ import { ProjectDependencyContainer } from "../../infrastructure/dependency-inje
 import { AuthDependencyContainer } from "../../infrastructure/dependency-injection/auth-dependency-container.js";
 import { upload } from "../middleware/upload.js";
 import taskRouter from "./task.routes.js";
-import type { SocketGateway } from "../../infrastructure/config/socket/socket-gateway.js";
+import type { IRealtimeGateway } from "../../infrastructure/config/socket/socket-gateway.js";
 
-export const createProjectRouter = (socketGateway: SocketGateway) => {
+export const createProjectRouter = (socketGateway: IRealtimeGateway) => {
   const router = express.Router();
 
   const authContainer = new AuthDependencyContainer();

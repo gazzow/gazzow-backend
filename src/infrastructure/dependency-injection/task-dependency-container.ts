@@ -34,7 +34,6 @@ import {
 } from "../../application/mappers/user/user.js";
 import type { IS3FileStorageService } from "../../application/providers/storage-service.js";
 import type { IStripeService } from "../../application/providers/stripe-service.js";
-import type { ICreateNotificationUseCase } from "../../application/use-cases/notification/create-notification.js";
 import { ReleaseFundsUseCase } from "../../application/use-cases/payment/release-fund.js";
 import { CompleteTaskUseCase } from "../../application/use-cases/task/complete-task.js";
 import { CreateTaskUseCase } from "../../application/use-cases/task/create-task.js";
@@ -61,7 +60,6 @@ import { ProjectRepository } from "../repositories/project-repository.js";
 import { SubscriptionRepository } from "../repositories/subscription.repository.js";
 import { TaskRepository } from "../repositories/task-repository.js";
 import { UserRepository } from "../repositories/user-repository.js";
-import { NotificationDependencyContainer } from "./notification.container.js";
 
 export class TaskDependencyContainer {
   private readonly _taskRepository: ITaskRepository;
@@ -74,7 +72,6 @@ export class TaskDependencyContainer {
   private readonly _s3Service: IS3FileStorageService;
   private readonly _subscriptionRepository: ISubscriptionRepository;
   private readonly _subscriptionMapper: ISubscriptionMapper;
-  private readonly _createNotificationUseCase: ICreateNotificationUseCase;
   private readonly _paymentRepository: IPaymentRepository;
   private readonly _paymentMapper: IPaymentMapper;
 
@@ -92,8 +89,6 @@ export class TaskDependencyContainer {
     );
     this._paymentRepository = new PaymentRepository(PaymentModel);
     this._subscriptionMapper = new SubscriptionMapper();
-    this._createNotificationUseCase =
-      new NotificationDependencyContainer().createNotificationUseCase();
     this._paymentMapper = new PaymentMapper();
   }
 
@@ -175,7 +170,6 @@ export class TaskDependencyContainer {
       this._projectRepository,
       this._projectMapper,
       this._taskMapper,
-      this._createNotificationUseCase
     );
   }
 
