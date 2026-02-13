@@ -5,4 +5,5 @@ export interface INotificationRepository
   extends IBaseRepository<INotificationDocument> {
   findByUserId(userId: string): Promise<INotificationDocument[]>;
   getUnreadCountByUserId(userId: string): Promise<number>;
+  markAllNotificationsAsRead(userId: string): Promise<number>;
 }

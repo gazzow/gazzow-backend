@@ -23,6 +23,13 @@ export const createNotificationRouter = (socketGateway: IRealtimeGateway) => {
   );
 
   router.patch(
+    "/mark-all",
+    tokenMiddleware.verifyToken,
+    blockedUserMiddleware.isBlocked,
+    controller.markAllAsRead,
+  );
+
+  router.patch(
     "/:notificationId",
     tokenMiddleware.verifyToken,
     blockedUserMiddleware.isBlocked,
