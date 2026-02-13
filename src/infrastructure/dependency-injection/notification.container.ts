@@ -1,5 +1,6 @@
 import type { INotificationRepository } from "../../application/interfaces/repository/notification.repository.js";
 import type { IGetUnreadNotificationCountUseCase } from "../../application/interfaces/usecase/notification/get-count.js";
+import type { IMarkAllNotificationsAsReadUseCase } from "../../application/interfaces/usecase/notification/mark-all-notifications-as -read.js";
 import type { IMarkNotificationAsReadUseCase } from "../../application/interfaces/usecase/notification/mark-notification-as-read.js";
 import {
   NotificationMapper,
@@ -16,6 +17,7 @@ import {
   ListNotificationUseCase,
   type IListNotificationUseCase,
 } from "../../application/use-cases/notification/list-notifications.js";
+import { MarkAllNotificationsAsReadUseCase } from "../../application/use-cases/notification/mark-all-notifications-as-read.js";
 import { MarkNotificationAsReadUseCase } from "../../application/use-cases/notification/mark-notification-as-read.js";
 
 import { NotificationController } from "../../presentation/controllers/notification.controller.js";
@@ -58,10 +60,14 @@ export class NotificationDependencyContainer {
     );
   }
 
-  // Notification DI
+  createMarkAllAsReadUseCase(): IMarkAllNotificationsAsReadUseCase {
+    return new MarkAllNotificationsAsReadUseCase(this._notificationRepository);
+  }
+
   public createNotificationUseCase(): ICreateNotificationUseCase {
     return new CreateNotificationUseCase(this._notificationService);
   }
+
   private createGetUnreadNotificationCountUseCase(): IGetUnreadNotificationCountUseCase {
     return new GetUnreadNotificationCountUseCase(this._notificationRepository);
   }
@@ -71,6 +77,7 @@ export class NotificationDependencyContainer {
       this.createListNotificationsUseCase(),
       this.createMarkAsReadUseCase(),
       this.createGetUnreadNotificationCountUseCase(),
+      this.createMarkAllAsReadUseCase(),
     );
   }
 }
