@@ -4,9 +4,9 @@ import logger from "../../utils/logger.js";
 import { ApiResponse } from "../common/api-response.js";
 import { HttpStatusCode } from "../../domain/enums/constants/status-codes.js";
 import type { IListNotificationUseCase } from "../../application/use-cases/notification/list-notifications.js";
-import type { IMarkNotificationAsReadUseCase } from "../../application/use-cases/notification/mark-notification-as-read.js";
 import type { IGetUnreadNotificationCountUseCase } from "../../application/interfaces/usecase/notification/get-count.js";
 import { ResponseMessages } from "../../domain/enums/constants/response-messages.js";
+import type { IMarkNotificationAsReadUseCase } from "../../application/interfaces/usecase/notification/mark-notification-as-read.js";
 
 export class NotificationController {
   constructor(

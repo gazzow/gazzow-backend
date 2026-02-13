@@ -3,6 +3,7 @@ import type {
   IDeletedMessageSocketPayload,
   IMessage,
   INotificationPayload,
+  ITaskCommentNotificationPayload,
 } from "../../../domain/entities/message.js";
 import {
   SOCKET_EVENTS,
@@ -18,7 +19,7 @@ export interface IRealtimeGateway {
   emitToUser(
     userId: string,
     event: SocketEvent,
-    payload: INotificationPayload,
+    payload: INotificationPayload | ITaskCommentNotificationPayload,
   ): void;
 
   updateNotificationCount(userId: string, count: number): void;
@@ -44,7 +45,6 @@ export class SocketGateway implements IRealtimeGateway {
   }
 
   updateNotificationCount(userId: string, count: number): void {
-    console.log(userId, count)
-    this.io.to(userId).emit(SOCKET_EVENTS.NOTIFICATION_COUNT, {count});
+    this.io.to(userId).emit(SOCKET_EVENTS.NOTIFICATION_COUNT, { count });
   }
 }

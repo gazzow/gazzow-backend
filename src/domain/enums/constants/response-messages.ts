@@ -140,4 +140,5 @@ export enum ResponseMessages {
   // Notification
   NotificationMarkedAsRead = "Notification marked as read",
   UnreadNotificationCountRetrieved = "Unread notification count retrieved successfully",
+  NotificationNotFound="Notification Not found",
 }

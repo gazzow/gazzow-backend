@@ -16,21 +16,21 @@ export class GetTaskCommentsUseCase implements IGetTaskCommentsUseCase {
     private _taskRepository: ITaskRepository,
     private _taskCommentRepository: ITaskCommentRepository,
     private _taskMapper: ITaskMapper,
-    private _taskCommentMapper: ITaskCommentMapper
+    private _taskCommentMapper: ITaskCommentMapper,
   ) {}
   async execute(
-    dto: IGetTaskCommentsRequestDTO
+    dto: IGetTaskCommentsRequestDTO,
   ): Promise<IGetTaskCommentsResponseDTO> {
     const taskDoc = await this._taskRepository.findById(dto.taskId);
     if (!taskDoc)
       throw new AppError(
         ResponseMessages.TaskNotFound,
-        HttpStatusCode.NOT_FOUND
+        HttpStatusCode.NOT_FOUND,
       );
     const task = this._taskMapper.toResponseDTO(taskDoc);
 
     const persistentEntity = this._taskCommentMapper.toGetCommentsPersistent(
-      task.id
+      task.id,
     );
 
     const taskCommentDocs = await this._taskCommentRepository.findAll({

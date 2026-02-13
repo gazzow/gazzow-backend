@@ -1,4 +1,4 @@
-import type { NotificationData } from "../../domain/entities/notification.js";
+import type { INotification, NotificationData } from "../../domain/entities/notification.js";
 import type { NotificationType } from "../../domain/enums/notification.js";
 
 export interface CreateNotificationDTO {
@@ -7,4 +7,12 @@ export interface CreateNotificationDTO {
   body: string;
   type: NotificationType;
   data?: NotificationData;
+}
+
+export interface IMarkNotificationAsReadRequestDTO {
+  notificationId: string;
+}
+
+export interface IMarkNotificationAsReadResponseDTO {
+  data: INotification;
 }

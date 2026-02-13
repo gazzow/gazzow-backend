@@ -23,6 +23,12 @@ export interface INotificationPayload {
   message: string;
 }
 
+export interface ITaskCommentNotificationPayload{
+   userId: string;
+  title: string;
+  message: string;
+}
+
 export interface IDeletedMessageSocketPayload {
   messageId: string;
   userId: string;

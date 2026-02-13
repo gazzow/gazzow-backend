@@ -1,6 +1,6 @@
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
-import { NotificationType } from "../../../domain/enums/notification.js";
+import type { IRealtimeGateway } from "../../../infrastructure/config/socket/socket-gateway.js";
 import { AppError } from "../../../utils/app-error.js";
 import logger from "../../../utils/logger.js";
 import type {
@@ -14,7 +14,6 @@ import type { IUserRepository } from "../../interfaces/repository/user-repositor
 import type { ICreateTaskCommentUseCase } from "../../interfaces/usecase/task-comment/create-comment.js";
 import type { ITaskCommentMapper } from "../../mappers/task-comment.js";
 import type { IUserMapper } from "../../mappers/user/user.js";
-import type { ICreateNotificationUseCase } from "../notification/create-notification.js";
 
 export class CreateTaskCommentUseCase implements ICreateTaskCommentUseCase {
   constructor(
@@ -23,24 +22,24 @@ export class CreateTaskCommentUseCase implements ICreateTaskCommentUseCase {
     private _taskCommentRepository: ITaskCommentRepository,
     private _userMapper: IUserMapper,
     private _taskCommentMapper: ITaskCommentMapper,
-    private _createNotificationUseCase: ICreateNotificationUseCase
+    private _realtimeGateway: IRealtimeGateway,
   ) {}
 
   async execute(
-    dto: ICreateTaskCommentRequestDTO
+    dto: ICreateTaskCommentRequestDTO,
   ): Promise<ICreateTaskCommentResponseDTO> {
     const taskDoc = await this._taskRepository.findById(dto.taskId);
     if (!taskDoc)
       throw new AppError(
         ResponseMessages.TaskNotFound,
-        HttpStatusCode.NOT_FOUND
+        HttpStatusCode.NOT_FOUND,
       );
 
     const userDoc = await this._userRepository.findById(dto.userId);
     if (!userDoc) {
       throw new AppError(
         ResponseMessages.UserNotFound,
-        HttpStatusCode.NOT_FOUND
+        HttpStatusCode.NOT_FOUND,
       );
     }
 
@@ -73,21 +72,27 @@ export class CreateTaskCommentUseCase implements ICreateTaskCommentUseCase {
     if (isCreator) {
       const assigneeMessage = {
         userId: assigneeId,
-        title: "Gazzow Notification",
-        body: "The task creator commented on the task",
-        type: NotificationType.TASK,
+        message: "The task creator commented on the task",
+        title: `Project Update`,
       };
 
-      await this._createNotificationUseCase.execute(assigneeMessage);
+      this._realtimeGateway.emitToUser(
+        assigneeMessage.userId,
+        "PROJECT_MESSAGE",
+        assigneeMessage,
+      );
     } else {
       const creatorMessage = {
         userId: creatorId,
+        message: "The assignee commented on the task",
         title: "Gazzow Notification",
-        body: "The assignee commented on the task",
-        type: NotificationType.TASK,
       };
 
-      await this._createNotificationUseCase.execute(creatorMessage);
+      this._realtimeGateway.emitToUser(
+        creatorMessage.userId,
+        "PROJECT_MESSAGE",
+        creatorMessage,
+      );
     }
 
     return { data };
