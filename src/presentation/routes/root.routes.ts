@@ -19,7 +19,7 @@ import { createTaskCommentRouter } from "./task-comment.routes.js";
 export const createRootRoutes = (socketGateway: IRealtimeGateway) => {
   const router = Router();
 
-  // Public routes
+
   router.use("/", userRoutes);
   router.use("/payments", paymentRoutes);
   router.use("/projects", createProjectRouter(socketGateway));
