@@ -3,7 +3,6 @@ import { ResponseMessages } from "../../../domain/enums/constants/response-messa
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
 import type { IRealtimeGateway } from "../../../infrastructure/config/socket/socket-gateway.js";
 import { AppError } from "../../../utils/app-error.js";
-import logger from "../../../utils/logger.js";
 import type {
   IUpdateContributorStatusRequestDTO,
   IUpdateContributorStatusResponseDTO,
@@ -15,6 +14,8 @@ import type { IProjectMapper } from "../../mappers/project.js";
 import { NotificationType } from "../../../domain/enums/notification.js";
 import type { INotificationRepository } from "../../interfaces/repository/notification.repository.js";
 import type { CreateNotificationDTO } from "../../dtos/notification.js";
+import type { ITaskMapper } from "../../mappers/task.js";
+import { TaskStatus } from "../../../domain/enums/task.js";
 
 export interface IUpdateContributorStatusUseCase {
   execute(
@@ -28,6 +29,7 @@ export class UpdateContributorStatusUseCase
   constructor(
     private _projectRepository: IProjectRepository,
     private _taskRepository: ITaskRepository,
+    private _taskMapper: ITaskMapper,
     private _projectMapper: IProjectMapper,
     private _realtimeGateway: IRealtimeGateway,
     private _notificationRepository: INotificationRepository,
@@ -46,9 +48,9 @@ export class UpdateContributorStatusUseCase
       );
     }
 
-    const project = this._projectMapper.toDomain(projectDoc);
+    const projectEntity = this._projectMapper.toDomain(projectDoc);
 
-    const isValidContributor = project.contributors.some(
+    const isValidContributor = projectEntity.contributors.some(
       (c) => c.userId === dto.contributorId,
     );
 
@@ -59,86 +61,93 @@ export class UpdateContributorStatusUseCase
       );
     }
 
-    // find task has not start working  and update it as unassigned for
+    // find task has not start working and update it as unassigned
     const taskDocs = await this._taskRepository.findByAssigneeId(
+      dto.projectId,
       dto.contributorId,
     );
 
-    if (taskDocs && taskDocs.length === 0) {
-      logger.info(`Contributor status updating to [${dto.status}]`);
-      const updatedProject =
-        await this._projectRepository.findContributorAndUpdateStatus(
-          dto.projectId,
-          dto.contributorId,
-          dto.status,
-        );
+    const tasks =
+      taskDocs && taskDocs.length > 0
+        ? taskDocs.map((task) => this._taskMapper.toDomain(task))
+        : [];
 
-      if (!updatedProject) {
-        throw new AppError(
-          "Contributor Status update failed",
-          HttpStatusCode.BAD_REQUEST,
-        );
-      }
+   
+    // return task when task status in_progress / submitted
+    const blockingTasks = tasks.filter((task) =>
+      [TaskStatus.IN_PROGRESS, TaskStatus.SUBMITTED].includes(task.status),
+    );
 
-      const project = this._projectMapper.toResponseDTO(updatedProject);
-
-      const contributor = project.contributors.find(
-        (c) => c.userId === dto.contributorId,
-      );
-
-      if (!contributor)
-        throw new AppError(
-          ResponseMessages.UnableToFindContributor,
-          HttpStatusCode.NOT_FOUND,
-        );
-
-      const messageBody = `Your contributor status was updated to ${contributor.status} in ${project.title}.`;
-
-      const messagePayload: INotificationPayload = {
-        projectId: project.id,
-        message: messageBody,
-        title: `Project Update`,
-      };
-
-      this._realtimeGateway.emitToUser(
-        contributor.userId,
-        "PROJECT_MESSAGE",
-        messagePayload,
-      );
-
-      const notificationPayload: CreateNotificationDTO = {
-        userId: contributor.userId,
-        title: messagePayload.title,
-        body: messagePayload.message,
-        type: NotificationType.PROJECT, // or NotificationType.SYSTEM // NotificationType.MESSAGE
-        data: {
-          type: "PROJECT",
-          projectId: messagePayload.projectId,
-        },
-      };
-
-      const notificationPersistent =
-        this._notificationMapper.toPersistentModel(notificationPayload);
-      const notificationDoc = await this._notificationRepository.create(
-        notificationPersistent,
-      );
-
-      if (notificationDoc) {
-        const count = await this._notificationRepository.getUnreadCountByUserId(
-          contributor.userId,
-        );
-        this._realtimeGateway.updateNotificationCount(
-          contributor.userId,
-          count,
-        );
-      }
-
-      return { data: project };
-    } else {
+    if (blockingTasks.length > 0)
       throw new AppError(
-        "Contributor is currently assigned to active tasks",
+        ResponseMessages.UnableToChangeContributorSTatus,
         HttpStatusCode.CONFLICT,
       );
+
+    const updatedProject =
+      await this._projectRepository.findContributorAndUpdateStatus(
+        dto.projectId,
+        dto.contributorId,
+        dto.status,
+      );
+
+    if (!updatedProject) {
+      throw new AppError(
+        ResponseMessages.ContributorStatusUpdateFailed,
+        HttpStatusCode.BAD_REQUEST,
+      );
     }
+
+    const data = this._projectMapper.toResponseDTO(updatedProject);
+
+    const contributor = data.contributors.find(
+      (c) => c.userId === dto.contributorId,
+    );
+
+    if (!contributor)
+      throw new AppError(
+        ResponseMessages.UnableToFindContributor,
+        HttpStatusCode.NOT_FOUND,
+      );
+
+    const messageBody = `Your contributor status was updated to ${contributor.status} in ${data.title}.`;
+
+    const messagePayload: INotificationPayload = {
+      projectId: data.id,
+      message: messageBody,
+      title: `Project Update`,
+    };
+
+    this._realtimeGateway.emitToUser(
+      contributor.userId,
+      "PROJECT_MESSAGE",
+      messagePayload,
+    );
+
+    const notificationPayload: CreateNotificationDTO = {
+      userId: contributor.userId,
+      title: messagePayload.title,
+      body: messagePayload.message,
+      type: NotificationType.PROJECT, // or NotificationType.SYSTEM // NotificationType.MESSAGE
+      data: {
+        type: "PROJECT",
+        projectId: messagePayload.projectId,
+      },
+    };
+
+    const notificationPersistent =
+      this._notificationMapper.toPersistentModel(notificationPayload);
+    const notificationDoc = await this._notificationRepository.create(
+      notificationPersistent,
+    );
+
+    if (notificationDoc) {
+      const count = await this._notificationRepository.getUnreadCountByUserId(
+        contributor.userId,
+      );
+      this._realtimeGateway.updateNotificationCount(contributor.userId, count);
+    }
+
+    return { data: data };
   }
 }
