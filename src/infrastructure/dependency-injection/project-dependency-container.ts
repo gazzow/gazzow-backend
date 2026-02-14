@@ -185,6 +185,7 @@ export class ProjectDependencyContainer {
     return new UpdateContributorStatusUseCase(
       this._projectRepository,
       this._taskRepository,
+      this._taskMapper,
       this._projectMapper,
       this._socketGateway,
       this._notificationRepository,

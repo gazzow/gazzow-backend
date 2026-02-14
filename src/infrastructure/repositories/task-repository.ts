@@ -17,8 +17,11 @@ export class TaskRepository
   constructor(model: Model<ITaskDocument>) {
     super(model);
   }
-  findByAssigneeId(assigneeId: string): Promise<ITaskDocument[] | null> {
-    return this.model.find({ assigneeId });
+  findByAssigneeId(
+    projectId: string,
+    assigneeId: string,
+  ): Promise<ITaskDocument[] | null> {
+    return this.model.find({ assigneeId, projectId });
   }
   async findByProjectAndUser(query: {
     filter?: FilterQuery<ITaskDocument>;

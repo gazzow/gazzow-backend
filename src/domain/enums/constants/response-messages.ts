@@ -49,10 +49,12 @@ export enum ResponseMessages {
   ProjectAlreadyDeleted = "Project has already been deleted",
   UnableToDeleteProjectWithActiveTasks = "Unable to delete project with active tasks",
   ProjectDeleted = "Project deleted successfully",
+  UnableToChangeContributorSTatus = "Contributor is currently assigned to active tasks",
+  ContributorStatusUpdateFailed= "Contributor Status update failed",
 
   // Contributor
   FetchedContributors = "Contributors fetched successfully",
-  ContributorNotFoundInProject = "User is not a contributor of this project",
+  ContributorNotFoundInProject = "User is not a contributor in this project",
   ContributorStatusUpdated = "Contributor status updated successfully",
   UnableToFindContributor = "Unable to find contributor",
 
