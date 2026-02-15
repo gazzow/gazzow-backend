@@ -19,16 +19,17 @@ export class CheckBlockedUserMiddleware implements ICheckBlockedUserMiddleware {
       if (!req.user) {
         throw new AppError(
           ResponseMessages.Unauthorized,
-          HttpStatusCode.UNAUTHORIZED
+          HttpStatusCode.UNAUTHORIZED,
         );
       }
-
 
       const user = await this._userRepository.findById(req.user.id);
       if (!user) {
         throw new AppError(
           ResponseMessages.UserNotFound,
-          HttpStatusCode.NOT_FOUND
+          HttpStatusCode.FORBIDDEN,
+          undefined,
+          ErrorCode.USER_BLOCKED,
         );
       }
 
@@ -38,7 +39,7 @@ export class CheckBlockedUserMiddleware implements ICheckBlockedUserMiddleware {
           ResponseMessages.UserBlocked,
           HttpStatusCode.FORBIDDEN,
           undefined,
-          ErrorCode.USER_BLOCKED
+          ErrorCode.USER_BLOCKED,
         );
       }
       return next();
