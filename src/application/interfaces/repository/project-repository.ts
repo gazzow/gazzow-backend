@@ -55,7 +55,7 @@ export interface IProjectRepository extends IBaseRepository<IProjectDocument> {
     status: ContributorStatus,
   ): Promise<IProjectDocument | null>;
 
-  findByProjectIds(projectIds: string[]): Promise<IProjectDocument[]>;
+  findByProjectIds(projectIds: string[], userId: string): Promise<IAggregatedProjectDocument[]>;
 
   softDelete(id: string): Promise<boolean>;
 }

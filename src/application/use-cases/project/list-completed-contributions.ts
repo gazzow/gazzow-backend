@@ -15,10 +15,10 @@ export class ListCompletedContributionsUseCase
     private _projectRepository: IProjectRepository,
     private _taskRepository: ITaskRepository,
     private _projectMapper: IProjectMapper,
-    private _taskMapper: ITaskMapper
+    private _taskMapper: ITaskMapper,
   ) {}
   async execute(
-    dto: IListCompletedContributionsRequestDTO
+    dto: IListCompletedContributionsRequestDTO,
   ): Promise<IListCompletedContributionsResponseDTO> {
     const { userId } = dto;
     const taskDocs =
@@ -26,10 +26,13 @@ export class ListCompletedContributionsUseCase
 
     const projectIds = this._taskMapper.getCompletedTaskProjectIds(taskDocs);
 
-    const projects = await this._projectRepository.findByProjectIds(projectIds);
+    const projects = await this._projectRepository.findByProjectIds(
+      projectIds,
+      userId,
+    );
 
     const data = projects.map((project) =>
-      this._projectMapper.toResponseDTO(project)
+      this._projectMapper.toAggregatedResponseDTO(project),
     );
 
     return { data };
