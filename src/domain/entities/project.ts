@@ -32,6 +32,11 @@ export interface IProject {
 
 export interface IAggregatedProject extends IProject {
   isFavorite: boolean;
+  applicationCount: number;
+  creator: {
+    name: string;
+    imageUrl: string;
+  };
 }
 
 export interface IContributor {

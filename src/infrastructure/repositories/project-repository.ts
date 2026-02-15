@@ -4,6 +4,7 @@ import type {
   IProjectRepository,
 } from "../../application/interfaces/repository/project-repository.js";
 import type {
+  IAggregatedProjectDocument,
   IProjectDocument,
   IProjectDocumentPopulated,
 } from "../db/models/project-model.js";
@@ -86,13 +87,94 @@ export class ProjectRepository
       },
     });
 
-    // Lookup applications to exclude applied projects
+    // skip applied projects
     pipeline.push({
       $lookup: {
         from: "applications",
-        localField: "_id",
-        foreignField: "projectId",
-        as: "applications",
+        let: { projectId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$projectId", "$$projectId"] },
+                  { $eq: ["$applicantId", userObjectId] },
+                ],
+              },
+            },
+          },
+          { $limit: 1 }, // performance optimization
+        ],
+        as: "userApplication",
+      },
+    });
+
+    pipeline.push({
+      $match: {
+        userApplication: { $eq: [] },
+      },
+    });
+
+    pipeline.push({
+      $project: {
+        userApplication: 0,
+      },
+    });
+
+    // Lookup applications to find application count
+    pipeline.push({
+      $lookup: {
+        from: "applications",
+        let: { projectId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: ["$projectId", "$$projectId"] },
+            },
+          },
+          {
+            $count: "count",
+          },
+        ],
+        as: "applicationCount",
+      },
+    });
+
+    pipeline.push({
+      $addFields: {
+        applicationCount: {
+          $ifNull: [{ $arrayElemAt: ["$applicationCount.count", 0] }, 0],
+        },
+      },
+    });
+
+    // add creator profile data
+    pipeline.push({
+      $lookup: {
+        from: "users",
+        let: { creatorId: "$creatorId" },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: ["$_id", "$$creatorId"] },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              name: 1,
+              imageUrl: 1,
+            },
+          },
+        ],
+        as: "creator",
+      },
+    });
+
+    pipeline.push({
+      $unwind: {
+        path: "$creator",
+        preserveNullAndEmptyArrays: true,
       },
     });
 
@@ -330,6 +412,64 @@ export class ProjectRepository
       },
     );
 
+
+    // Lookup applications to find application count
+    pipeline.push({
+      $lookup: {
+        from: "applications",
+        let: { projectId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: ["$projectId", "$$projectId"] },
+            },
+          },
+          {
+            $count: "count",
+          },
+        ],
+        as: "applicationCount",
+      },
+    });
+
+    pipeline.push({
+      $addFields: {
+        applicationCount: {
+          $ifNull: [{ $arrayElemAt: ["$applicationCount.count", 0] }, 0],
+        },
+      },
+    });
+
+    // add creator profile data
+    pipeline.push({
+      $lookup: {
+        from: "users",
+        let: { creatorId: "$creatorId" },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: ["$_id", "$$creatorId"] },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              name: 1,
+              imageUrl: 1,
+            },
+          },
+        ],
+        as: "creator",
+      },
+    });
+
+    pipeline.push({
+      $unwind: {
+        path: "$creator",
+        preserveNullAndEmptyArrays: true,
+      },
+    });
+
     //Check project is added as favorite
     pipeline.push({
       $lookup: {
@@ -407,9 +547,114 @@ export class ProjectRepository
     );
   }
 
-  findByProjectIds(projectIds: string[]): Promise<IProjectDocument[]> {
+  findByProjectIds(
+    projectIds: string[],
+    userId: string,
+  ): Promise<IAggregatedProjectDocument[]> {
     const objectIds = projectIds.map((id) => new Types.ObjectId(id));
-    return this.model.find({ _id: { $in: objectIds } }).exec();
+    const userObjectId = new Types.ObjectId(userId);
+
+    const pipeline: any[] = [];
+
+    // Match by project IDs
+    pipeline.push({
+      $match: {
+        _id: { $in: objectIds },
+        isDeleted: false,
+      },
+    });
+
+     // Lookup applications to find application count
+    pipeline.push({
+      $lookup: {
+        from: "applications",
+        let: { projectId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: ["$projectId", "$$projectId"] },
+            },
+          },
+          {
+            $count: "count",
+          },
+        ],
+        as: "applicationCount",
+      },
+    });
+
+    pipeline.push({
+      $addFields: {
+        applicationCount: {
+          $ifNull: [{ $arrayElemAt: ["$applicationCount.count", 0] }, 0],
+        },
+      },
+    });
+
+    // Creator profile lookup (only name + image)
+    pipeline.push({
+      $lookup: {
+        from: "users",
+        let: { creatorId: "$creatorId" },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: ["$_id", "$$creatorId"] },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              name: 1,
+              imageUrl: 1,
+            },
+          },
+        ],
+        as: "creator",
+      },
+    });
+
+    pipeline.push({
+      $unwind: {
+        path: "$creator",
+        preserveNullAndEmptyArrays: true,
+      },
+    });
+
+    // Favorite check
+    pipeline.push({
+      $lookup: {
+        from: "favorites",
+        let: { projectId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$projectId", "$$projectId"] },
+                  { $eq: ["$userId", userObjectId] },
+                ],
+              },
+            },
+          },
+        ],
+        as: "favorite",
+      },
+    });
+
+    pipeline.push({
+      $addFields: {
+        isFavorite: { $gt: [{ $size: "$favorite" }, 0] },
+      },
+    });
+
+    pipeline.push({
+      $project: {
+        favorite: 0,
+      },
+    });
+
+    return this.model.aggregate(pipeline);
   }
 
   async softDelete(id: string): Promise<boolean> {

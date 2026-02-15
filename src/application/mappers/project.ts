@@ -126,6 +126,7 @@ export class ProjectMapper implements IProjectMapper {
     return {
       id: projectDoc._id.toString(),
       creatorId: projectDoc.creatorId.toString(),
+      creator: projectDoc.creator,
       title: projectDoc.title,
       description: projectDoc.description,
       developersNeeded: projectDoc.developersNeeded,
@@ -144,6 +145,7 @@ export class ProjectMapper implements IProjectMapper {
       durationMax: projectDoc.durationMax,
       durationUnit: projectDoc.durationUnit,
       visibility: projectDoc.visibility,
+      applicationCount: projectDoc.applicationCount,
       isFavorite: projectDoc.isFavorite,
       status: projectDoc.status,
       documents: projectDoc.documents,

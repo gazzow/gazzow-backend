@@ -57,6 +57,11 @@ export interface IProjectDocumentPopulated
 }
 export interface IAggregatedProjectDocument extends IProjectDocument {
   isFavorite: boolean;
+  applicationCount: number;
+  creator: {
+    name: string;
+    imageUrl: string;
+  };
 }
 
 const contributorSchema = new Schema<IContributor>(

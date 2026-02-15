@@ -114,7 +114,7 @@ export interface IListCompletedContributionsRequestDTO {
 }
 
 export interface IListCompletedContributionsResponseDTO {
-  data: IProject[];
+  data: IAggregatedProject[];
 }
 
 export interface IDeleteProjectRequestDTO {
