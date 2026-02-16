@@ -13,8 +13,8 @@ export class PlanRepository
   }
   findByPlanTypeAndDuration(
     type: PlanType,
-    duration: PlanDuration
+    duration: PlanDuration,
   ): Promise<IPlanDocument | null> {
-    return this.model.findOne({ type, duration });
+    return this.model.findOne({ type, duration, isDeleted: false });
   }
 }

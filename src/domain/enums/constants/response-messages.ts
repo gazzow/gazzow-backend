@@ -50,7 +50,7 @@ export enum ResponseMessages {
   UnableToDeleteProjectWithActiveTasks = "Unable to delete project with active tasks",
   ProjectDeleted = "Project deleted successfully",
   UnableToChangeContributorSTatus = "Contributor is currently assigned to active tasks",
-  ContributorStatusUpdateFailed= "Contributor Status update failed",
+  ContributorStatusUpdateFailed = "Contributor Status update failed",
 
   // Contributor
   FetchedContributors = "Contributors fetched successfully",
@@ -113,6 +113,8 @@ export enum ResponseMessages {
   PlanRetrieved = "Plan retrieved successfully",
   PlanIdIsRequired = "Plan is is required",
   PlanNotFound = "Plan not found",
+  PlanUpdateFailed = "Plan update failed.Please try again later",
+  PlanUpdateSuccess = "Plan update successfully",
 
   // Subscription
   UserAlreadySubscribed = "You already has an active subscription",
