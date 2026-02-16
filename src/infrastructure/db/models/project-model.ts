@@ -47,8 +47,8 @@ export type IProjectDocument = Document & {
   documents: IProjectFile[];
   isDeleted: boolean;
   deletedAt: Date;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export interface IProjectDocumentPopulated

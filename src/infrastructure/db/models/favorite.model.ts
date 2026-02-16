@@ -1,5 +1,5 @@
 import { Schema, Types, model, Document } from "mongoose";
-import type { IProjectDocument } from "./project-model.js";
+import type { IAggregatedProjectDocument } from "./project-model.js";
 
 export type IFavoriteDocument = Document & {
   _id: Types.ObjectId;
@@ -10,7 +10,7 @@ export type IFavoriteDocument = Document & {
 };
 
 export type IFavoritePopulatedDocument = Omit<IFavoriteDocument, "projectId"> & {
-  projectId: Partial<IProjectDocument>;
+  project: IAggregatedProjectDocument;
 };
 
 const FavoriteSchema = new Schema<IFavoriteDocument>(
