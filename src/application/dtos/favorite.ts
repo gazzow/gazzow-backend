@@ -1,8 +1,8 @@
 import type { IFavorite } from "../../domain/entities/favorite.js";
-import type { IProject } from "../../domain/entities/project.js";
+import type { IAggregatedProject } from "../../domain/entities/project.js";
 
 export interface IFavoriteResponseDTO extends Omit<IFavorite, "projectId"> {
-  project: Partial<IProject>;
+  project: IAggregatedProject;
 }
 
 export interface IAddProjectFavoriteRequestDTO {

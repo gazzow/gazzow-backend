@@ -11,15 +11,17 @@ import type {
 
 export interface IFavoriteMapper {
   toPersistentDocument(
-    dto: IAddProjectFavoriteRequestDTO
+    dto: IAddProjectFavoriteRequestDTO,
   ): Partial<IFavoriteDocument>;
-  toPopulatedResponseDTO(doc: IFavoritePopulatedDocument): IFavoriteResponseDTO;
+  toPopulatedResponseDTO(
+    projectDoc: IFavoritePopulatedDocument,
+  ): IFavoriteResponseDTO;
   toResponseDTO(doc: IFavoriteDocument): IFavorite;
 }
 
 export class FavoriteMapper implements IFavoriteMapper {
   toPersistentDocument(
-    dto: IAddProjectFavoriteRequestDTO
+    dto: IAddProjectFavoriteRequestDTO,
   ): Partial<IFavoriteDocument> {
     return {
       userId: new Types.ObjectId(dto.userId),
@@ -38,24 +40,44 @@ export class FavoriteMapper implements IFavoriteMapper {
   }
 
   toPopulatedResponseDTO(
-    doc: IFavoritePopulatedDocument
+    projectDoc: IFavoritePopulatedDocument,
   ): IFavoriteResponseDTO {
-    return {
-      id: doc._id.toString(),
-      userId: doc.userId.toString(),
+    return {  
+      id: projectDoc._id.toString(),
+      userId: projectDoc.userId.toString(),
       project: {
-        ...(doc.projectId.id && { id: doc.projectId.id }),
-        title: doc.projectId?.title,
-        description: doc.projectId.description,
-        requiredSkills:doc.projectId.requiredSkills,
-        budgetMin: doc.projectId.budgetMin,
-        budgetMax: doc.projectId.budgetMax,
-        durationMin: doc.projectId.durationMin,
-        durationMax: doc.projectId.durationMax,
-        durationUnit: doc.projectId.durationUnit,
+        id: projectDoc._id.toString(),
+        creatorId: projectDoc.project.creatorId.toString(),
+        creator: projectDoc.project.creator,
+        title: projectDoc.project.title,
+        description: projectDoc.project.description,
+        developersNeeded: projectDoc.project.developersNeeded,
+        experience: projectDoc.project.experience,
+        contributors: projectDoc.project.contributors.map((c) => ({
+          userId: c.userId.toString(),
+          status: c.status,
+          invitedAt: c.invitedAt?.toISOString() ?? "",
+          createdAt: c.createdAt?.toISOString() ?? "",
+          updatedAt: projectDoc.project.updatedAt?.toISOString() ?? "",
+        })),
+        budgetMin: projectDoc.project.budgetMin,
+        budgetMax: projectDoc.project.budgetMax,
+        requiredSkills: projectDoc.project.requiredSkills,
+        durationMin: projectDoc.project.durationMin,
+        durationMax: projectDoc.project.durationMax,
+        durationUnit: projectDoc.project.durationUnit,
+        visibility: projectDoc.project.visibility,
+        applicationCount: projectDoc.project.applicationCount,
+        isFavorite: projectDoc.project.isFavorite,
+        status: projectDoc.project.status,
+        documents: projectDoc.project.documents,
+        isDeleted: projectDoc.project.isDeleted,
+        deletedAt: projectDoc.project.deletedAt,
+        createdAt: projectDoc.project.createdAt?.toISOString() ?? "",
+        updatedAt: projectDoc.project.updatedAt?.toISOString() ?? "",
       },
-      createdAt: doc.createdAt,
-      updatedAt: doc.updatedAt,
+      createdAt: projectDoc.project.createdAt,
+      updatedAt: projectDoc.project.updatedAt,
     };
   }
 }
