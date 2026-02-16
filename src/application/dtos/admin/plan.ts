@@ -28,3 +28,11 @@ export interface IGetPlanRequestDTO {
 export interface IGetPlanResponseDTO {
   data: IPlan;
 }
+
+export interface IUpdatePlanRequestDTO {
+  planId: string;
+  data: Partial<IPlan>;
+}
+export interface IUpdatePlanResponseDTO {
+  data: IPlan;
+}

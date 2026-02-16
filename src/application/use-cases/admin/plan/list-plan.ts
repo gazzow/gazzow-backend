@@ -6,10 +6,12 @@ import type { IPlanMapper } from "../../../mappers/admin/plan.js";
 export class ListPlanUseCase implements IListPlanUseCase {
   constructor(
     private _planRepository: IPlanRepository,
-    private _planMapper: IPlanMapper
+    private _planMapper: IPlanMapper,
   ) {}
   async execute(): Promise<IListPlanResponseDTO> {
-    const planDocs = await this._planRepository.findAll({});
+    const planDocs = await this._planRepository.findAll({
+      filter: { isDeleted: false },
+    });
 
     const data = planDocs.map((doc) => this._planMapper.toResponseDTO(doc));
 
