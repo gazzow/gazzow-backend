@@ -12,6 +12,9 @@ const planController = planContainer.createPlanController();
 
 router.post("/", verifyMiddleware.isAdmin, planController.createPlan);
 router.get("/", verifyMiddleware.isAdmin, planController.listPlan);
+
 router.get("/:planId", verifyMiddleware.isAdmin, planController.getPlan);
+router.put("/:planId", verifyMiddleware.isAdmin, planController.updatePlan);
+router.patch("/:planId", verifyMiddleware.isAdmin, planController.updateStatus);
 
 export default router;
