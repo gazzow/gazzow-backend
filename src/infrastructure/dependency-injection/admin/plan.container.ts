@@ -3,6 +3,7 @@ import type { ICreatePlanUseCase } from "../../../application/interfaces/usecase
 import type { IGetPlanUseCase } from "../../../application/interfaces/usecase/admin/plan/get-plan.js";
 import type { IListPlanUseCase } from "../../../application/interfaces/usecase/admin/plan/list-plan.js";
 import type { IUpdatePlanUseCase } from "../../../application/interfaces/usecase/admin/plan/update-plan.js";
+import type { IUpdatePlanStatusUseCase } from "../../../application/interfaces/usecase/admin/plan/update-status.js";
 import {
   PlanMapper,
   type IPlanMapper,
@@ -11,6 +12,7 @@ import { CreatePlanUseCase } from "../../../application/use-cases/admin/plan/cre
 import { GetPlanUseCase } from "../../../application/use-cases/admin/plan/get-plan.js";
 import { ListPlanUseCase } from "../../../application/use-cases/admin/plan/list-plan.js";
 import { UpdatePlanUseCase } from "../../../application/use-cases/admin/plan/update-plan.js";
+import { UpdatePlanStatusUseCase } from "../../../application/use-cases/admin/plan/update-status.js";
 import { PlanController } from "../../../presentation/controllers/admin/plan.controller.js";
 import { PlanModel } from "../../db/models/plans.model.js";
 import { PlanRepository } from "../../repositories/plan.repository.js";
@@ -40,6 +42,10 @@ export class PlanDependencyContainer {
     return new UpdatePlanUseCase(this._planRepository, this._planMapper);
   }
 
+  createUpdatePlanStatusUseCase(): IUpdatePlanStatusUseCase {
+    return new UpdatePlanStatusUseCase(this._planRepository, this._planMapper);
+  }
+
   // Plan Controller
   createPlanController(): PlanController {
     return new PlanController(
@@ -47,6 +53,7 @@ export class PlanDependencyContainer {
       this.createListPlanUseCase(),
       this.createGetPlanUseCase(),
       this.createUpdatePlanUseCase(),
+      this.createUpdatePlanStatusUseCase(),
     );
   }
 }

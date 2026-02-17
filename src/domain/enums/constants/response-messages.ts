@@ -113,7 +113,7 @@ export enum ResponseMessages {
   PlanRetrieved = "Plan retrieved successfully",
   PlanIdIsRequired = "Plan is is required",
   PlanNotFound = "Plan not found",
-  PlanUpdateFailed = "Plan update failed.Please try again later",
+  PlanUpdateFailed = "Plan update failed. Please try again later",
   PlanUpdateSuccess = "Plan update successfully",
 
   // Subscription

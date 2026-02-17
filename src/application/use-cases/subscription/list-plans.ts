@@ -21,7 +21,7 @@ export class ListSubscriptionPlansUseCase
     const duration = dto.duration ?? PlanDuration.MONTHLY;
 
     const planDocs = await this._planRepository.findAll({
-      filter: { duration },
+      filter: { duration, isActive: true, isDeleted: false },
     });
 
     const data = planDocs.map((doc) => this._planMapper.toResponseDTO(doc));
