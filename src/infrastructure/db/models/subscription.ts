@@ -37,7 +37,6 @@ const ActivePlanSchema = new Schema<IActivePlanDocument>(
       type: String,
       enum: Object.values(PlanType),
       required: true,
-      unique: true,
       index: true,
     },
     price: {
