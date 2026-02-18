@@ -46,7 +46,7 @@ export class FavoriteMapper implements IFavoriteMapper {
       id: projectDoc._id.toString(),
       userId: projectDoc.userId.toString(),
       project: {
-        id: projectDoc._id.toString(),
+        id: projectDoc.project._id.toString(),
         creatorId: projectDoc.project.creatorId.toString(),
         creator: projectDoc.project.creator,
         title: projectDoc.project.title,
