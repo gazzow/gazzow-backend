@@ -47,6 +47,7 @@ export class TaskCheckoutSessionUseCase implements ITaskCheckoutSessionUseCase {
 
     const checkoutUrl = await this._paymentService.taskCheckoutSession({
       taskId: task.id,
+      projectId: task.projectId,
       amountInCents: AMOUNT_IN_CENTS,
       currency: CURRENCY_CODE,
       successUrl: dto.successUrl,

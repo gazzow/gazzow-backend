@@ -30,6 +30,7 @@ export interface IStripeService {
 
   taskCheckoutSession(params: {
     taskId: string;
+    projectId: string;
     amountInCents: number;
     currency: string;
     successUrl: string;

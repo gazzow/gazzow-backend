@@ -29,7 +29,7 @@ export class StripeService implements IStripeService {
     return this.stripe.webhooks.constructEvent(
       params.payload,
       params.signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
+      process.env.STRIPE_WEBHOOK_SECRET!,
     );
   }
 
@@ -50,7 +50,7 @@ export class StripeService implements IStripeService {
   }
 
   public async generateOnboardingLink(
-    accountId: string
+    accountId: string,
   ): Promise<Stripe.Response<Stripe.AccountLink>> {
     const stripe = this.getClient();
     const accountLink = await stripe.accountLinks.create({
@@ -70,7 +70,7 @@ export class StripeService implements IStripeService {
       taskId?: string;
       refundStatus?: RefundStatus;
       taskPaymentStatus?: TaskPaymentStatus;
-    }
+    },
   ): Promise<Stripe.Transfer> {
     const stripe = this.getClient();
 
@@ -102,6 +102,7 @@ export class StripeService implements IStripeService {
 
   public async taskCheckoutSession(params: {
     taskId: string;
+    projectId: string;
     amountInCents: number;
     currency: string;
     successUrl: string;
@@ -123,7 +124,7 @@ export class StripeService implements IStripeService {
           quantity: 1,
         },
       ],
-      success_url: `${params.successUrl}?taskId=${params.taskId}&session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${params.successUrl}?projectId=${params.projectId}&taskId=${params.taskId}&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: params.cancelUrl,
       metadata: {
         taskId: params.taskId,
@@ -134,7 +135,7 @@ export class StripeService implements IStripeService {
     if (!session.url) {
       throw new AppError(
         ResponseMessages.FailedToCreateCheckoutSession,
-        HttpStatusCode.INTERNAL_SERVER_ERROR
+        HttpStatusCode.INTERNAL_SERVER_ERROR,
       );
     }
 
@@ -180,7 +181,7 @@ export class StripeService implements IStripeService {
     if (!session.url) {
       throw new AppError(
         ResponseMessages.FailedToCreateCheckoutSession,
-        HttpStatusCode.INTERNAL_SERVER_ERROR
+        HttpStatusCode.INTERNAL_SERVER_ERROR,
       );
     }
 
