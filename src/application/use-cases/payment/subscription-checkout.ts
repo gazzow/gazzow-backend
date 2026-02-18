@@ -51,12 +51,12 @@ export class SubscriptionCheckoutUseCase
         currentSubscription.endDate,
       );
 
-      const currentPerDayCost = this.getPerDayCost(
-        activePlan.price,
-        currentPlanDurationInDays,
+      const currentPriceInCents = Math.round(activePlan.price * 100);
+      const currentPerDayCost = Math.floor(
+        currentPriceInCents / currentPlanDurationInDays,
       );
 
-      const remainingValue = remainingDays * currentPerDayCost;
+      const remainingValueInCents = remainingDays * currentPerDayCost;
 
       const planDoc = await this._planRepository.findById(dto.planId);
 
@@ -68,12 +68,14 @@ export class SubscriptionCheckoutUseCase
 
       const plan = this._planMapper.toDomain(planDoc);
 
-      const payableAmount =
-        Math.max(plan.price, remainingValue) -
-        Math.min(plan.price, remainingValue);
+      const newPlanPriceInCents = Math.round(plan.price * 100);
+
+      const payableAmountInCents =
+        Math.max(newPlanPriceInCents, remainingValueInCents) -
+        Math.min(newPlanPriceInCents, remainingValueInCents);
 
       const CURRENCY_CODE = "usd";
-      const AMOUNT_IN_CENTS = payableAmount * 100;
+      const AMOUNT_IN_CENTS = payableAmountInCents;
 
       const checkoutUrl = await this._paymentService.subscriptionCheckout({
         userId: dto.userId,
