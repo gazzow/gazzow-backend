@@ -4,6 +4,9 @@ import { AuthDependencyContainer } from "../../infrastructure/dependency-injecti
 import { upload } from "../middleware/upload.js";
 import taskRouter from "./task.routes.js";
 import type { IRealtimeGateway } from "../../infrastructure/config/socket/socket-gateway.js";
+import { validate } from "../middleware/validate.middleware.js";
+import { createProjectSchema } from "../validators/user/create-project.validator.js";
+import { updateProjectSchema } from "../validators/user/update-project.validator.js";
 
 export const createProjectRouter = (socketGateway: IRealtimeGateway) => {
   const router = express.Router();
@@ -21,8 +24,10 @@ export const createProjectRouter = (socketGateway: IRealtimeGateway) => {
     tokenMiddleware.verifyToken,
     blockedUserMiddleware.isBlocked,
     upload.array("files"),
+    validate(createProjectSchema),
     projectController.createProject,
   );
+
   router.get(
     "/",
     tokenMiddleware.verifyToken,
@@ -44,7 +49,6 @@ export const createProjectRouter = (socketGateway: IRealtimeGateway) => {
     projectController.deleteProject,
   );
 
-  
   // ----------------------
   // 📁  Generate Signed Url Route
   // ----------------------
@@ -65,6 +69,7 @@ export const createProjectRouter = (socketGateway: IRealtimeGateway) => {
     "/:projectId",
     tokenMiddleware.verifyToken,
     blockedUserMiddleware.isBlocked,
+    validate(updateProjectSchema),
     projectController.updateProject,
   );
 
