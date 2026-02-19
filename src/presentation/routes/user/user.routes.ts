@@ -2,6 +2,8 @@ import { Router } from "express";
 import { passport } from "../../../infrastructure/config/passport.js";
 import { AuthDependencyContainer } from "../../../infrastructure/dependency-injection/auth-dependency-container.js";
 import { UserDependencyContainer } from "../../../infrastructure/dependency-injection/user-dependency-container.js";
+import { validate } from "../../middleware/validate.middleware.js";
+import { loginSchema } from "../../validators/user/login.validator.js";
 
 const userRouter = Router();
 
@@ -15,11 +17,17 @@ const authController = authContainer.createAuthController();
 const userController = userContainer.createUserController();
 
 userRouter.post("/auth/register", authController.register);
+
 userRouter.post("/auth/verify-otp", authController.verifyUser);
-userRouter.post("/auth/login", authController.login);
+
+userRouter.post("/auth/login", validate(loginSchema), authController.login);
+
 userRouter.post("/auth/forgot-password", authController.forgotPassword);
+
 userRouter.post("/auth/forgot-password/verify-otp", authController.verifyOtp);
+
 userRouter.put("/auth/reset-password", authController.resetPassword);
+
 userRouter.post("/auth/resend-otp", authController.resendOtp);
 
 userRouter.post("/auth/refresh", authController.refreshAccessToken);
