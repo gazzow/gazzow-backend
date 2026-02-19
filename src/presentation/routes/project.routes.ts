@@ -7,6 +7,7 @@ import type { IRealtimeGateway } from "../../infrastructure/config/socket/socket
 import { validate } from "../middleware/validate.middleware.js";
 import { createProjectSchema } from "../validators/user/create-project.validator.js";
 import { updateProjectSchema } from "../validators/user/update-project.validator.js";
+import { applyProjectSchema } from "../validators/user/apply-project.validator.js";
 
 export const createProjectRouter = (socketGateway: IRealtimeGateway) => {
   const router = express.Router();
@@ -81,6 +82,7 @@ export const createProjectRouter = (socketGateway: IRealtimeGateway) => {
     "/:projectId/applications",
     tokenMiddleware.verifyToken,
     blockedUserMiddleware.isBlocked,
+    validate(applyProjectSchema),
     projectController.createApplication,
   );
   router.get(
