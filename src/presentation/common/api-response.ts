@@ -26,7 +26,7 @@ export class ApiResponse<T = unknown, M = unknown, E = ErrorDetail | string> {
     data: T | null = null,
     errors: E[] | null = null,
     code: ErrorCode | null = null,
-    meta: M | null = null
+    meta: M | null = null,
   ) {
     this.success = success;
     this.message = message;
@@ -41,7 +41,7 @@ export class ApiResponse<T = unknown, M = unknown, E = ErrorDetail | string> {
   static success<T, M = null>(
     message: string,
     data: T | null = null,
-    meta: M | null = null
+    meta: M | null = null,
   ): ApiResponse<T, M, never> {
     return new ApiResponse<T, M, never>(true, message, data, null, null, meta);
   }
@@ -59,19 +59,20 @@ export class ApiResponse<T = unknown, M = unknown, E = ErrorDetail | string> {
       null,
       errors,
       code,
-      meta
+      meta,
     );
   }
 
   /** ⚠️ Validation Error Response */
   static validationError(
-    errors: ErrorDetail[]
+    errors: ErrorDetail[],
   ): ApiResponse<null, null, ErrorDetail> {
     return new ApiResponse<null, null, ErrorDetail>(
       false,
-      "Validation failed",
+      // "Please correct the highlighted errors.",
+      "Oops! Something needs your attention.",
       null,
-      errors
+      errors,
     );
   }
 
@@ -79,7 +80,7 @@ export class ApiResponse<T = unknown, M = unknown, E = ErrorDetail | string> {
   static paginated<T>(
     message: string,
     data: T[],
-    meta: PaginationMeta
+    meta: PaginationMeta,
   ): ApiResponse<T[], PaginationMeta, never> {
     return new ApiResponse<T[], PaginationMeta, never>(
       true,
@@ -87,7 +88,7 @@ export class ApiResponse<T = unknown, M = unknown, E = ErrorDetail | string> {
       data,
       null,
       null,
-      meta
+      meta,
     );
   }
 }
