@@ -20,7 +20,7 @@ export class SubscriptionManagementController {
     logger.debug("List subscriptions API hit 🚀");
 
     try {
-      const { data } = await this._listSubscriptionUseCase.execute({});
+      const { data } = await this._listSubscriptionUseCase.execute();
       res
         .status(HttpStatusCode.OK)
         .json(ApiResponse.success(ResponseMessages.FetchedPlans, data));

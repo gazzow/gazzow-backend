@@ -6,11 +6,13 @@ import { ApiResponse } from "../../common/api-response.js";
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
 import type { IAdminGetProjectUseCase } from "../../../application/interfaces/usecase/admin/project/get-project.js";
 import { AppError } from "../../../utils/app-error.js";
+import type { IAdminDeleteProjectUseCase } from "../../../application/interfaces/usecase/admin/project/delete-project.js";
 
 export class AdminProjectController {
   constructor(
     private _adminListProjectUseCase: IAdminListProjectsUseCase,
-    private _adminGetProjectUseCase: IAdminGetProjectUseCase
+    private _adminGetProjectUseCase: IAdminGetProjectUseCase,
+    private _adminDeleteProjectUseCase: IAdminDeleteProjectUseCase,
   ) {}
 
   listProjects = async (req: Request, res: Response, next: NextFunction) => {
@@ -31,8 +33,8 @@ export class AdminProjectController {
           ApiResponse.paginated(
             ResponseMessages.FetchedProjects,
             data,
-            pagination
-          )
+            pagination,
+          ),
         );
     } catch (error) {
       next(error);
@@ -45,7 +47,7 @@ export class AdminProjectController {
     if (!projectId) {
       throw new AppError(
         ResponseMessages.ProjectIdIsRequired,
-        HttpStatusCode.BAD_REQUEST
+        HttpStatusCode.BAD_REQUEST,
       );
     }
     try {
@@ -55,6 +57,24 @@ export class AdminProjectController {
       res
         .status(HttpStatusCode.OK)
         .json(ApiResponse.success(ResponseMessages.ProjectRetrieved, data));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  deleteProject = async (req: Request, res: Response, next: NextFunction) => {
+    logger.debug("Admin Delete Project API hit 🚀");
+    const projectId = req.params.projectId;
+    if (!projectId) {
+      throw new AppError("Project ID is required", HttpStatusCode.BAD_REQUEST);
+    }
+    try {
+      await this._adminDeleteProjectUseCase.execute({
+        projectId,
+      });
+      res
+        .status(HttpStatusCode.OK)
+        .json(ApiResponse.success(ResponseMessages.ProjectDeleted));
     } catch (error) {
       next(error);
     }

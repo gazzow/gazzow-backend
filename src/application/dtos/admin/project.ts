@@ -25,3 +25,7 @@ export interface IAdminGetProjectRequestDTO {
 export interface IAdminGetProjectResponseDTO {
   data: IProject;
 }
+
+export interface IAdminDeleteProjectRequestDTO {
+  projectId: string;
+}

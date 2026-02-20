@@ -21,7 +21,7 @@ export class ApplicationRepository
   }
 
   findByProjectId(
-    projectId: string
+    projectId: string,
   ): Promise<IApplicationDocumentWithApplicant[] | null> {
     return this.model.aggregate([
       {
@@ -69,14 +69,14 @@ export class ApplicationRepository
 
   findByApplicantAndProject(
     applicantId: string,
-    projectId: string
+    projectId: string,
   ): Promise<IApplicationDocument | null> {
     return this.model.findOne({ applicantId, projectId });
   }
 
   updateStatus(
     applicationId: string,
-    status: ApplicationStatus
+    status: ApplicationStatus,
   ): Promise<IApplicationDocument | null> {
     return this.model
       .findByIdAndUpdate(applicationId, { status }, { new: true })
@@ -84,12 +84,13 @@ export class ApplicationRepository
   }
 
   async findApplicationsWithPopulatedProject(
-    query: ApplicationPopulatedQuery
+    query: ApplicationPopulatedQuery,
   ): Promise<FindWithPagination> {
     const { userId, status, skip = 0, limit = 6 } = query;
 
     const applicantObjId = new Types.ObjectId(userId);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const filter: any = {};
 
     filter.applicantId = applicantObjId;
@@ -101,7 +102,7 @@ export class ApplicationRepository
         projectId: IApplicationPopulatedProjectDocument["projectId"];
       }>(
         "projectId",
-        "_id title description budgetMin budgetMax durationMin durationMax durationUnit"
+        "_id title description budgetMin budgetMax durationMin durationMax durationUnit",
       )
       .skip(skip)
       .limit(limit);

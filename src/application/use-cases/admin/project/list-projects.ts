@@ -1,4 +1,3 @@
-import logger from "../../../../utils/logger.js";
 import type {
   IAdminListProjectsRequestDTO,
   IAdminListProjectsResponseDTO,
@@ -10,14 +9,15 @@ import type { IProjectMapper } from "../../../mappers/project.js";
 export class AdminListProjectsUseCase implements IAdminListProjectsUseCase {
   constructor(
     private _projectRepository: IProjectRepository,
-    private _projectMapper: IProjectMapper
+    private _projectMapper: IProjectMapper,
   ) {}
   async execute(
-    query: IAdminListProjectsRequestDTO
+    query: IAdminListProjectsRequestDTO,
   ): Promise<IAdminListProjectsResponseDTO> {
     const { skip = 0, limit = 6, search, status, sortField, sortOrder } = query;
-
-    const filter: any = {};
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const filter: any = { isDeleted: false };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sort: any = {};
 
     if (search) {
@@ -34,9 +34,6 @@ export class AdminListProjectsUseCase implements IAdminListProjectsUseCase {
     } else {
       sort.createdAt = -1;
     }
-
-    logger.debug(`filter query: ${JSON.stringify(filter)}`);
-    logger.debug(`sort query: ${JSON.stringify(sort)}`);
 
     const projects = await this._projectRepository.findAll({
       filter,

@@ -5,6 +5,7 @@ import type { ITokenPayload } from "../../../application/interfaces/jwt/jwt-payl
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
 import { UserRole } from "../../../domain/enums/user-role.js";
+import { ErrorCode } from "../../../domain/enums/constants/error-code.js";
 
 interface AuthRequest extends Request {
   admin?: ITokenPayload;
@@ -20,7 +21,7 @@ export class VerifyAdmin {
       if (!accessToken) {
         throw new AppError(
           ResponseMessages.Unauthorized,
-          HttpStatusCode.UNAUTHORIZED
+          HttpStatusCode.UNAUTHORIZED,
         );
       }
 
@@ -28,17 +29,20 @@ export class VerifyAdmin {
       if (!decoded) {
         throw new AppError(
           ResponseMessages.Unauthorized,
-          HttpStatusCode.UNAUTHORIZED
+          HttpStatusCode.UNAUTHORIZED,
+          undefined,
+          ErrorCode.AUTHORIZATION_ERROR,
         );
       }
 
       if (decoded.role !== UserRole.ADMIN) {
         throw new AppError(
           ResponseMessages.Forbidden,
-          HttpStatusCode.FORBIDDEN
+          HttpStatusCode.FORBIDDEN,
+          undefined,
+          ErrorCode.AUTHORIZATION_ERROR,
         );
       }
-
       req.admin = decoded;
 
       return next();

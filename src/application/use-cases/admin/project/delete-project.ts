@@ -1,25 +1,21 @@
-import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
-import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
-import { AppError } from "../../../utils/app-error.js";
-import type {
-  IDeleteProjectRequestDTO,
-  IDeleteProjectResponseDTO,
-} from "../../dtos/project.js";
-import type { IProjectRepository } from "../../interfaces/repository/project-repository.js";
-import type { ITaskRepository } from "../../interfaces/repository/task-repository.js";
-import type { IDeleteProjectUseCase } from "../../interfaces/usecase/project/delete-project.js";
-import type { IProjectMapper } from "../../mappers/project.js";
+import { ResponseMessages } from "../../../../domain/enums/constants/response-messages.js";
+import { HttpStatusCode } from "../../../../domain/enums/constants/status-codes.js";
+import { AppError } from "../../../../utils/app-error.js";
+import type { IAdminDeleteProjectRequestDTO } from "../../../dtos/admin/project.js";
 
-export class DeleteProjectUseCase implements IDeleteProjectUseCase {
+import type { IProjectRepository } from "../../../interfaces/repository/project-repository.js";
+import type { ITaskRepository } from "../../../interfaces/repository/task-repository.js";
+import type { IAdminDeleteProjectUseCase } from "../../../interfaces/usecase/admin/project/delete-project.js";
+import type { IProjectMapper } from "../../../mappers/project.js";
+
+export class AdminDeleteProjectUseCase implements IAdminDeleteProjectUseCase {
   constructor(
     private _projectRepository: IProjectRepository,
     private _projectMapper: IProjectMapper,
     private _taskRepository: ITaskRepository,
   ) {}
 
-  async execute(
-    dto: IDeleteProjectRequestDTO,
-  ): Promise<IDeleteProjectResponseDTO> {
+  async execute(dto: IAdminDeleteProjectRequestDTO): Promise<void> {
     const projectDocument = await this._projectRepository.findById(
       dto.projectId,
     );
@@ -32,13 +28,6 @@ export class DeleteProjectUseCase implements IDeleteProjectUseCase {
 
     const project = this._projectMapper.toDomain(projectDocument);
 
-    if (project.creatorId !== dto.userId) {
-      throw new AppError(
-        ResponseMessages.UnauthorizedProjectModification,
-        HttpStatusCode.FORBIDDEN,
-      );
-    }
-
     if (project.isDeleted) {
       throw new AppError(
         ResponseMessages.ProjectAlreadyDeleted,
@@ -50,6 +39,7 @@ export class DeleteProjectUseCase implements IDeleteProjectUseCase {
       project.id,
     );
 
+    console.log(activeTaskExists)
     if (activeTaskExists) {
       throw new AppError(
         ResponseMessages.UnableToDeleteProjectWithActiveTasks,
@@ -64,7 +54,5 @@ export class DeleteProjectUseCase implements IDeleteProjectUseCase {
         HttpStatusCode.BAD_REQUEST,
       );
     }
-
-    return { isDeleted };
   }
 }

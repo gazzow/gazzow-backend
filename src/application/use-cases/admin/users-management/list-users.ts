@@ -28,6 +28,7 @@ export class ListUsersUseCase implements IListUsersUseCase {
       sortOrder,
     } = query;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const dbFilter: any = { role: UserRole.USER };
 
     if(search){
@@ -40,6 +41,7 @@ export class ListUsersUseCase implements IListUsersUseCase {
     if (status) dbFilter.status = status;
     if (role) dbFilter.role = role;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sortQuery: any = {};
     if (sortField) {
       sortQuery[sortField] = sortOrder === "asc" ? 1 : -1;

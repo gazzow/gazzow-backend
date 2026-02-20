@@ -49,6 +49,7 @@ export enum ResponseMessages {
   ProjectAlreadyDeleted = "Project has already been deleted",
   UnableToDeleteProjectWithActiveTasks = "Unable to delete project with active tasks",
   ProjectDeleted = "Project deleted successfully",
+  ProjectDeleteFailed = "Failed to delete project. Please try again later",
   UnableToChangeContributorSTatus = "Contributor is currently assigned to active tasks",
   ContributorStatusUpdateFailed = "Contributor Status update failed",
 
