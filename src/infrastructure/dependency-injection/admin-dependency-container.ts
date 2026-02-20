@@ -56,10 +56,16 @@ import {
 } from "../../application/mappers/project.js";
 import type { IAdminGetProjectUseCase } from "../../application/interfaces/usecase/admin/project/get-project.js";
 import { AdminGetProjectUseCase } from "../../application/use-cases/admin/project/get-project.js";
+import type { IAdminDeleteProjectUseCase } from "../../application/interfaces/usecase/admin/project/delete-project.js";
+import { AdminDeleteProjectUseCase } from "../../application/use-cases/admin/project/delete-project.js";
+import type { ITaskRepository } from "../../application/interfaces/repository/task-repository.js";
+import { TaskRepository } from "../repositories/task-repository.js";
+import { TaskModel } from "../db/models/task-model.js";
 
 export class AdminDependencyContainer {
   private readonly _userRepository: IUserRepository;
   private readonly _projectRepository: IProjectRepository;
+  private readonly _taskRepository: ITaskRepository;
   private readonly _userMapper: IUserMapper;
   private readonly _projectMapper: IProjectMapper;
   private readonly _usersMapper: IUsersMapper;
@@ -70,6 +76,7 @@ export class AdminDependencyContainer {
   constructor() {
     this._userRepository = new UserRepository(UserModel);
     this._projectRepository = new ProjectRepository(ProjectModel);
+    this._taskRepository = new TaskRepository(TaskModel);
     this._userMapper = new UserMapper();
     this._projectMapper = new ProjectMapper();
     this._usersMapper = new UsersMapper(this._userMapper);
@@ -83,7 +90,7 @@ export class AdminDependencyContainer {
       this._tokenService,
       this._userRepository,
       this._hashService,
-      this._adminMapper
+      this._adminMapper,
     );
   }
 
@@ -102,14 +109,22 @@ export class AdminDependencyContainer {
   private createListProjectsUseCase(): IAdminListProjectsUseCase {
     return new AdminListProjectsUseCase(
       this._projectRepository,
-      this._projectMapper
+      this._projectMapper,
     );
   }
 
   private createGetProjectUseCase(): IAdminGetProjectUseCase {
     return new AdminGetProjectUseCase(
       this._projectRepository,
-      this._projectMapper
+      this._projectMapper,
+    );
+  }
+
+  private createDeleteProjectUseCase(): IAdminDeleteProjectUseCase {
+    return new AdminDeleteProjectUseCase(
+      this._projectRepository,
+      this._projectMapper,
+      this._taskRepository,
     );
   }
 
@@ -123,7 +138,7 @@ export class AdminDependencyContainer {
     return new UserManagementController(
       this.createListUsersUseCase(),
       this.createBlockUserUseCase(),
-      this.createGetUserUseCase()
+      this.createGetUserUseCase(),
     );
   }
 
@@ -132,6 +147,7 @@ export class AdminDependencyContainer {
     return new AdminProjectController(
       this.createListProjectsUseCase(),
       this.createGetProjectUseCase(),
+      this.createDeleteProjectUseCase(),
     );
   }
 

@@ -6,7 +6,6 @@ import { ResponseMessages } from "../../../domain/enums/constants/response-messa
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
 import { UserRole } from "../../../domain/enums/user-role.js";
 import { ErrorCode } from "../../../domain/enums/constants/error-code.js";
-import logger from "../../../utils/logger.js";
 
 interface AuthRequest extends Request {
   admin?: ITokenPayload;

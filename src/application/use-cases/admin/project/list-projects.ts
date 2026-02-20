@@ -17,7 +17,7 @@ export class AdminListProjectsUseCase implements IAdminListProjectsUseCase {
   ): Promise<IAdminListProjectsResponseDTO> {
     const { skip = 0, limit = 6, search, status, sortField, sortOrder } = query;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const filter: any = {};
+    const filter: any = { isDeleted: false };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sort: any = {};
 
@@ -35,9 +35,6 @@ export class AdminListProjectsUseCase implements IAdminListProjectsUseCase {
     } else {
       sort.createdAt = -1;
     }
-
-    logger.debug(`filter query: ${JSON.stringify(filter)}`);
-    logger.debug(`sort query: ${JSON.stringify(sort)}`);
 
     const projects = await this._projectRepository.findAll({
       filter,

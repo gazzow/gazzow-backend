@@ -52,4 +52,12 @@ adminRouter.get(
   projectController.getProject
 );
 
+adminRouter.delete(
+  "/projects/:projectId",
+  verifyMiddleware.isAdmin,
+  projectController.deleteProject
+);
+
+
+
 export default adminRouter;
