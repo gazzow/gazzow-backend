@@ -38,6 +38,7 @@ export class ProjectRepository
 
     const userObjectId: Types.ObjectId = new Types.ObjectId(userId);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const pipeline: any[] = [];
 
     //  Exclude user created projects
@@ -260,18 +261,17 @@ export class ProjectRepository
     } = query;
     const creatorObjId = new Types.ObjectId(creatorId);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const pipeline: any[] = [{ $match: { creatorId: creatorObjId } }];
-
-    pipeline.push({
-      $sort: { createdAt: -1 },
-    });
 
     if (search) {
       pipeline.push({
-        $or: [
-          { $match: { title: { $regex: search, $options: "i" } } },
-          { $match: { description: { $regex: search, $options: "i" } } },
-        ],
+        $match: {
+          $or: [
+            { title: { $regex: search, $options: "i" } },
+            { description: { $regex: search, $options: "i" } },
+          ],
+        },
       });
     }
 
@@ -364,6 +364,7 @@ export class ProjectRepository
 
     const userObjId = new Types.ObjectId(userId);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const pipeline: any[] = [];
 
     if (search) {
@@ -411,7 +412,6 @@ export class ProjectRepository
         $match: { "application.0": { $exists: true } },
       },
     );
-
 
     // Lookup applications to find application count
     pipeline.push({
@@ -554,6 +554,7 @@ export class ProjectRepository
     const objectIds = projectIds.map((id) => new Types.ObjectId(id));
     const userObjectId = new Types.ObjectId(userId);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const pipeline: any[] = [];
 
     // Match by project IDs
@@ -564,7 +565,7 @@ export class ProjectRepository
       },
     });
 
-     // Lookup applications to find application count
+    // Lookup applications to find application count
     pipeline.push({
       $lookup: {
         from: "applications",
