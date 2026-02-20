@@ -15,7 +15,7 @@ export class AdminAuthController {
     try {
       const { accessToken, refreshToken, data } =
         await this._adminLoginUseCase.execute(req.body);
-        
+
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
         maxAge: env.jwt.access_expires, // 15 minutes
@@ -28,10 +28,23 @@ export class AdminAuthController {
         sameSite: "strict",
         secure: env.node_env,
       });
-      
-      res.status(HttpStatusCode.OK).json(ApiResponse.success(ResponseMessages.LoginSuccess, data));
+
+      res
+        .status(HttpStatusCode.OK)
+        .json(ApiResponse.success(ResponseMessages.LoginSuccess, data));
     } catch (error) {
       next(error);
     }
+  };
+
+  logout = (req: Request, res: Response) => {
+    logger.debug("Admin Logout api got hit 🚀");
+
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
+
+    res
+      .status(HttpStatusCode.OK)
+      .json(ApiResponse.success(ResponseMessages.LogoutSuccess));
   };
 }

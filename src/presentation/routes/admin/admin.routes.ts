@@ -16,6 +16,12 @@ const verifyMiddleware = adminContainer.createVerifyAdminMiddleware();
 
 adminRouter.post("/auth/login", adminAuthController.login);
 
+adminRouter.post(
+  "/auth/logout",
+  verifyMiddleware.isAdmin,
+  adminAuthController.logout,
+);
+
 //------------------
 // User Routes
 //------------------
@@ -23,17 +29,17 @@ adminRouter.post("/auth/login", adminAuthController.login);
 adminRouter.get(
   "/users",
   verifyMiddleware.isAdmin,
-  userManagementController.listUsers
+  userManagementController.listUsers,
 );
 adminRouter.get(
   "/users/:id",
   verifyMiddleware.isAdmin,
-  userManagementController.getUser
+  userManagementController.getUser,
 );
 adminRouter.patch(
   "/users/:id/status",
   verifyMiddleware.isAdmin,
-  userManagementController.blockUser
+  userManagementController.blockUser,
 );
 
 //------------------
@@ -43,21 +49,19 @@ adminRouter.patch(
 adminRouter.get(
   "/projects",
   verifyMiddleware.isAdmin,
-  projectController.listProjects
+  projectController.listProjects,
 );
 
 adminRouter.get(
   "/projects/:projectId",
   verifyMiddleware.isAdmin,
-  projectController.getProject
+  projectController.getProject,
 );
 
 adminRouter.delete(
   "/projects/:projectId",
   verifyMiddleware.isAdmin,
-  projectController.deleteProject
+  projectController.deleteProject,
 );
-
-
 
 export default adminRouter;
