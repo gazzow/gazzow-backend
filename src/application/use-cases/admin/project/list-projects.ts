@@ -10,14 +10,15 @@ import type { IProjectMapper } from "../../../mappers/project.js";
 export class AdminListProjectsUseCase implements IAdminListProjectsUseCase {
   constructor(
     private _projectRepository: IProjectRepository,
-    private _projectMapper: IProjectMapper
+    private _projectMapper: IProjectMapper,
   ) {}
   async execute(
-    query: IAdminListProjectsRequestDTO
+    query: IAdminListProjectsRequestDTO,
   ): Promise<IAdminListProjectsResponseDTO> {
     const { skip = 0, limit = 6, search, status, sortField, sortOrder } = query;
-
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const filter: any = {};
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sort: any = {};
 
     if (search) {

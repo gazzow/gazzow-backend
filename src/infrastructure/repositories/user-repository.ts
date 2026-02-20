@@ -31,19 +31,19 @@ export class UserRepository
 
   async updatePassword(
     email: string,
-    hashedPassword: string
+    hashedPassword: string,
   ): Promise<void | null> {
     return await this.model.findOneAndUpdate(
       { email },
       {
         password: hashedPassword,
-      }
+      },
     );
   }
 
   async updateProfile(
     userId: string,
-    profileData: IUpdateProfileRequestDTO
+    profileData: IUpdateProfileRequestDTO,
   ): Promise<IUserDocument | null> {
     const updatedUserDoc = await this.model
       .findByIdAndUpdate(userId, { $set: profileData }, { new: true })
@@ -60,7 +60,9 @@ export class UserRepository
   }: {
     skip: number;
     limit: number;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     filter: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     sort?: any;
   }): Promise<IUserDocument[]> {
     return this.model
@@ -77,7 +79,7 @@ export class UserRepository
 
   async updateStatus(
     id: string,
-    status: UserStatus
+    status: UserStatus,
   ): Promise<IUserDocument | null> {
     const updatedUserDoc = await this.model
       .findByIdAndUpdate(id, { status }, { new: true })

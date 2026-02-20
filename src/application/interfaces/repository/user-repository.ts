@@ -12,7 +12,7 @@ export interface IUserRepository extends IBaseRepository<IUserDocument> {
   updatePassword(email: string, hashedPassword: string): Promise<void | null>;
   updateProfile(
     userId: string,
-    profileData: IUpdateProfileRequestDTO
+    profileData: IUpdateProfileRequestDTO,
   ): Promise<IUserDocument | null>;
   findAll({
     filter,
@@ -22,7 +22,9 @@ export interface IUserRepository extends IBaseRepository<IUserDocument> {
   }: {
     skip: number;
     limit: number;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     filter: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     sort?: any;
   }): Promise<IUserDocument[]>;
   updateStatus(id: string, status: UserStatus): Promise<IUserDocument | null>;

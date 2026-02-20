@@ -28,6 +28,7 @@ export class FavoriteRepository
   ): Promise<IFavoritePopulatedDocument[]> {
     const userObjectId = new Types.ObjectId(userId);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const pipeline: any[] = [
       {
         $match: { userId: userObjectId },
