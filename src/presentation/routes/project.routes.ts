@@ -8,6 +8,7 @@ import { validate } from "../middleware/validate.middleware.js";
 import { createProjectSchema } from "../validators/user/create-project.validator.js";
 import { updateProjectSchema } from "../validators/user/update-project.validator.js";
 import { applyProjectSchema } from "../validators/user/apply-project.validator.js";
+import { updateProjectStatusSchema } from "../validators/user/update-project-status.validator.js";
 
 export const createProjectRouter = (socketGateway: IRealtimeGateway) => {
   const router = express.Router();
@@ -41,6 +42,14 @@ export const createProjectRouter = (socketGateway: IRealtimeGateway) => {
     tokenMiddleware.verifyToken,
     blockedUserMiddleware.isBlocked,
     projectController.listMyProjects,
+  );
+
+  router.patch(
+    "/:projectId",
+    tokenMiddleware.verifyToken,
+    blockedUserMiddleware.isBlocked,
+    validate(updateProjectStatusSchema),
+    projectController.updateStatus,
   );
 
   router.delete(

@@ -43,6 +43,7 @@ export enum ResponseMessages {
   ProjectNotFound = "Project not found",
   ProjectUpdateFailed = "Project update failed",
   ProjectUpdateSuccess = "Project update successfully",
+  ProjectStatusUpdateFailed = "Failed to update project status. Please try again",
   ProjectIdIsRequired = "Project is required",
   UnauthorizedProjectModification = "Unauthorized to modify this project",
   GeneratedSignedUrl = "Generated signed url successfully",
