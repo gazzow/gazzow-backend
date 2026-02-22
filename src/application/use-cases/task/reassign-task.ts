@@ -111,7 +111,6 @@ export class ReassignTaskUseCase implements IReassignTaskUseCase {
       ...reCalculatedFinancial,
     });
 
-    logger.debug(`update persistent: ${JSON.stringify(updatePersistent)}`);
 
     const updatedTaskDoc = await this._taskRepository.update(
       task.id,
