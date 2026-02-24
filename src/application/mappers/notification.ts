@@ -19,7 +19,6 @@ export class NotificationMapper implements INotificationMapper {
       userId: new Types.ObjectId(dto.userId),
       title: dto.title,
       body: dto.body,
-      data: dto.data as NotificationData,
       type: dto.type,
       isRead: false,
       isPushed: false,

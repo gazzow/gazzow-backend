@@ -19,13 +19,12 @@ export interface IMessage {
 
 export interface INotificationPayload {
   projectId: string;
-  taskId?: string;  
   title: string;
   message: string;
 }
 
-export interface ITaskCommentNotificationPayload {
-  userId: string;
+export interface ITaskCommentNotificationPayload{
+   userId: string;
   title: string;
   message: string;
 }
@@ -34,8 +33,4 @@ export interface IDeletedMessageSocketPayload {
   messageId: string;
   userId: string;
   type: DeleteMessageType;
-}
-
-export interface ITaskUpdateNotificationPayload {
-  taskId: string;
 }

@@ -14,7 +14,6 @@ import type { ISubmitTaskUseCase } from "../../application/interfaces/usecase/ta
 import type { ICompleteTaskUseCase } from "../../application/interfaces/usecase/task/complete-task.js";
 import type { IReassignTaskUseCase } from "../../application/interfaces/usecase/task/reassign-task.js";
 import type { ICreateTaskRequestDTO } from "../../application/dtos/task.js";
-import type { IRemoveAssigneeUseCase } from "../../application/interfaces/usecase/task/remove-assignee.js";
 
 export class TaskController {
   constructor(
@@ -26,8 +25,7 @@ export class TaskController {
     private _startWorkUseCase: IStartWorkUseCase,
     private _submitTaskUseCase: ISubmitTaskUseCase,
     private _completeTaskUseCase: ICompleteTaskUseCase,
-    private _reassignTaskUseCase: IReassignTaskUseCase,
-    private _removeAssigneeUseCase: IRemoveAssigneeUseCase,
+    private _reassignTaskUseCase: IReassignTaskUseCase
   ) {}
 
   createTask = async (req: Request, res: Response, next: NextFunction) => {
@@ -37,9 +35,10 @@ export class TaskController {
     if (!projectId) {
       throw new AppError(
         ResponseMessages.ProjectIdIsRequired,
-        HttpStatusCode.BAD_REQUEST,
+        HttpStatusCode.BAD_REQUEST
       );
     }
+    logger.debug(`files: ${req.files}`);
 
     try {
       const dto: ICreateTaskRequestDTO = {
@@ -60,7 +59,7 @@ export class TaskController {
   listTasksByContributor = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     logger.debug("list task by contributor API hit 🚀");
     const userId = req.user!.id;
@@ -68,7 +67,7 @@ export class TaskController {
     if (!projectId) {
       throw new AppError(
         ResponseMessages.ProjectIdIsRequired,
-        HttpStatusCode.BAD_REQUEST,
+        HttpStatusCode.BAD_REQUEST
       );
     }
 
@@ -87,7 +86,7 @@ export class TaskController {
   listTasksByCreator = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     logger.debug("list task by Creator API hit 🚀");
     const userId = req.user!.id;
@@ -95,7 +94,7 @@ export class TaskController {
     if (!projectId) {
       throw new AppError(
         ResponseMessages.ProjectIdIsRequired,
-        HttpStatusCode.BAD_REQUEST,
+        HttpStatusCode.BAD_REQUEST
       );
     }
 
@@ -118,12 +117,13 @@ export class TaskController {
     if (!taskId) {
       throw new AppError(
         ResponseMessages.TaskIdIsRequired,
-        HttpStatusCode.BAD_REQUEST,
+        HttpStatusCode.BAD_REQUEST
       );
     }
 
     try {
       const dto = { userId, taskId, data: req.body };
+      logger.debug(`dto: ${JSON.stringify(dto)}`);
       const { data } = await this._updateTaskUseCase.execute(dto);
       res
         .status(HttpStatusCode.OK)
@@ -141,11 +141,12 @@ export class TaskController {
     if (!taskId) {
       throw new AppError(
         ResponseMessages.TaskIdIsRequired,
-        HttpStatusCode.BAD_REQUEST,
+        HttpStatusCode.BAD_REQUEST
       );
     }
     try {
       const dto = { userId, taskId };
+      logger.debug(`dto: ${JSON.stringify(dto)}`);
       const { data } = await this._getTaskUseCase.execute(dto);
       res
         .status(HttpStatusCode.OK)
@@ -161,14 +162,17 @@ export class TaskController {
     const taskId = req.params.taskId;
     const time = req.body.time || new Date();
 
+    logger.debug(`Received time: ${time}`);
+
     if (!taskId) {
       throw new AppError(
         ResponseMessages.TaskIdIsRequired,
-        HttpStatusCode.BAD_REQUEST,
+        HttpStatusCode.BAD_REQUEST
       );
     }
     try {
       const dto = { taskId, time };
+      logger.debug(`Received time: ${time}`);
       await this._startWorkUseCase.execute(dto);
       res
         .status(HttpStatusCode.OK)
@@ -185,11 +189,12 @@ export class TaskController {
     if (!taskId) {
       throw new AppError(
         ResponseMessages.TaskIdIsRequired,
-        HttpStatusCode.BAD_REQUEST,
+        HttpStatusCode.BAD_REQUEST
       );
     }
     try {
       const dto = { taskId, time };
+      logger.debug(`dto: ${JSON.stringify(dto)}`);
       await this._submitTaskUseCase.execute(dto);
       res
         .status(HttpStatusCode.OK)
@@ -206,11 +211,12 @@ export class TaskController {
     if (!taskId) {
       throw new AppError(
         ResponseMessages.TaskIdIsRequired,
-        HttpStatusCode.BAD_REQUEST,
+        HttpStatusCode.BAD_REQUEST
       );
     }
     try {
       const dto = { taskId, time };
+      logger.debug(`dto: ${JSON.stringify(dto)}`);
       await this._completeTaskUseCase.execute(dto);
       res
         .status(HttpStatusCode.OK)
@@ -227,7 +233,7 @@ export class TaskController {
     if (!taskId) {
       throw new AppError(
         ResponseMessages.TaskIdIsRequired,
-        HttpStatusCode.BAD_REQUEST,
+        HttpStatusCode.BAD_REQUEST
       );
     }
 
@@ -235,33 +241,12 @@ export class TaskController {
 
     try {
       const dto = { taskId, assigneeId, userId };
+      logger.debug(`dto: ${JSON.stringify(dto)}`);
 
       await this._reassignTaskUseCase.execute(dto);
       res
         .status(HttpStatusCode.OK)
         .json(ApiResponse.success(ResponseMessages.TaskReassigned));
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  removeAssignee = async (req: Request, res: Response, next: NextFunction) => {
-    logger.debug("Remove assignee task API hit 🚀");
-    const taskId = req.params.taskId;
-    const userId = req.user!.id;
-    if (!taskId) {
-      throw new AppError(
-        ResponseMessages.TaskIdIsRequired,
-        HttpStatusCode.BAD_REQUEST,
-      );
-    }
-    try {
-      const dto = { taskId, userId };
-
-      const { data } = await this._removeAssigneeUseCase.execute(dto);
-      res
-        .status(HttpStatusCode.OK)
-        .json(ApiResponse.success(ResponseMessages.AssigneeRemoved, data));
     } catch (error) {
       next(error);
     }

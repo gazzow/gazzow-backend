@@ -125,13 +125,3 @@ export interface IDeleteProjectRequestDTO {
 export interface IDeleteProjectResponseDTO {
   isDeleted: boolean;
 }
-
-export interface IUpdateProjectStatusRequestDTO {
-  userId: string;
-  projectId: string;
-  status: ProjectStatus;
-}
-
-export interface IUpdateProjectStatusResponseDTO {
-  data: IProject;
-}

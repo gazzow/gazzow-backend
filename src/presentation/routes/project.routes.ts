@@ -2,13 +2,12 @@ import express from "express";
 import { ProjectDependencyContainer } from "../../infrastructure/dependency-injection/project-dependency-container.js";
 import { AuthDependencyContainer } from "../../infrastructure/dependency-injection/auth-dependency-container.js";
 import { upload } from "../middleware/upload.js";
+import taskRouter from "./task.routes.js";
+import type { IRealtimeGateway } from "../../infrastructure/config/socket/socket-gateway.js";
 import { validate } from "../middleware/validate.middleware.js";
 import { createProjectSchema } from "../validators/user/create-project.validator.js";
 import { updateProjectSchema } from "../validators/user/update-project.validator.js";
 import { applyProjectSchema } from "../validators/user/apply-project.validator.js";
-import { updateProjectStatusSchema } from "../validators/user/update-project-status.validator.js";
-import type { IRealtimeGateway } from "../../infrastructure/config/socket/socket-gateway.js";
-import { createTaskRouter } from "./task.routes.js";
 
 export const createProjectRouter = (socketGateway: IRealtimeGateway) => {
   const router = express.Router();
@@ -42,14 +41,6 @@ export const createProjectRouter = (socketGateway: IRealtimeGateway) => {
     tokenMiddleware.verifyToken,
     blockedUserMiddleware.isBlocked,
     projectController.listMyProjects,
-  );
-
-  router.patch(
-    "/:projectId",
-    tokenMiddleware.verifyToken,
-    blockedUserMiddleware.isBlocked,
-    validate(updateProjectStatusSchema),
-    projectController.updateStatus,
   );
 
   router.delete(
@@ -128,7 +119,7 @@ export const createProjectRouter = (socketGateway: IRealtimeGateway) => {
     "/:projectId/tasks",
     tokenMiddleware.verifyToken,
     blockedUserMiddleware.isBlocked,
-    createTaskRouter(socketGateway),
+    taskRouter,
   );
 
   return router;

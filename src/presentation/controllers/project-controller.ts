@@ -18,7 +18,6 @@ import type { IGenerateSignedUrlUseCase } from "../../application/interfaces/use
 import type { IListContributorsUseCase } from "../../application/interfaces/usecase/project/list-contributors.js";
 import type { IUpdateContributorStatusUseCase } from "../../application/use-cases/project/update-contributor-status.js";
 import type { IDeleteProjectUseCase } from "../../application/interfaces/usecase/project/delete-project.js";
-import type { IUpdateProjectStatusUseCase } from "../../application/interfaces/usecase/project/update-project-status.js";
 
 export class ProjectController {
   constructor(
@@ -34,7 +33,6 @@ export class ProjectController {
     private _listContributorsUseCase: IListContributorsUseCase,
     private _updateContributorStatusUseCase: IUpdateContributorStatusUseCase,
     private _deleteProjectUseCase: IDeleteProjectUseCase,
-    private _updateProjectStatusUseCase: IUpdateProjectStatusUseCase,
   ) {}
 
   createProject = async (req: Request, res: Response, next: NextFunction) => {
@@ -88,35 +86,6 @@ export class ProjectController {
         projectId,
         userId,
         data: req.body,
-      });
-
-      res
-        .status(HttpStatusCode.OK)
-        .json(ApiResponse.success(ResponseMessages.ProjectUpdateSuccess, data));
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  updateStatus = async (req: Request, res: Response, next: NextFunction) => {
-    logger.debug("Update Project status API Hit 🚀");
-    const userId = req.user!.id;
-    try {
-      const projectId = req.params.projectId;
-
-      const { status } = req.body;
-
-      if (!projectId) {
-        throw new AppError(
-          ResponseMessages.ProjectIdIsRequired,
-          HttpStatusCode.BAD_REQUEST,
-        );
-      }
-
-      const { data } = await this._updateProjectStatusUseCase.execute({
-        userId,
-        projectId,
-        status,
       });
 
       res

@@ -4,36 +4,27 @@ import { upload } from "../middleware/upload.js";
 import { validate } from "../middleware/validate.middleware.js";
 import { createTaskSchema } from "../validators/user/create-task.validator.js";
 import { updateTaskSchema } from "../validators/user/update-task.validator.js";
-import type { IRealtimeGateway } from "../../infrastructure/config/socket/socket-gateway.js";
 
-export const createTaskRouter = (socketGateway: IRealtimeGateway) => {
-  const router = express.Router({ mergeParams: true });
+const router = express.Router({ mergeParams: true });
 
-  const taskContainer = new TaskDependencyContainer(socketGateway);
-  const taskController = taskContainer.createTaskController();
+const taskContainer = new TaskDependencyContainer();
+const taskController = taskContainer.createTaskController();
 
-  router.post(
-    "/",
-    upload.array("files"),
-    validate(createTaskSchema),
-    taskController.createTask,
-  );
-  router.get("/contributor", taskController.listTasksByContributor);
-  router.get("/creator", taskController.listTasksByCreator);
+router.post(
+  "/",
+  upload.array("files"),
+  validate(createTaskSchema),
+  taskController.createTask,
+);
+router.get("/contributor", taskController.listTasksByContributor);
+router.get("/creator", taskController.listTasksByCreator);
 
-  router.put("/:taskId/start", taskController.startWork);
-  router.put("/:taskId/submit", taskController.submitTask);
-  router.put("/:taskId/complete", taskController.completeTask);
+router.put("/:taskId/start", taskController.startWork);
+router.put("/:taskId/submit", taskController.submitTask);
+router.put("/:taskId/complete", taskController.completeTask);
 
-  router.patch("/:taskId/assignee", taskController.reassignTask);
-  router.delete("/:taskId/assignee/remove", taskController.removeAssignee);
+router.patch("/:taskId/reassign", taskController.reassignTask);
+router.patch("/:taskId", validate(updateTaskSchema), taskController.updateTask);
+router.get("/:taskId", taskController.getTask);
 
-  router.patch(
-    "/:taskId",
-    validate(updateTaskSchema),
-    taskController.updateTask,
-  );
-  router.get("/:taskId", taskController.getTask);
-
-  return router;
-};
+export default router;

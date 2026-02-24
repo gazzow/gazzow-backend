@@ -25,7 +25,7 @@ import { ProjectMapper } from "../../application/mappers/project.js";
 import type { IApplicationMapper } from "../../application/mappers/application.js";
 import { ApplicationMapper } from "../../application/mappers/application.js";
 
-import { ProjectController } from "../../presentation/controllers/project.controller.js";
+import { ProjectController } from "../../presentation/controllers/project-controller.js";
 
 import { ApplicationModel } from "../db/models/application-model.js";
 import { ProjectModel } from "../db/models/project-model.js";
@@ -71,8 +71,6 @@ import { NotificationModel } from "../db/models/notification.model.js";
 import type { INotificationRepository } from "../../application/interfaces/repository/notification.repository.js";
 import type { IDeleteProjectUseCase } from "../../application/interfaces/usecase/project/delete-project.js";
 import { DeleteProjectUseCase } from "../../application/use-cases/project/delete-project.js";
-import type { IUpdateProjectStatusUseCase } from "../../application/interfaces/usecase/project/update-project-status.js";
-import { UpdateProjectStatusUseCase } from "../../application/use-cases/project/update-project-status.js";
 
 export class ProjectDependencyContainer {
   private readonly _userRepository: IUserRepository;
@@ -164,13 +162,6 @@ export class ProjectDependencyContainer {
     );
   }
 
-  private createUpdateProjectStatusUseCase(): IUpdateProjectStatusUseCase {
-    return new UpdateProjectStatusUseCase(
-      this._projectRepository,
-      this._projectMapper,
-    );
-  }
-
   private createDeleteProjectUseCase(): IDeleteProjectUseCase {
     return new DeleteProjectUseCase(
       this._projectRepository,
@@ -216,7 +207,6 @@ export class ProjectDependencyContainer {
       this.createListContributorsUseCase(),
       this.updateContributorStatusUseCase(),
       this.createDeleteProjectUseCase(),
-      this.createUpdateProjectStatusUseCase(),
     );
   }
 }
