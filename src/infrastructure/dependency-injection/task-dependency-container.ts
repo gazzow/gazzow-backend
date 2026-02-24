@@ -1,3 +1,4 @@
+import type { INotificationRepository } from "../../application/interfaces/repository/notification.repository.js";
 import type { IProjectRepository } from "../../application/interfaces/repository/project-repository.js";
 import type { ISubscriptionRepository } from "../../application/interfaces/repository/subscription.repository.js";
 import type { ITaskRepository } from "../../application/interfaces/repository/task-repository.js";
@@ -9,9 +10,14 @@ import type { IGetTaskUseCase } from "../../application/interfaces/usecase/task/
 import type { IListTasksByContributorUseCase } from "../../application/interfaces/usecase/task/list-tasks-by-contributor.js";
 import type { IListTasksByCreatorUseCase } from "../../application/interfaces/usecase/task/list-tasks-by-creator.js";
 import type { IReassignTaskUseCase } from "../../application/interfaces/usecase/task/reassign-task.js";
+import type { IRemoveAssigneeUseCase } from "../../application/interfaces/usecase/task/remove-assignee.js";
 import type { IStartWorkUseCase } from "../../application/interfaces/usecase/task/start-task.js";
 import type { ISubmitTaskUseCase } from "../../application/interfaces/usecase/task/submit-task.js";
 import type { IUpdateTaskUseCase } from "../../application/interfaces/usecase/task/update-task.js";
+import {
+  NotificationMapper,
+  type INotificationMapper,
+} from "../../application/mappers/notification.js";
 import {
   PaymentMapper,
   type IPaymentMapper,
@@ -41,10 +47,13 @@ import { GetTaskUseCase } from "../../application/use-cases/task/get-task.js";
 import { ListTasksByContributorUseCase } from "../../application/use-cases/task/list-tasks-by-contributor.js";
 import { ListTasksByCreatorUseCase } from "../../application/use-cases/task/list-tasks-by-creator.js";
 import { ReassignTaskUseCase } from "../../application/use-cases/task/reassign-task.js";
+import { RemoveAssigneeUseCase } from "../../application/use-cases/task/remove-assignee.js";
 import { StartWorkUseCase } from "../../application/use-cases/task/start-task.js";
 import { SubmitTaskUseCase } from "../../application/use-cases/task/submit-task.js";
 import { UpdateTaskUseCase } from "../../application/use-cases/task/update-task.js";
 import { TaskController } from "../../presentation/controllers/task-controller.js";
+import type { IRealtimeGateway } from "../config/socket/socket-gateway.js";
+import { NotificationModel } from "../db/models/notification.model.js";
 import { PaymentModel } from "../db/models/payment.model.js";
 import { ProjectModel } from "../db/models/project-model.js";
 import { SubscriptionModel } from "../db/models/subscription.js";
@@ -52,6 +61,7 @@ import { TaskModel } from "../db/models/task-model.js";
 import { UserModel } from "../db/models/user-model.js";
 import { S3FileStorageService } from "../providers/s3-service.js";
 import { StripeService } from "../providers/stripe-service.js";
+import { NotificationRepository } from "../repositories/notification.repository.js";
 import {
   PaymentRepository,
   type IPaymentRepository,
@@ -74,8 +84,11 @@ export class TaskDependencyContainer {
   private readonly _subscriptionMapper: ISubscriptionMapper;
   private readonly _paymentRepository: IPaymentRepository;
   private readonly _paymentMapper: IPaymentMapper;
+  private readonly _socketGateway: IRealtimeGateway;
+  private readonly _notificationRepository: INotificationRepository;
+  private readonly _notificationMapper: INotificationMapper;
 
-  constructor() {
+  constructor(socketGateway: IRealtimeGateway) {
     this._taskRepository = new TaskRepository(TaskModel);
     this._taskMapper = new TaskMapper();
     this._projectRepository = new ProjectRepository(ProjectModel);
@@ -85,11 +98,16 @@ export class TaskDependencyContainer {
     this._stripeService = new StripeService();
     this._s3Service = new S3FileStorageService();
     this._subscriptionRepository = new SubscriptionRepository(
-      SubscriptionModel
+      SubscriptionModel,
     );
     this._paymentRepository = new PaymentRepository(PaymentModel);
     this._subscriptionMapper = new SubscriptionMapper();
     this._paymentMapper = new PaymentMapper();
+    this._socketGateway = socketGateway;
+    this._notificationRepository = new NotificationRepository(
+      NotificationModel,
+    );
+    this._notificationMapper = new NotificationMapper();
   }
 
   createTaskUseCase(): ICreateTaskUseCase {
@@ -97,21 +115,24 @@ export class TaskDependencyContainer {
       this._taskRepository,
       this._projectRepository,
       this._taskMapper,
-      this._s3Service
+      this._s3Service,
+      this._socketGateway,
+      this._notificationRepository,
+      this._notificationMapper,
     );
   }
 
   createListTaskByContributor(): IListTasksByContributorUseCase {
     return new ListTasksByContributorUseCase(
       this._taskRepository,
-      this._taskMapper
+      this._taskMapper,
     );
   }
 
   createListTaskByCreator(): IListTasksByCreatorUseCase {
     return new ListTasksByCreatorUseCase(
       this._taskRepository,
-      this._taskMapper
+      this._taskMapper,
     );
   }
 
@@ -120,7 +141,10 @@ export class TaskDependencyContainer {
       this._taskRepository,
       this._projectRepository,
       this._projectMapper,
-      this._taskMapper
+      this._taskMapper,
+      this._socketGateway,
+      this._notificationRepository,
+      this._notificationMapper,
     );
   }
 
@@ -134,7 +158,7 @@ export class TaskDependencyContainer {
       this._userRepository,
       this._taskMapper,
       this._userMapper,
-      this._stripeService
+      this._stripeService,
     );
   }
 
@@ -152,7 +176,7 @@ export class TaskDependencyContainer {
       this._subscriptionRepository,
       this._subscriptionMapper,
       this._paymentRepository,
-      this._paymentMapper
+      this._paymentMapper,
     );
   }
 
@@ -160,7 +184,18 @@ export class TaskDependencyContainer {
     return new CompleteTaskUseCase(
       this._taskRepository,
       this._taskMapper,
-      this.createReleaseFundsUseCase()
+      this.createReleaseFundsUseCase(),
+    );
+  }
+
+  createRemoveAssigneeUseCase(): IRemoveAssigneeUseCase {
+    return new RemoveAssigneeUseCase(
+      this._taskRepository,
+      this._taskMapper,
+      this._userRepository,
+      this._socketGateway,
+      this._notificationRepository,
+      this._notificationMapper,
     );
   }
 
@@ -170,6 +205,9 @@ export class TaskDependencyContainer {
       this._projectRepository,
       this._projectMapper,
       this._taskMapper,
+      this._socketGateway,
+      this._notificationRepository,
+      this._notificationMapper,
     );
   }
 
@@ -186,7 +224,8 @@ export class TaskDependencyContainer {
       this.createStartWorkUseCase(),
       this.createSubmitTaskUseCase(),
       this.createCompleteTaskUseCase(),
-      this.createReassignTaskUseCase()
+      this.createReassignTaskUseCase(),
+      this.createRemoveAssigneeUseCase(),
     );
   }
 }

@@ -49,7 +49,7 @@ export class TaskRules {
 
   static getValidContributor(
     assigneeId: string,
-    contributors: Contributor[]
+    contributors: Contributor[],
   ): Contributor | null {
     return contributors.find((c) => c.id === assigneeId) ?? null;
   }
@@ -60,5 +60,33 @@ export class TaskRules {
 
   static canReassign(assigneeStatus: AssigneeStatus): boolean {
     return assigneeStatus === AssigneeStatus.ASSIGNED;
+  }
+
+  static canRemoveAssignee(task: ITask): boolean {
+    return (
+      task.assigneeStatus === AssigneeStatus.ASSIGNED &&
+      task.assigneeId !== undefined &&
+      task.assigneeId !== null
+    );
+  }
+
+  static handleRemoveTaskAssignee(task: ITask) {
+    const update: Partial<ITask> = {};
+
+    update.assigneeId = null;
+    update.assigneeStatus = AssigneeStatus.UNASSIGNED;
+    update.expectedRate = 0;
+    update.totalAmount = 0;
+    update.balance = 0;
+    if (task.amountInEscrow > 0) {
+      update.refundAmount = task.amountInEscrow;
+      update.refundStatus = RefundStatus.PENDING;
+    }
+    update.status = TaskStatus.TODO;
+    update.acceptedAt = null;
+    update.submittedAt = null;
+    update.reassignedAt = null;
+
+    return update;
   }
 }

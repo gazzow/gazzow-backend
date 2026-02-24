@@ -134,3 +134,12 @@ export interface ITaskStatistics {
   plan: string;
   count: number;
 }
+
+export interface IRemoveAssigneeRequestDTO {
+  taskId: string;
+  userId: string;
+}
+
+export interface IRemoveAssigneeResponseDTO {
+  data: ITaskResponseDTO;
+}

@@ -4,6 +4,7 @@ import type {
   IMessage,
   INotificationPayload,
   ITaskCommentNotificationPayload,
+  ITaskUpdateNotificationPayload,
 } from "../../../domain/entities/message.js";
 import {
   SOCKET_EVENTS,
@@ -19,7 +20,10 @@ export interface IRealtimeGateway {
   emitToUser(
     userId: string,
     event: SocketEvent,
-    payload: INotificationPayload | ITaskCommentNotificationPayload,
+    payload:
+      | INotificationPayload
+      | ITaskCommentNotificationPayload
+      | ITaskUpdateNotificationPayload,
   ): void;
 
   updateNotificationCount(userId: string, count: number): void;
@@ -39,7 +43,10 @@ export class SocketGateway implements IRealtimeGateway {
   emitToUser(
     userId: string,
     event: SocketEvent,
-    payload: INotificationPayload,
+    payload:
+      | INotificationPayload
+      | ITaskCommentNotificationPayload
+      | ITaskUpdateNotificationPayload,
   ) {
     this.io.to(userId).emit(event, payload);
   }
