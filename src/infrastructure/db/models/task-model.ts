@@ -20,7 +20,7 @@ export type ITaskDocument = Document & {
   title: string;
   projectId: Types.ObjectId;
   creatorId: Types.ObjectId;
-  assigneeId?: Types.ObjectId;
+  assigneeId?: Types.ObjectId | null;
   description: string;
   expectedRate: number;
   estimatedHours: number;
@@ -41,14 +41,16 @@ export type ITaskDocument = Document & {
   cancellationReason?: string;
   revisionCount?: number;
 
-  ExpiredAt?: Date;
-  cancelledAt?: Date;
-  acceptedAt?: Date;
-  submittedAt?: Date;
-  completedAt?: Date;
   dueDate: Date;
-  closedAt?: Date;
-  paidAt?: Date;
+
+  ExpiredAt?: Date | null;
+  cancelledAt?: Date | null;
+  acceptedAt?: Date | null;
+  submittedAt?: Date | null;
+  completedAt?: Date | null;
+  reassignedAt?: Date | null;
+  closedAt?: Date | null;
+  paidAt?: Date | null;
 
   revisions?: Revision[];
 
@@ -72,7 +74,7 @@ const TaskFileSchema = new Schema<IProjectFile>(
     key: { type: String, trim: true, required: true },
     name: { type: String, trim: true, required: true },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const SubmissionLinkSchema = new Schema<SubmissionLink>(
@@ -81,7 +83,7 @@ const SubmissionLinkSchema = new Schema<SubmissionLink>(
     label: { type: String, trim: true, required: true },
     date: { type: Date, default: Date.now },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const RevisionSchema = new Schema<Revision>(
@@ -89,7 +91,7 @@ const RevisionSchema = new Schema<Revision>(
     message: { type: String, trim: true, required: true, maxlength: 500 },
     date: { type: Date, default: Date.now },
   },
-  { _id: false }
+  { _id: false },
 );
 
 // -------------------------------------------
@@ -179,6 +181,7 @@ const taskSchema = new Schema<ITaskDocument>(
     acceptedAt: { type: Date, default: null },
     submittedAt: { type: Date, default: null },
     completedAt: { type: Date, default: null },
+    reassignedAt: { type: Date, default: null },
     closedAt: { type: Date, default: null },
     paidAt: { type: Date, default: null },
 
@@ -188,7 +191,7 @@ const taskSchema = new Schema<ITaskDocument>(
   {
     timestamps: true,
     versionKey: false,
-  }
+  },
 );
 
 // -------------------------------------------
