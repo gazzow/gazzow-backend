@@ -31,15 +31,17 @@ export interface ITask {
   paymentStatus?: TaskPaymentStatus;
   cancellationReason?: string; // for creator/admin cancellation
   revisionCount?: number; // track how many revisions were requested
-  expiredAt?: Date; // record when task expired
-  cancelledAt?: Date;
-  acceptedAt?: Date;
-  submittedAt?: Date;
-  completedAt?: Date;
-  reassignedAt?: Date;
+ 
   dueDate: Date;
-  closedAt?: Date; // when admin marks as done (after payment)
-  paidAt?: Date;
+
+  expiredAt?: Date | null; // record when task expired
+  cancelledAt?: Date | null;
+  acceptedAt?: Date | null;
+  submittedAt?: Date | null;
+  completedAt?: Date | null;
+  reassignedAt?: Date | null;
+  closedAt?: Date | null; // when admin marks as done (after payment)
+  paidAt?: Date | null;
 
   revisions?: Revision[];
 

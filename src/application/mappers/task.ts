@@ -8,7 +8,11 @@ import type {
   IPopulatedResponseDTO,
   ITaskResponseDTO,
 } from "../dtos/task.js";
-import { AssigneeStatus } from "../../domain/enums/task.js";
+import {
+  AssigneeStatus,
+  RefundStatus,
+  TaskStatus,
+} from "../../domain/enums/task.js";
 import type { ITask } from "../../domain/entities/task.js";
 
 export interface ITaskMapper {
@@ -16,10 +20,11 @@ export interface ITaskMapper {
   toPersistent(dto: ICreateTaskRequestDTO): Partial<ITaskDocument>;
   toResponseDTO(taskDoc: ITaskDocument): ITaskResponseDTO;
   toPopulatedResponseDTO(
-    taskDoc: IPopulatedTaskDocument
+    taskDoc: IPopulatedTaskDocument,
   ): IPopulatedResponseDTO;
   toUpdatePersistent(dto: Partial<ITask>): Partial<ITaskDocument>;
   toReassignPersistent(data: Partial<ITask>): Partial<ITaskDocument>;
+  toRemoveAssigneePersistent(data: Partial<ITask>): Partial<ITaskDocument>;
   getCompletedTaskProjectIds(taskDoc: ITaskDocument[]): string[];
 }
 
@@ -109,7 +114,7 @@ export class TaskMapper implements ITaskMapper {
   }
 
   toPopulatedResponseDTO(
-    taskDoc: IPopulatedTaskDocument
+    taskDoc: IPopulatedTaskDocument,
   ): IPopulatedResponseDTO {
     return {
       id: taskDoc._id.toString(),
@@ -233,6 +238,26 @@ export class TaskMapper implements ITaskMapper {
 
     if (data.refundStatus !== undefined)
       update.refundStatus = data.refundStatus;
+
+    if (data.reassignedAt !== undefined)
+      update.reassignedAt = data.reassignedAt;
+
+    return update;
+  }
+
+  toRemoveAssigneePersistent(data: Partial<ITask>): Partial<ITaskDocument> {
+    const update: Partial<ITaskDocument> = {};
+
+    update.assigneeId = null;
+    update.assigneeStatus = AssigneeStatus.UNASSIGNED;
+    update.expectedRate = 0;
+    update.totalAmount = 0;
+    update.balance = 0;
+    update.refundAmount = data.refundAmount || 0;
+    update.refundStatus = data.refundStatus || RefundStatus.PENDING;
+    update.status = TaskStatus.TODO;
+    update.acceptedAt = null;
+    update.submittedAt = null;
 
     return update;
   }
