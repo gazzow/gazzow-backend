@@ -30,17 +30,6 @@ export class CreateReviewUseCase implements ICreateReviewUseCase {
 
     const task = this._taskMapper.toDomain(taskDocument);
 
-    const existingReview = await this._reviewRepository.findReviewByTaskId(
-      task.id,
-    );
-
-    if (existingReview) {
-      throw new AppError(
-        ResponseMessages.ReviewAlreadyExists,
-        HttpStatusCode.CONFLICT,
-      );
-    }
-
     if (task.creatorId !== dto.userId)
       throw new AppError(
         ResponseMessages.UnauthorizedReviewCreation,
@@ -58,6 +47,17 @@ export class CreateReviewUseCase implements ICreateReviewUseCase {
       throw new AppError(
         ResponseMessages.UnableToAddReview,
         HttpStatusCode.BAD_REQUEST,
+      );
+    }
+
+    const existingReview = await this._reviewRepository.findReviewByTaskId(
+      task.id,
+    );
+
+    if (existingReview) {
+      throw new AppError(
+        ResponseMessages.ReviewAlreadyExists,
+        HttpStatusCode.CONFLICT,
       );
     }
 

@@ -13,13 +13,14 @@ export type IReviewDocument = Document & {
   updatedAt: Date;
 };
 
-export type PartialReviewDocument = Partial<IReviewDocument>
+export type PartialReviewDocument = Partial<IReviewDocument>;
 
 const ReviewSchema = new Schema<IReviewDocument>(
   {
     taskId: {
       type: Schema.Types.ObjectId,
       required: true,
+      unique: true,
       ref: "Task",
     },
     projectId: {
