@@ -21,6 +21,10 @@ export interface IUserPublicDTO {
   developerRole?: string;
   imageUrl?: string;
   stripeAccountId: string | null;
+  reputation: {
+    avgRating: number;
+    totalReviews: number;
+  };
   createdAt: Date;
 }
 
@@ -30,8 +34,8 @@ export interface IRegisterUserRequestDTO {
   password: string;
 }
 
-export interface IRegisterUserResponseDTO{
-  otpExpiresAt: number
+export interface IRegisterUserResponseDTO {
+  otpExpiresAt: number;
 }
 
 export interface ILoginRequestDTO {
