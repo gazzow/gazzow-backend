@@ -6,9 +6,11 @@ import { AppError } from "../../../utils/app-error.js";
 import type { ICreateReviewRequestDTO } from "../../dtos/review.js";
 import type { IReviewRepository } from "../../interfaces/repository/review.repository.js";
 import type { ITaskRepository } from "../../interfaces/repository/task-repository.js";
+import type { IUserRepository } from "../../interfaces/repository/user-repository.js";
 import type { ICreateReviewUseCase } from "../../interfaces/usecase/review/create-review.js";
 import type { IReviewMapper } from "../../mappers/review.js";
 import type { ITaskMapper } from "../../mappers/task.js";
+import type { IUserMapper } from "../../mappers/user/user.js";
 
 export class CreateReviewUseCase implements ICreateReviewUseCase {
   constructor(
@@ -16,9 +18,8 @@ export class CreateReviewUseCase implements ICreateReviewUseCase {
     private _taskMapper: ITaskMapper,
     private _reviewRepository: IReviewRepository,
     private _reviewMapper: IReviewMapper,
-    // private _realtimeGateway: IRealtimeGateway,
-    // private _notificationRepository: INotificationRepository,
-    // private _notificationMapper: INotificationMapper,
+    private _userRepository: IUserRepository,
+    private _userMapper: IUserMapper,
   ) {}
   async execute(dto: ICreateReviewRequestDTO): Promise<void> {
     const taskDocument = await this._taskRepository.findById(dto.taskId);
@@ -73,8 +74,37 @@ export class CreateReviewUseCase implements ICreateReviewUseCase {
     const reviewPersistent =
       this._reviewMapper.toPersistentModel(createReviewPayload);
 
-    await this._reviewRepository.create(reviewPersistent);
+    const reviewDoc = await this._reviewRepository.create(reviewPersistent);
+    const review = this._reviewMapper.toDomain(reviewDoc);
 
-    // update contributor review stats
+    const contributorDocument = await this._userRepository.findById(
+      review.contributorId,
+    );
+
+    if (!contributorDocument) {
+      throw new AppError(
+        ResponseMessages.AssigneeNotFound,
+        HttpStatusCode.NOT_FOUND,
+      );
+    }
+    const contributor = this._userMapper.toPublicDTO(contributorDocument);
+
+    const { reputation } = contributor;
+
+    const newTotalReview = reputation.totalReviews + 1;
+    
+    const newAvgRating = Number(
+      (
+        (reputation.avgRating * reputation.totalReviews + review.rating) /
+        newTotalReview
+      ).toFixed(2),
+    );
+
+    await this._userRepository.update(review.contributorId, {
+      reputation: {
+        avgRating: newAvgRating,
+        totalReviews: newTotalReview,
+      },
+    });
   }
 }
