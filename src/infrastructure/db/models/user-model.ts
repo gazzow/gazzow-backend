@@ -21,6 +21,10 @@ export type IUserDocument = Document & {
   techStacks?: string[];
   learningGoals?: string[];
   stripeAccountId: string | null;
+  reputation: {
+    avgRating: number;
+    totalReviews: number;
+  };
   createdAt: Date;
   updatedAt: Date;
 };
@@ -52,9 +56,18 @@ const userSchema = new Schema<IUserDocument>(
     experience: { type: String },
     developerRole: { type: String },
     imageUrl: { type: String },
-    stripeAccountId: { type: String, default: null},
+    stripeAccountId: { type: String, default: null },
+    reputation: {
+      avgRating: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 5,
+      },
+      totalReviews: { type: Number, default: 0, min: 0 },
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export const UserModel = mongoose.model("User", userSchema);

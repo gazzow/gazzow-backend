@@ -15,10 +15,10 @@ import { createTeamChatRoutes } from "./team-chat.routes.js";
 import { createProjectRouter } from "./project.routes.js";
 import { createNotificationRouter } from "./notification.routes.js";
 import { createTaskCommentRouter } from "./task-comment.routes.js";
+import { createReviewRoutes } from "./review.routes.js";
 
 export const createRootRoutes = (socketGateway: IRealtimeGateway) => {
   const router = Router();
-
 
   router.use("/", userRoutes);
   router.use("/payments", paymentRoutes);
@@ -29,6 +29,7 @@ export const createRootRoutes = (socketGateway: IRealtimeGateway) => {
   router.use("/notifications", createNotificationRouter(socketGateway));
   router.use("/favorites", favoriteRoutes);
   router.use("/team-chat", createTeamChatRoutes(socketGateway));
+  router.use("/reviews", createReviewRoutes());
 
   // Admin routes
   router.use("/admin/plans", planRoutes);
