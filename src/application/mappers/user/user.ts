@@ -23,6 +23,10 @@ export class UserMapper implements IUserMapper {
       googleId: user.googleId ?? "",
       provider: user.provider ?? Provider.LOCAL,
       stripeAccountId: user.stripeAccountId,
+      reputation: {
+        avgRating: user.reputation.avgRating,
+        totalReviews: user.reputation.totalReviews,
+      },
       createdAt: user.createdAt,
     };
   }

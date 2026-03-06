@@ -147,4 +147,11 @@ export enum ResponseMessages {
   UnreadNotificationCountRetrieved = "Unread notification count retrieved successfully",
   NotificationNotFound = "Notification Not found",
   FetchedNotifications = "List Notifications Successfully",
+
+  // Review
+  UnauthorizedReviewCreation = "You don't have permission to create review for this task",
+  ReviewCreated = "Review created successfully",
+  UnableToAddReview = "Unable to add review on this task.",
+  ReviewAlreadyExists = "Review already exists",
+  FetchedReviews = "list reviews successfully",
 }
