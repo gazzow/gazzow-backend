@@ -91,6 +91,7 @@ export enum ResponseMessages {
   UnableToMarkAsCompleted = "Unable to mark this task as completed",
   UnauthorizedTaskModification = "Unauthorized to modify this task",
   UnauthorizedTaskCreation = "You don't have permission to create tasks for this project",
+  AssigneeNotFound = "Assignee not found",
 
   // TaskComment
   TaskCommentCreated = "Task Comment posted",
