@@ -19,5 +19,12 @@ export const createReviewRoutes = () => {
     reviewController.createReview,
   );
 
+  router.get(
+    "/",
+    tokenMiddleware.verifyToken,
+    blockedUserMiddleware.isBlocked,
+    reviewController.listReviews,
+  );
+
   return router;
 };

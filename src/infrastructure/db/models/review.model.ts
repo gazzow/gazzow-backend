@@ -1,4 +1,5 @@
 import mongoose, { Schema, type Document, type Types } from "mongoose";
+import type { TaskStatus } from "../../../domain/enums/task.js";
 
 export type IReviewDocument = Document & {
   _id: Types.ObjectId;
@@ -13,7 +14,22 @@ export type IReviewDocument = Document & {
   updatedAt: Date;
 };
 
-export type PartialReviewDocument = Partial<IReviewDocument>;
+export type IPartialReviewDocument = Partial<IReviewDocument>;
+
+export interface IAggregatedReviewDocument {
+  _id: string;
+  rating: number;
+  review: string;
+  reviewer: {
+    id: string;
+    name: string;
+  };
+  task: {
+    id: string;
+    title: string;
+    status: TaskStatus;
+  };
+}
 
 const ReviewSchema = new Schema<IReviewDocument>(
   {

@@ -1,4 +1,4 @@
-import type { PartialReview } from "../../../domain/entities/review.js";
+import type { IPartialReview } from "../../../domain/entities/review.js";
 import { ResponseMessages } from "../../../domain/enums/constants/response-messages.js";
 import { HttpStatusCode } from "../../../domain/enums/constants/status-codes.js";
 import { TaskStatus } from "../../../domain/enums/task.js";
@@ -62,7 +62,7 @@ export class CreateReviewUseCase implements ICreateReviewUseCase {
       );
     }
 
-    const createReviewPayload: PartialReview = {
+    const createReviewPayload: IPartialReview = {
       taskId: task.id,
       projectId: task.projectId,
       reviewerId: task.creatorId,

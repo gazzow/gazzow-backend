@@ -2,6 +2,7 @@ import type { IReviewRepository } from "../../application/interfaces/repository/
 import type { ITaskRepository } from "../../application/interfaces/repository/task-repository.js";
 import type { IUserRepository } from "../../application/interfaces/repository/user-repository.js";
 import type { ICreateReviewUseCase } from "../../application/interfaces/usecase/review/create-review.js";
+import type { IListReviewsUseCase } from "../../application/interfaces/usecase/review/list-reviews.js";
 import {
   ReviewMapper,
   type IReviewMapper,
@@ -15,6 +16,7 @@ import {
   type IUserMapper,
 } from "../../application/mappers/user/user.js";
 import { CreateReviewUseCase } from "../../application/use-cases/review/create-review.js";
+import { ListReviewsUseCase } from "../../application/use-cases/review/list-reviews.js";
 import { ReviewController } from "../../presentation/controllers/review.controller.js";
 import { ReviewModel } from "../db/models/review.model.js";
 import { TaskModel } from "../db/models/task-model.js";
@@ -51,8 +53,15 @@ export class ReviewDependencyContainer {
     );
   }
 
+  private createListReviewsUseCase(): IListReviewsUseCase {
+    return new ListReviewsUseCase(this._reviewRepository, this._reviewMapper);
+  }
+
   // Controller
   createReviewController(): ReviewController {
-    return new ReviewController(this.createNewReviewUseCase());
+    return new ReviewController(
+      this.createNewReviewUseCase(),
+      this.createListReviewsUseCase(),
+    );
   }
 }

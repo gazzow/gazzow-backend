@@ -1,3 +1,5 @@
+import type { TaskStatus } from "../enums/task.js";
+
 export interface IReview {
   id: string;
   taskId: string;
@@ -11,4 +13,19 @@ export interface IReview {
   updatedAt: Date;
 }
 
-export type PartialReview = Partial<IReview>;
+export type IPartialReview = Partial<IReview>;
+
+export interface IAggregatedReview {
+  id: string;
+  rating: number;
+  review: string;
+  reviewer: {
+    id: string;
+    name: string;
+  };
+  task: {
+    id: string;
+    title: string;
+    status: TaskStatus;
+  };
+}
