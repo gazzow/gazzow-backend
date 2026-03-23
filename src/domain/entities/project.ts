@@ -1,4 +1,5 @@
 import type { IProjectFile } from "../../application/interfaces/s3-bucket/file-storage.js";
+import type { ApplicationStatus } from "../enums/application.js";
 import type {
   ContributorStatus,
   ProjectDurationUnit,
@@ -37,6 +38,11 @@ export interface IAggregatedProject extends IProject {
     name: string;
     imageUrl: string;
   };
+}
+
+export interface IAggregatedProjectDetail extends IProject{
+  isContributor: boolean;
+  applicationStatus: ApplicationStatus;
 }
 
 export interface IContributor {

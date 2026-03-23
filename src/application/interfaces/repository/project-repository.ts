@@ -1,5 +1,6 @@
 import type { ContributorStatus } from "../../../domain/enums/project.js";
 import type {
+  IAggregatedProjectDetailsDocument,
   IAggregatedProjectDocument,
   IProjectDocument,
   IProjectDocumentPopulated,
@@ -56,6 +57,8 @@ export interface IProjectRepository extends IBaseRepository<IProjectDocument> {
   ): Promise<IProjectDocument | null>;
 
   findByProjectIds(projectIds: string[], userId: string): Promise<IAggregatedProjectDocument[]>;
+
+  getProjectById(projectId: string, userId: string): Promise<IAggregatedProjectDetailsDocument | null>
 
   softDelete(id: string): Promise<boolean>;
 }

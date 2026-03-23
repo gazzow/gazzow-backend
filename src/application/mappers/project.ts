@@ -4,6 +4,7 @@ import type {
   IListContributorsResponseDTO,
 } from "../dtos/project.js";
 import type {
+  IAggregatedProjectDetailsDocument,
   IAggregatedProjectDocument,
   IPopulatedContributor,
   IProjectDocument,
@@ -12,6 +13,7 @@ import type {
 import type {
   Contributor,
   IAggregatedProject,
+  IAggregatedProjectDetail,
   IProject,
 } from "../../domain/entities/project.js";
 
@@ -31,6 +33,10 @@ export interface IProjectMapper {
   toListContributorsEntity(
     populatedContributor: IPopulatedContributor,
   ): Contributor;
+
+  toAggregatedProjectResponseDTO(
+    projectDoc: IAggregatedProjectDetailsDocument,
+  ): IAggregatedProjectDetail;
 }
 
 export class ProjectMapper implements IProjectMapper {
@@ -214,6 +220,41 @@ export class ProjectMapper implements IProjectMapper {
       invitedAt: populatedContributor.invitedAt?.toISOString?.() ?? "",
       createdAt: populatedContributor.createdAt?.toISOString?.() ?? "",
       updatedAt: populatedContributor.updatedAt?.toISOString?.() ?? "",
+    };
+  }
+
+  toAggregatedProjectResponseDTO(
+    projectDoc: IAggregatedProjectDetailsDocument,
+  ): IAggregatedProjectDetail {
+    return {
+      id: projectDoc._id.toString(),
+      creatorId: projectDoc.creatorId.toString(),
+      title: projectDoc.title,
+      description: projectDoc.description,
+      developersNeeded: projectDoc.developersNeeded,
+      experience: projectDoc.experience,
+      contributors: projectDoc.contributors.map((c) => ({
+        userId: c.userId.toString(),
+        status: c.status,
+        invitedAt: c.invitedAt?.toISOString() ?? "",
+        createdAt: c.createdAt?.toISOString() ?? "",
+        updatedAt: projectDoc.updatedAt?.toISOString() ?? "",
+      })),
+      budgetMin: projectDoc.budgetMin,
+      budgetMax: projectDoc.budgetMax,
+      requiredSkills: projectDoc.requiredSkills,
+      durationMin: projectDoc.durationMin,
+      durationMax: projectDoc.durationMax,
+      durationUnit: projectDoc.durationUnit,
+      visibility: projectDoc.visibility,
+      status: projectDoc.status,
+      documents: projectDoc.documents,
+      isDeleted: projectDoc.isDeleted,
+      isContributor: projectDoc.isContributor,
+      applicationStatus: projectDoc.applicationStatus,
+      deletedAt: projectDoc.deletedAt,
+      createdAt: projectDoc.createdAt?.toISOString() ?? "",
+      updatedAt: projectDoc.updatedAt?.toISOString() ?? "",
     };
   }
 }
