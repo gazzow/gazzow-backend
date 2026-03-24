@@ -26,6 +26,10 @@ import {
   type IPaymentRepository,
 } from "../repositories/payment.repository.js";
 import { PaymentModel } from "../db/models/payment.model.js";
+import type { IChangePasswordUseCase } from "../../application/interfaces/usecase/user/profile/change-password.js";
+import { ChangePasswordUseCase } from "../../application/use-cases/user/profile/change-password.js";
+import type { IHashService } from "../../application/providers/hash-service.js";
+import { HashService } from "../providers/hash-service.js";
 
 export class UserDependencyContainer {
   private readonly _userRepository: IUserRepository;
@@ -33,6 +37,7 @@ export class UserDependencyContainer {
   private readonly _projectRepository: ProjectRepository;
   private readonly _taskRepository: TaskRepository;
   private readonly _paymentRepository: IPaymentRepository;
+  private readonly _hashService: IHashService;
 
   constructor() {
     this._userRepository = new UserRepository(UserModel);
@@ -40,6 +45,7 @@ export class UserDependencyContainer {
     this._projectRepository = new ProjectRepository(ProjectModel);
     this._taskRepository = new TaskRepository(TaskModel);
     this._paymentRepository = new PaymentRepository(PaymentModel);
+    this._hashService = new HashService(10);
   }
 
   private createUpdateProfileUseCase(): IUpdateUserProfileUseCase {
@@ -54,15 +60,20 @@ export class UserDependencyContainer {
     return new UserDashboardStatsUseCase(
       this._projectRepository,
       this._taskRepository,
-      this._paymentRepository
+      this._paymentRepository,
     );
+  }
+
+  private createChangePasswordUseCase(): IChangePasswordUseCase {
+    return new ChangePasswordUseCase(this._userRepository, this._hashService);
   }
 
   createUserController(): UserController {
     return new UserController(
       this.createUpdateProfileUseCase(),
       this.createGetUserProfileUseCase(),
-      this.createDashboardStatsUseCase()
+      this.createDashboardStatsUseCase(),
+      this.createChangePasswordUseCase(),
     );
   }
 }

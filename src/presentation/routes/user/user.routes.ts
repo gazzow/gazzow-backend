@@ -73,4 +73,10 @@ userRouter.get(
   userController.dashboardStats,
 );
 
+userRouter.post(
+  "/change-password",
+  tokenMiddleware.verifyToken,
+  userController.changePassword,
+);
+
 export default userRouter;

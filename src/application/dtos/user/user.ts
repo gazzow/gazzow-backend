@@ -98,3 +98,11 @@ export interface IGoogleAuthResponseDTO {
   data: IUserPublicDTO;
   isNewUser: boolean;
 }
+
+export interface IChangePasswordRequestDTO{
+  userId: string;
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
