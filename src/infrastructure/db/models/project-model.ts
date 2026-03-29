@@ -7,6 +7,7 @@ import {
   ContributorStatus,
 } from "../../../domain/enums/project.js";
 import type { IProjectFile } from "../../../application/interfaces/s3-bucket/file-storage.js";
+import type { ApplicationStatus } from "../../../domain/enums/application.js";
 
 export interface IContributor {
   userId: Types.ObjectId;
@@ -62,6 +63,11 @@ export interface IAggregatedProjectDocument extends IProjectDocument {
     name: string;
     imageUrl: string;
   };
+}
+
+export interface IAggregatedProjectDetailsDocument extends IProjectDocument {
+  applicationStatus: ApplicationStatus;
+  isContributor: boolean;
 }
 
 const contributorSchema = new Schema<IContributor>(

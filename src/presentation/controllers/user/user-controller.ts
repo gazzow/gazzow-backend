@@ -9,12 +9,14 @@ import { pickAllowedFields } from "../../../infrastructure/utils/pick-allowed-fi
 import type { IUpdateProfileRequestDTO } from "../../../application/dtos/user/user.js";
 import { ApiResponse } from "../../common/api-response.js";
 import type { IUserDashboardStatsUseCase } from "../../../application/interfaces/usecase/dashboard/dashboard-stats.js";
+import type { IChangePasswordUseCase } from "../../../application/interfaces/usecase/user/profile/change-password.js";
 
 export class UserController {
   constructor(
     private _updateUserProfileUseCase: IUpdateUserProfileUseCase,
     private _getUserProfileUseCase: IGetUserProfileUseCase,
-    private _userDashboardStatsUseCase: IUserDashboardStatsUseCase
+    private _userDashboardStatsUseCase: IUserDashboardStatsUseCase,
+    private _changePasswordUseCase: IChangePasswordUseCase,
   ) {}
 
   getUserProfile = async (req: Request, res: Response, next: NextFunction) => {
@@ -24,7 +26,7 @@ export class UserController {
       if (!id) {
         throw new AppError(
           ResponseMessages.Unauthorized,
-          HttpStatusCode.UNAUTHORIZED
+          HttpStatusCode.UNAUTHORIZED,
         );
       }
 
@@ -47,7 +49,7 @@ export class UserController {
       if (!userId) {
         throw new AppError(
           ResponseMessages.Unauthorized,
-          HttpStatusCode.UNAUTHORIZED
+          HttpStatusCode.UNAUTHORIZED,
         );
       }
 
@@ -63,14 +65,14 @@ export class UserController {
 
       const profileData = pickAllowedFields<IUpdateProfileRequestDTO>(
         req.body,
-        allowedFields
+        allowedFields,
       );
 
       logger.debug(`Profile date to update: ${JSON.stringify(profileData)}`);
 
       const { data } = await this._updateUserProfileUseCase.execute(
         userId,
-        profileData
+        profileData,
       );
 
       res
@@ -90,6 +92,27 @@ export class UserController {
       res
         .status(HttpStatusCode.OK)
         .json(ApiResponse.success("User dashboard stats fetched", data));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  changePassword = async (req: Request, res: Response, next: NextFunction) => {
+    logger.debug("Change password API hit 🚀");
+    const userId = req.user!.id;
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+
+    try {
+      await this._changePasswordUseCase.execute({
+        userId,
+        currentPassword,
+        newPassword,
+        confirmPassword,
+      });
+
+      res
+        .status(HttpStatusCode.OK)
+        .json(ApiResponse.success(ResponseMessages.PasswordUpdatedSuccess));
     } catch (error) {
       next(error);
     }

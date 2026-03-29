@@ -71,6 +71,7 @@ export interface IListMyProjectsResponseDTO {
 }
 
 export interface IGetProjectRequestDTO {
+  userId: string;
   projectId: string;
 }
 

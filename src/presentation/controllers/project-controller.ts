@@ -55,11 +55,15 @@ export class ProjectController {
     logger.debug("Get Project API hit 🚀");
 
     try {
+      const userId = req.user!.id;
       const { projectId } = req.params;
       if (!projectId) {
         throw new AppError("Project id required", HttpStatusCode.BAD_REQUEST);
       }
-      const { data } = await this._getProjectUseCase.execute({ projectId });
+      const { data } = await this._getProjectUseCase.execute({
+        projectId,
+        userId,
+      });
       res
         .status(HttpStatusCode.OK)
         .json(ApiResponse.success(ResponseMessages.ProjectRetrieved, data));

@@ -12,18 +12,22 @@ import type { IProjectMapper } from "../../mappers/project.js";
 export class GetProjectUseCase implements IGetProjectUseCase {
   constructor(
     private _projectRepository: IProjectRepository,
-    private _projectMapper: IProjectMapper
+    private _projectMapper: IProjectMapper,
   ) {}
   async execute(dto: IGetProjectRequestDTO): Promise<IGetProjectResponseDTO> {
-    const projectDoc = await this._projectRepository.findById(dto.projectId);
+    const projectDoc = await this._projectRepository.getProjectById(
+      dto.projectId,
+      dto.userId,
+    );
+
 
     if (!projectDoc) {
       throw new AppError(
         ResponseMessages.ProjectNotFound,
-        HttpStatusCode.NOT_FOUND
+        HttpStatusCode.NOT_FOUND,
       );
     }
-    const data = this._projectMapper.toResponseDTO(projectDoc);
+    const data = this._projectMapper.toAggregatedProjectResponseDTO(projectDoc);
 
     return { data };
   }

@@ -4,6 +4,7 @@ import type {
   IProjectRepository,
 } from "../../application/interfaces/repository/project-repository.js";
 import type {
+  IAggregatedProjectDetailsDocument,
   IAggregatedProjectDocument,
   IProjectDocument,
   IProjectDocumentPopulated,
@@ -667,5 +668,91 @@ export class ProjectRepository
       )
       .exec()
       .then((result) => !!result);
+  }
+
+  async getProjectById(
+    projectId: string,
+    userId: string,
+  ): Promise<IAggregatedProjectDetailsDocument | null> {
+    const projectObjId = new Types.ObjectId(projectId);
+    const userObjId = new Types.ObjectId(userId);
+
+    const result =
+      await this.model.aggregate<IAggregatedProjectDetailsDocument>([
+        {
+          $match: {
+            _id: projectObjId,
+            // isDeleted: false,
+          },
+        },
+
+        {
+          $lookup: {
+            from: "applications",
+            let: { projectId: "$_id" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ["$projectId", "$$projectId"] },
+                      { $eq: ["$applicantId", userObjId] },
+                    ],
+                  },
+                },
+              },
+              {
+                $project: {
+                  status: 1,
+                  _id: 0,
+                },
+              },
+            ],
+            as: "application",
+          },
+        },
+
+        {
+          $addFields: {
+            applicationStatus: {
+              $cond: {
+                if: { $gt: [{ $size: "$application" }, 0] },
+                then: { $arrayElemAt: ["$application.status", 0] },
+                else: "none",
+              },
+            },
+          },
+        },
+
+        // 🔥 Contributor check
+        {
+          $addFields: {
+            isContributor: {
+              $in: [userObjId, "$contributors.userId"],
+            },
+          },
+        },
+
+        // 🔥 Unified state
+        {
+          $addFields: {
+            userProjectState: {
+              $cond: {
+                if: "$isContributor",
+                then: "contributor",
+                else: "$applicationStatus",
+              },
+            },
+          },
+        },
+
+        {
+          $project: {
+            application: 0,
+          },
+        },
+      ]);
+
+    return result[0] || null
   }
 }

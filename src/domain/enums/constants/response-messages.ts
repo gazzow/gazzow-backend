@@ -5,6 +5,8 @@ export enum ResponseMessages {
   LogoutSuccess = "Logged out successfully",
   Unauthorized = "Unauthorized: No token provided",
   PasswordUpdatedSuccess = "Password updated successfully",
+  InvalidCredentials = "Invalid Credentials",
+  PasswordMustBeDifferent = "New password must be different from current password",
 
   // JWT Token
   NoRefreshToken = "Unauthorized: No refresh token provided",
